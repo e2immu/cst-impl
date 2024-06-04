@@ -31,14 +31,13 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         this.arrays = arrays;
     }
 
-    public OutputBuilder output(Qualification qualification) {
-        return ParameterizedTypePrinter.print(InspectionProvider.DEFAULT, qualification, this,
-                false, Diamond.SHOW_ALL, false);
+    public OutputBuilder print(Qualification qualification) {
+        return ParameterizedTypePrinter.print(qualification, this,
+                false, DiamondImpl.SHOW_ALL, false);
     }
 
     public OutputBuilder print(Qualification qualification, boolean varArgs, Diamond diamond) {
-        return ParameterizedTypePrinter.print(InspectionProvider.DEFAULT, qualification, this, varArgs, diamond,
-                false);
+        return ParameterizedTypePrinter.print(qualification, this, varArgs, diamond, false);
     }
 
     @Override
