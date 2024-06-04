@@ -21,13 +21,13 @@ public abstract class ExpressionCanBeTooComplex extends ExpressionImpl {
     // information
     public static Expression reducedComplexity(EvaluationResult context,
                                                List<Expression> expressions,
-                                               Expression[] values) {
+                                               List<Expression> values) {
         ParameterizedType booleanType = context.getPrimitives().booleanParameterizedType();
 
         Expression instance = context.runtime().newInstanceForTooComplex(booleanType);
 
         // IMPORTANT: instance has to be the last one, it determines type, delay, etc.
-        Stream<Expression> components = Stream.concat(Arrays.stream(values), expressions.stream())
+        Stream<Expression> components = Stream.concat(values.stream(), expressions.stream())
                 .flatMap(e -> collect(context.runtime(), e).stream());
         List<Expression> newExpressions = Stream.concat(components.distinct().sorted(), Stream.of(instance))
                 .toList();

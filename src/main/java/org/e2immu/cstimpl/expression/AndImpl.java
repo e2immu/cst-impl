@@ -43,7 +43,7 @@ public class AndImpl extends ExpressionImpl implements And {
     }
 
     // we try to maintain a CNF
-    private Expression evaluate(EvaluationResult context, boolean allowEqualsToCallContext, Expression... values) {
+    public Expression evaluate(EvaluationResult context, boolean allowEqualsToCallContext, List<Expression> values) {
 
         // STEP 1: check that all values return boolean!
         int complexity = 0;
@@ -58,13 +58,14 @@ public class AndImpl extends ExpressionImpl implements And {
 
         // STEP 2: trivial reductions
 
-        if (this.expressions.isEmpty() && values.length == 1 && values[0].isInstanceOf(And.class)) return values[0];
+        if (this.expressions.isEmpty() && values.size() == 1 && values.get(0).isInstanceOf(And.class))
+            return values.get(0);
 
         // STEP 3: concat everything
 
-        ArrayList<Expression> concat = new ArrayList<>(values.length + this.expressions.size());
+        ArrayList<Expression> concat = new ArrayList<>(values.size() + this.expressions.size());
         concat.addAll(this.expressions);
-        recursivelyAdd(concat, Arrays.stream(values).collect(Collectors.toList()));
+        recursivelyAdd(concat, values);
 
         // STEP 4: loop
 
@@ -413,7 +414,7 @@ public class AndImpl extends ExpressionImpl implements And {
                 List<Expression> result = new ArrayList<>(or.expressions().size());
                 boolean foundTrue = false;
                 for (Expression clause : or.expressions()) {
-                    Expression and = evaluate(evaluationContext, allowEqualsToCallContext, prev, clause);
+                    Expression and = evaluate(evaluationContext, allowEqualsToCallContext, List.of(prev, clause));
                     if (and.isBoolValueTrue()) {
                         foundTrue = true;
                         break;

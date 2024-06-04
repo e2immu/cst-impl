@@ -1,8 +1,11 @@
 package org.e2immu.cstimpl.util;
 
+import org.e2immu.annotation.Independent;
 import org.e2immu.annotation.NotModified;
+import org.e2immu.annotation.NotNull;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ListUtil {
@@ -20,4 +23,19 @@ public class ListUtil {
         return 0;
     }
 
+    @SafeVarargs
+    @NotNull(content = true)
+    @Independent
+    public static <T> List<T> immutableConcat(@NotNull(content = true)
+                                              @NotModified
+                                              @Independent(hcReturnValue = true)
+                                              Iterable<? extends T>... lists) {
+        List<T> builder = new LinkedList<>();
+        for (Iterable<? extends T> list : lists) {
+            for (T t : list) {
+                builder.add(t);
+            }
+        }
+        return List.copyOf(builder);
+    }
 }

@@ -16,6 +16,7 @@ package org.e2immu.cstimpl.expression.util;
 
 import org.e2immu.annotation.rare.IgnoreModifications;
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.ExpressionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,7 @@ public class ExpressionComparator implements Comparator<Expression> {
             Expression unwrapped = v;
             int count = 0;
             while (unwrapped instanceof ExpressionWrapper e) {
-                unwrapped = e.getExpression();
+                unwrapped = e.expression();
                 count++;
             }
             return new Unwrapped(unwrapped, count);
@@ -144,7 +145,7 @@ public class ExpressionComparator implements Comparator<Expression> {
         try {
             int u = v1.internalCompareTo(v2);
             if (u != 0) return u;
-        } catch (InternalError ie) {
+        } catch (InternalCompareToException ie) {
             LOGGER.error("Comparison at order {}", v1.order());
             LOGGER.error("Expression 1: '{}' of {}", v1, v1.getClass());
             LOGGER.error("Expression 2: '{}' of {}", v2, v2.getClass());
@@ -156,10 +157,7 @@ public class ExpressionComparator implements Comparator<Expression> {
             return 0;
         }
         // same wrappers, go deeper (v1 may have one wrapper, v2 may have 2)
-        return compare(((ExpressionWrapper) v1).getExpression(), ((ExpressionWrapper) v2).getExpression());
-    }
-
-    public static class InternalError extends Exception {
+        return compare(((ExpressionWrapper) v1).expression(), ((ExpressionWrapper) v2).expression());
     }
 
     private int compareWithoutWrappers(Expression v1, Expression v2) {
@@ -175,11 +173,13 @@ public class ExpressionComparator implements Comparator<Expression> {
                 return v1.internalCompareTo(c2);
             }
             return v1.internalCompareTo(v2);
-        } catch (InternalError ie) {
-            LOGGER.error("Comparison at order {}", v1.order());
-            LOGGER.error("Expression 1: '{}' of {}", v1, v1.getClass());
-            LOGGER.error("Expression 2: '{}' of {}", v2, v2.getClass());
-            LOGGER.error("v1.equals(v2): {}", v1.equals(v2));
+        } catch (InternalCompareToException ie) {
+            LOGGER.error("""
+                    Comparison at order {}
+                    Expression 1: '{}' of {}
+                    Expression 2: '{}' of {}
+                    v1.equals(v2): {}
+                    """, v1.order(), v1, v1.getClass(), v2, v2.getClass(), v1.equals(v2));
             throw new UnsupportedOperationException();
         }
     }
