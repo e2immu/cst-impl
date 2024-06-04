@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.expression;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.expression.TypeExpression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -10,6 +11,8 @@ import org.e2immu.cstapi.type.Diamond;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
+import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 
 import java.util.Objects;
@@ -20,14 +23,10 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
     public final ParameterizedType parameterizedType;
     public final Diamond diamond;
 
-    public TypeExpressionImpl( ParameterizedType parameterizedType, Diamond diamond) {
+    public TypeExpressionImpl(ParameterizedType parameterizedType, Diamond diamond) {
+        super(1);
         this.parameterizedType = Objects.requireNonNull(parameterizedType);
         this.diamond = diamond;
-    }
-
-    @Override
-    public int complexity() {
-        return 1;
     }
 
     @Override
@@ -60,7 +59,7 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
 
     @Override
     public Stream<TypeReference> typesReferenced() {
-        return Stream.of(n);
+        return Stream.of(new ElementImpl.TypeReference(parameterizedType().typeInfo(), true));
     }
 
     @Override
@@ -77,5 +76,10 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
     @Override
     public int compareTo(Expression o) {
         return 0;
+    }
+
+    @Override
+    public Precedence precedence() {
+        return PrecedenceEnum.TOP;
     }
 }

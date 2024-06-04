@@ -3,11 +3,13 @@ package org.e2immu.cstimpl.expression;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -17,6 +19,7 @@ public class VariableExpressionImpl extends ExpressionImpl {
     private final Variable variable;
 
     public VariableExpressionImpl(Variable variable) {
+        super(variable.complexity());
         this.variable = variable;
     }
 
@@ -28,11 +31,6 @@ public class VariableExpressionImpl extends ExpressionImpl {
     @Override
     public int compareTo(Expression o) {
         return 0;
-    }
-
-    @Override
-    public int complexity() {
-        return variable.complexity();
     }
 
     @Override
@@ -63,5 +61,10 @@ public class VariableExpressionImpl extends ExpressionImpl {
     @Override
     public Stream<TypeReference> typesReferenced() {
         return variable.typesReferenced();
+    }
+
+    @Override
+    public Precedence precedence() {
+        return PrecedenceEnum.TOP;
     }
 }

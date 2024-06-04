@@ -25,10 +25,10 @@ import java.util.List;
 public record LhsRhs(Expression lhs, Expression rhs) {
 
     public static List<LhsRhs> extractEqualities(Expression e) {
-        DelayedExpression de;
-        if ((de = e.asInstanceOf(DelayedExpression.class)) != null) {
-            return extractEqualities(de.getOriginal());
-        }
+      //  DelayedExpression de;
+      //  if ((de = e.asInstanceOf(DelayedExpression.class)) != null) {
+      //      return extractEqualities(de.getOriginal());
+      //  }
         Equals equals;
         if ((equals = e.asInstanceOf(Equals.class)) != null) {
             return List.of(new LhsRhs(equals.lhs(), equals.rhs()));
@@ -37,7 +37,7 @@ public record LhsRhs(Expression lhs, Expression rhs) {
         if (equalsMethod != null) return List.of(equalsMethod);
         And and;
         if ((and = e.asInstanceOf(And.class)) != null) {
-            return and.getExpressions().stream().flatMap(clause -> extractEqualities(clause).stream()).toList();
+            return and.expressions().stream().flatMap(clause -> extractEqualities(clause).stream()).toList();
         }
         return List.of();
     }

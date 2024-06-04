@@ -189,13 +189,13 @@ public class EvaluateInlineConditional {
         // x ? !x&&y : z --> x ? false : z --> !x && z
         And and2;
         if ((and2 = ifTrue.asInstanceOf(And.class)) != null) {
-            if (and2.getExpressions().contains(condition)) {
+            if (and2.expressions().contains(condition)) {
                 Expression newAnd = evaluationResult.newAnd(
-                        and2.getExpressions().stream().filter(e -> !e.equals(condition)).toArray(Expression[]::new));
+                        and2.expressions().stream().filter(e -> !e.equals(condition)).toArray(Expression[]::new));
                 return compute(evaluationResult, condition, newAnd, ifFalse, complain, myself, modifying);
             }
             Expression notCondition = evaluationResult.negate(condition);
-            if (and2.getExpressions().contains(notCondition)) {
+            if (and2.expressions().contains(notCondition)) {
                 Expression res = evaluationResult.newAnd(notCondition, ifFalse);
                 return builder.setExpression(res).build();
             }
@@ -204,14 +204,14 @@ public class EvaluateInlineConditional {
         // x ? y : x&&z --> x ? y : false --> x && y
         And and3;
         if ((and3 = ifFalse.asInstanceOf(And.class)) != null) {
-            if (and3.getExpressions().contains(condition)) {
+            if (and3.expressions().contains(condition)) {
                 Expression res = evaluationResult.newAnd(condition, ifTrue);
                 return builder.setExpression(res).build();
             }
             Expression notCondition = evaluationResult.negate(condition);
-            if (and3.getExpressions().contains(notCondition)) {
+            if (and3.expressions().contains(notCondition)) {
                 Expression newAnd = evaluationResult.newAnd(
-                        and3.getExpressions().stream().filter(e -> !e.equals(notCondition)).toArray(Expression[]::new));
+                        and3.expressions().stream().filter(e -> !e.equals(notCondition)).toArray(Expression[]::new));
                 return compute(evaluationResult, condition, ifTrue, newAnd, complain, myself, modifying);
             }
         }
@@ -255,15 +255,15 @@ public class EvaluateInlineConditional {
     }
 
     private static Expression removeCommonClauses(EvaluationResult evaluationContext, Expression condition, And and) {
-        Expression[] filtered = and.getExpressions().stream().filter(e -> !inExpression(e, condition)).toArray(Expression[]::new);
-        if (filtered.length == and.getExpressions().size()) return and;
+        Expression[] filtered = and.expressions().stream().filter(e -> !inExpression(e, condition)).toArray(Expression[]::new);
+        if (filtered.length == and.expressions().size()) return and;
         return evaluationContext.newAnd(filtered);
     }
 
     private static boolean inExpression(Expression e, Expression container) {
         And and;
         if ((and = container.asInstanceOf(And.class)) != null) {
-            return and.getExpressions().contains(e);
+            return and.expressions().contains(e);
         }
         return container.equals(e);
     }

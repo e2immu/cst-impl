@@ -2,9 +2,9 @@ package org.e2immu.cstimpl.expression.util;
 
 
 import org.e2immu.cstapi.expression.*;
-import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.VariableExpressionImpl;
+import org.e2immu.cstimpl.variable.DescendModeEnum;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,7 +82,7 @@ public class AndOrSorter {
         } else {
             base = expression;
         }
-        List<Variable> vars = base.variables(DescendMode.NO);
+        List<Variable> vars = base.variables(DescendModeEnum.NO).toList();
         if (vars.size() == 1) {
             return new VariableExpressionImpl(vars.get(0));
         }
