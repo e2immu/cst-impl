@@ -8,14 +8,28 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.This;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.ThisName;
+import org.e2immu.cstimpl.output.TypeName;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class ThisImpl extends VariableImpl implements This {
 
+    private final boolean writeSuper;
+    private final TypeInfo explicitlyWriteType;
+    private final String fullyQualifiedName;
+
     public ThisImpl(TypeInfo typeInfo) {
+        this(typeInfo, null, false);
+    }
+
+    public ThisImpl(TypeInfo typeInfo, TypeInfo explicitlyWriteType, boolean writeSuper) {
         super(typeInfo.asSimpleParameterizedType());
+        this.writeSuper = writeSuper;
+        this.explicitlyWriteType = explicitlyWriteType;
+        this.fullyQualifiedName = typeInfo.fullyQualifiedName() + ".this";
     }
 
     @Override
@@ -24,13 +38,20 @@ public class ThisImpl extends VariableImpl implements This {
     }
 
     @Override
+    public boolean writeSuper() {
+        return writeSuper;
+    }
+
+    @Override
     public String fullyQualifiedName() {
-        return parameterizedType().typeInfo().fullyQualifiedName();
+        return fullyQualifiedName;
     }
 
     @Override
     public String simpleName() {
-        return "this";
+        String superOrThis = writeSuper ? "super" : "this";
+        if (explicitlyWriteType != null) return explicitlyWriteType.simpleName() + "+" + superOrThis;
+        return superOrThis;
     }
 
     @Override
@@ -40,7 +61,7 @@ public class ThisImpl extends VariableImpl implements This {
 
     @Override
     public int complexity() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -55,7 +76,9 @@ public class ThisImpl extends VariableImpl implements This {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        return new OutputBuilderImpl().add(new ThisName(writeSuper,
+                TypeName.typeName(typeInfo(), qualification.qualifierRequired(typeInfo())),
+                qualification.qualifierRequired(this)));
     }
 
     @Override

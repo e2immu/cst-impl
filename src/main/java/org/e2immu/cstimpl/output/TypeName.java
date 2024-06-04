@@ -14,15 +14,17 @@
 
 package org.e2immu.cstimpl.output;
 
+import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.FormattingOptions;
+import org.e2immu.cstapi.output.TypeNameRequired;
 import org.e2immu.cstimpl.util.StringUtil;
 
 public record TypeName(String simpleName,
                        String fullyQualifiedName,
                        String fromPrimaryTypeDownwards,
-                       Required required) implements Qualifier {
+                       TypeNameRequired required) implements Qualifier {
 
-    public enum Required {
+    public enum Required implements TypeNameRequired {
         DOLLARIZED_FQN, // com.foo.Bar$Bar2
         FQN, // com.foo.Bar.Bar2
         QUALIFIED_FROM_PRIMARY_TYPE, // Bar.Bar2
@@ -41,9 +43,16 @@ public record TypeName(String simpleName,
         assert required != null;
     }
 
+    public static TypeName typeName(TypeInfo typeInfo, TypeNameRequired requiresQualifier) {
+        String simpleName = typeInfo.simpleName();
+        String fqn = typeInfo.doesNotRequirePackage() ? simpleName : typeInfo.fullyQualifiedName();
+        return new TypeName(simpleName, fqn, typeInfo.isPrimaryType() ? simpleName : typeInfo.fromPrimaryTypeDownwards(),
+                requiresQualifier);
+    }
+
     @Override
     public String minimal() {
-        return switch (required) {
+        return switch ((Required) required) {
             case SIMPLE -> simpleName;
             case FQN -> fullyQualifiedName;
             case QUALIFIED_FROM_PRIMARY_TYPE -> fromPrimaryTypeDownwards;

@@ -33,6 +33,15 @@ public class OutputBuilderImpl implements OutputBuilder {
         return list;
     }
 
+    @Override
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    @Override
+    public boolean notStart() {
+        return !list.stream().allMatch(outputElement -> outputElement instanceof Guide);
+    }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining() {
         return joining(Space.NONE, Space.NONE, Space.NONE, Guide.defaultGuideGenerator());
@@ -56,7 +65,7 @@ public class OutputBuilderImpl implements OutputBuilder {
 
             @Override
             public Supplier<OutputBuilder> supplier() {
-                return OutputBuilder::new;
+                return OutputBuilderImpl::new;
             }
 
             @Override
@@ -87,7 +96,7 @@ public class OutputBuilderImpl implements OutputBuilder {
             @Override
             public Function<OutputBuilder, OutputBuilder> finisher() {
                 return t -> {
-                    OutputBuilder result = new OutputBuilder();
+                    OutputBuilder result = new OutputBuilderImpl();
                     if (start != Space.NONE) result.add(start);
                     if (countMid.get() > 0 || guideGenerator.keepGuidesWithoutMid()) {
                         result.add(guideGenerator.start());

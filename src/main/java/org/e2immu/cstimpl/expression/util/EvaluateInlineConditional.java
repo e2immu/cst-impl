@@ -15,65 +15,30 @@
 package org.e2immu.cstimpl.expression.util;
 
 import org.e2immu.cstapi.expression.*;
-import org.e2immu.cstapi.runtime.EvaluationResult;
 import org.e2immu.cstapi.variable.Variable;
-
-import java.util.List;
+import org.e2immu.cstapi.runtime.Runtime;
 
 public class EvaluateInlineConditional {
 
-    public static EvaluationResult conditionalValueCurrentState(EvaluationResult context,
-                                                                Expression conditionBeforeState,
-                                                                Expression ifTrue,
-                                                                Expression ifFalse) {
-        Expression condition = context.evaluationContext().getConditionManager()
-                .evaluate(context, conditionBeforeState, false);
-        return conditionalValueConditionResolved(context, condition, ifTrue, ifFalse, false, null, DV.FALSE_DV);
-    }
-
-    public static EvaluationResult conditionalValueConditionResolved(EvaluationResult evaluationContext,
-                                                                     Expression condition,
-                                                                     Expression ifTrue,
-                                                                     Expression ifFalse,
-                                                                     boolean complain,
-                                                                     Variable mySelf,
-                                                                     DV modifying) {
-        EvaluationResult evaluationResult = compute(evaluationContext, condition, ifTrue, ifFalse, complain, mySelf, modifying);
-        if (evaluationResult.expression().isDone()) {
-            CausesOfDelay causes = condition().causesOfDelay().merge(ifTrue.causesOfDelay()).merge(ifFalse.causesOfDelay());
-            if (causes.isDelayed()) {
-                Expression delay = DelayedExpression.forSimplification(identifier, evaluationResult.expression().parameterizedType(),
-                        evaluationResult.expression(), causes);
-                return evaluationContext.newBuilder().setExpression(delay).build();
-            }
-        }
-        return evaluationResult;
-    }
-
-    public static EvaluationResult compute(EvaluationResult evaluationResult,
-                                           Expression condition,
-                                           Expression ifTrue,
-                                           Expression ifFalse,
-                                           boolean complain,
-                                           Variable myself,
-                                           DV modifying) {
-        EvaluationResult.Builder builder = evaluationResult.newBuilder();
+    public static Expression compute(Runtime runtime,
+                                     Expression condition,
+                                     Expression ifTrue,
+                                     Expression ifFalse,
+                                     Variable myself,
+                                     boolean modifying) {
         if (condition.isBooleanConstant()) {
             boolean first = condition.isBoolValueTrue();
-            if (complain) {
-                builder.raiseError(condition.getIdentifier(), Message.Label.INLINE_CONDITION_EVALUATES_TO_CONSTANT);
-            }
-            return builder.setExpression(first ? ifTrue : ifFalse).build();
+            return first ? ifTrue : ifFalse;
         }
 
         // not x ? a: b --> x ? b: a
         Negation negatedCondition;
         if ((negatedCondition = condition.asInstanceOf(Negation.class)) != null) {
-            return compute(evaluationResult, negatedCondition.expression(), ifFalse, ifTrue, complain, myself, modifying);
+            return compute(runtime, negatedCondition.expression(), ifFalse, ifTrue,  myself, modifying);
         }
 
-        Expression edgeCase = edgeCases(evaluationResult, condition, ifTrue, ifFalse);
-        if (edgeCase != null) return builder.setExpression(edgeCase).build();
+        Expression edgeCase = edgeCases(runtime, condition, ifTrue, ifFalse);
+        if (edgeCase != null) return edgeCase;
 
         // NOTE that x, !x cannot always be detected by the presence of Negation (see GreaterThanZero,
         // x>=10 and x<=9 for integer x
@@ -81,23 +46,23 @@ public class EvaluateInlineConditional {
         if ((ifTrueCv = ifTrue.asInstanceOf(InlineConditional.class)) != null) {
             // x ? (x? a: b): c === x ? a : c
             if (ifTrueCv.condition().equals(condition)) {
-                return compute(evaluationResult, condition, ifTrueCv.ifTrue(), ifFalse, complain, myself, modifying);
+                return compute(runtime, condition, ifTrueCv.ifTrue(), ifFalse,  myself, modifying);
             }
             // x ? (!x ? a: b): c === x ? b : c
-            if (ifTrueCv.condition().equals(evaluationResult.negate(condition))) {
-                return compute(evaluationResult, condition, ifTrueCv.ifFalse(), ifFalse, complain, myself, modifying);
+            if (ifTrueCv.condition().equals(runtime.negate(condition))) {
+                return compute(runtime, condition, ifTrueCv.ifFalse(), ifFalse,  myself, modifying);
             }
             // x ? (y ? a: b): b --> x && y ? a : b
             // especially important for trailing x?(y ? z: <return variable>):<return variable>
             if (ifFalse.equals(ifTrueCv.ifFalse())) {
-                return compute(evaluationResult,
-                        evaluationResult.newAnd(condition, ifTrueCv.condition()), ifTrueCv.ifTrue(), ifFalse, complain, myself, modifying);
+                return compute(runtime,
+                        runtime.newAnd(condition, ifTrueCv.condition()), ifTrueCv.ifTrue(), ifFalse,  myself, modifying);
             }
             // x ? (y ? a: b): a --> x && !y ? b: a
             if (ifFalse.equals(ifTrueCv.ifTrue())) {
-                return compute(evaluationResult,
-                        evaluationResult.newAnd(condition, evaluationResult.negate(ifTrueCv.condition())),
-                        ifTrueCv.ifFalse(), ifFalse, complain, myself, modifying);
+                return compute(runtime,
+                        runtime.newAnd(condition, runtime.negate(ifTrueCv.condition())),
+                        ifTrueCv.ifFalse(), ifFalse,  myself, modifying);
             }
         }
         // x? a: (x? b:c) === x?a:c
@@ -105,38 +70,30 @@ public class EvaluateInlineConditional {
         if ((ifFalseCv = ifFalse.asInstanceOf(InlineConditional.class)) != null) {
             // x ? a: (x ? b:c) === x?a:c
             if (ifFalseCv.condition().equals(condition)) {
-                return compute(evaluationResult, condition, ifTrue, ifFalseCv.ifFalse(), complain, myself, modifying);
+                return compute(runtime, condition, ifTrue, ifFalseCv.ifFalse(),  myself, modifying);
             }
             // x ? a: (!x ? b:c) === x?a:b
-            if (ifFalseCv.condition().equals(Negation.negate(evaluationResult, condition))) {
-                return compute(evaluationResult, condition, ifTrue, ifFalseCv.ifTrue(), complain, myself, modifying);
+            if (ifFalseCv.condition().equals(runtime.negate(condition))) {
+                return compute(runtime, condition, ifTrue, ifFalseCv.ifTrue(),  myself, modifying);
             }
             // x ? a: (y ? a: b) --> x || y ? a: b
             if (ifTrue.equals(ifFalseCv.ifTrue())) {
-                return compute(evaluationResult,
-                        evaluationResult.newOr(condition, ifFalseCv.condition()), ifTrue, ifFalseCv.ifFalse(), complain, myself, modifying);
+                return compute(runtime,
+                        runtime.newOr(condition, ifFalseCv.condition()), ifTrue, ifFalseCv.ifFalse(),  myself, modifying);
             }
             // x ? a: (y ? b: a) --> x || !y ? a: b
             if (ifTrue.equals(ifFalseCv.ifFalse())) {
-                return compute(evaluationResult,
-                        evaluationResult.newOr(condition, evaluationResult.negate(ifFalseCv.condition())),
-                        ifTrue, ifFalseCv.ifTrue(), complain, myself, modifying);
+                return compute(runtime,
+                        runtime.newOr(condition, runtime.negate(ifFalseCv.condition())),
+                        ifTrue, ifFalseCv.ifTrue(),  myself, modifying);
             }
             // 4==i ? a : 3==i ? b : c --> 3==i first, then 4==i
-            if (hiddenSwitch(evaluationResult.getAnalyserContext(), condition, ifFalseCv.condition())
-                && condition().compareTo(ifFalseCv.condition()) > 0) {
-                if (modifying.isDelayed()) {
-                    // we cannot execute this swap yet
-                    InlineConditional inline = new InlineConditional(evaluationResult.getAnalyserContext(), condition, ifTrue, ifFalse);
-                    Expression delayInline = DelayedExpression.forModification(inline, modifying.causesOfDelay());
-                    return builder.setExpression(delayInline).build();
-                }
-                if (modifying.valueIsFalse()) {
+            if (hiddenSwitch(condition, ifFalseCv.condition()) && condition.compareTo(ifFalseCv.condition()) > 0) {
+                if (!modifying) {
                     // swap
-                    EvaluationResult result = compute(evaluationResult, condition, ifTrue, ifFalseCv.ifFalse(), complain, myself, modifying);
-                    InlineConditional inline = evaluationResult.runtime().newInlineConditional(
-                            ifFalseCv.condition(), ifFalseCv.ifTrue(), result.expression());
-                    return builder.compose(result).setExpression(inline).build();
+                    Expression result = compute(runtime, condition, ifTrue, ifFalseCv.ifFalse(),  myself, modifying);
+                    return runtime.newInlineConditional(ifFalseCv.condition(), ifFalseCv.ifTrue(),
+                            result);
                 }
             }
         }
@@ -146,11 +103,11 @@ public class EvaluateInlineConditional {
         And and1;
         if ((ifTrueInline = ifTrue.asInstanceOf(InlineConditional.class)) != null
             && (and1 = ifTrueInline.condition().asInstanceOf(And.class)) != null) {
-            Expression ifTrueCondition = removeCommonClauses(evaluationResult, condition, and1);
+            Expression ifTrueCondition = removeCommonClauses(runtime, condition, and1);
             if (ifTrueCondition != ifTrueInline.condition()) {
-                return compute(evaluationResult,
-                        condition, evaluationResult.runtime().newInlineConditional(ifTrueCondition,
-                                ifTrueInline.ifTrue(), ifTrueInline.ifFalse()), ifFalse, complain, myself, modifying);
+                return compute(runtime,
+                        condition, runtime.newInlineConditional(ifTrueCondition,
+                                ifTrueInline.ifTrue(), ifTrueInline.ifFalse()), ifFalse,  myself, modifying);
             }
         }
 
@@ -160,14 +117,13 @@ public class EvaluateInlineConditional {
         Or or1;
         if ((or1 = ifTrue.asInstanceOf(Or.class)) != null) {
             if (or1.expressions().contains(condition)) {
-                Expression res = evaluationResult.newOr(condition, ifFalse);
-                return builder.setExpression(res).build();
+                return runtime.newOr(condition, ifFalse);
             }
-            Expression notCondition = evaluationResult.negate(condition);
+            Expression notCondition = runtime.negate(condition);
             if (or1.expressions().contains(notCondition)) {
-                Expression newOr = evaluationResult.newOr(or1.expressions().stream()
+                Expression newOr = runtime.newOr(or1.expressions().stream()
                         .filter(e -> !e.equals(notCondition)).toList());
-                return compute(evaluationResult, condition, newOr, ifFalse, complain, myself, modifying);
+                return compute(runtime, condition, newOr, ifFalse,  myself, modifying);
             }
         }
         // x ? y : x||z --> x ? y: z
@@ -175,14 +131,13 @@ public class EvaluateInlineConditional {
         Or or2;
         if ((or2 = ifFalse.asInstanceOf(Or.class)) != null) {
             if (or2.expressions().contains(condition)) {
-                Expression newOr = evaluationResult.newOr(or2.expressions().stream()
+                Expression newOr = runtime.newOr(or2.expressions().stream()
                         .filter(e -> !e.equals(condition)).toList());
-                return compute(evaluationResult, condition, ifTrue, newOr, complain, myself, modifying);
+                return compute(runtime, condition, ifTrue, newOr,  myself, modifying);
             }
-            Expression notCondition = evaluationResult.negate(condition);
+            Expression notCondition = runtime.negate(condition);
             if (or2.expressions().contains(notCondition)) {
-                Expression res = evaluationResult.newOr(notCondition, ifTrue);
-                return builder.setExpression(res).build();
+                return runtime.newOr(notCondition, ifTrue);
             }
         }
         // x ? x&&y : z --> x ? y : z
@@ -190,14 +145,13 @@ public class EvaluateInlineConditional {
         And and2;
         if ((and2 = ifTrue.asInstanceOf(And.class)) != null) {
             if (and2.expressions().contains(condition)) {
-                Expression newAnd = evaluationResult.newAnd(
+                Expression newAnd = runtime.newAnd(
                         and2.expressions().stream().filter(e -> !e.equals(condition)).toArray(Expression[]::new));
-                return compute(evaluationResult, condition, newAnd, ifFalse, complain, myself, modifying);
+                return compute(runtime, condition, newAnd, ifFalse,  myself, modifying);
             }
-            Expression notCondition = evaluationResult.negate(condition);
+            Expression notCondition = runtime.negate(condition);
             if (and2.expressions().contains(notCondition)) {
-                Expression res = evaluationResult.newAnd(notCondition, ifFalse);
-                return builder.setExpression(res).build();
+                return runtime.newAnd(notCondition, ifFalse);
             }
         }
         // x ? y : !x&&z => x ? y : z
@@ -205,14 +159,13 @@ public class EvaluateInlineConditional {
         And and3;
         if ((and3 = ifFalse.asInstanceOf(And.class)) != null) {
             if (and3.expressions().contains(condition)) {
-                Expression res = evaluationResult.newAnd(condition, ifTrue);
-                return builder.setExpression(res).build();
+                return runtime.newAnd(condition, ifTrue);
             }
-            Expression notCondition = evaluationResult.negate(condition);
+            Expression notCondition = runtime.negate(condition);
             if (and3.expressions().contains(notCondition)) {
-                Expression newAnd = evaluationResult.newAnd(
+                Expression newAnd = runtime.newAnd(
                         and3.expressions().stream().filter(e -> !e.equals(notCondition)).toArray(Expression[]::new));
-                return compute(evaluationResult, condition, ifTrue, newAnd, complain, myself, modifying);
+                return compute(runtime, condition, ifTrue, newAnd,  myself, modifying);
             }
         }
 
@@ -225,13 +178,13 @@ public class EvaluateInlineConditional {
                 && vel.variable().equals(myself) && ifTrue.equals(equals.rhs())
                 || (ver = equals.rhs().asInstanceOf(VariableExpression.class)) != null
                    && ver.variable().equals(myself) && ifTrue.equals(equals.lhs())) {
-                return builder.setExpression(ifFalse).build();
+                return ifFalse;
             }
         }
 
         GreaterThanZero ge0;
         Sum sum;
-        if (evaluationResult.runtime().configuration().isNormalizeMore()
+        if (runtime.configuration().isNormalizeMore()
             && (ge0 = condition.asInstanceOf(GreaterThanZero.class)) != null
             && (sum = ge0.expression().asInstanceOf(Sum.class)) != null) {
             /*
@@ -241,23 +194,21 @@ public class EvaluateInlineConditional {
             boolean lhsNegative = sum.lhs().isNegatedOrNumericNegative();
             boolean rhsNegative = sum.rhs().isNegatedOrNumericNegative();
             if (!lhsNegative && rhsNegative) {
-                Expression newCondition = evaluationResult.negate(condition);
-                InlineConditional inline = evaluationResult.runtime().newInlineConditional(newCondition, ifFalse, ifTrue);
-                return builder.setExpression(inline).build();
+                Expression newCondition = runtime.negate(condition);
+                return runtime.newInlineConditional(newCondition, ifFalse, ifTrue);
             }
         }
 
         // standardization... we swap!
         // this will result in  a != null ? a: x ==>  null == a ? x : a as the default form
-        return builder.setExpression(evaluationResult.runtime().newInlineConditional(
-                condition, ifTrue, ifFalse)).build();
+        return runtime.newInlineConditional(condition, ifTrue, ifFalse);
         // TODO more advanced! if a "large" part of ifTrue or ifFalse appears in condition, we should create a temp variable
     }
 
-    private static Expression removeCommonClauses(EvaluationResult evaluationContext, Expression condition, And and) {
+    private static Expression removeCommonClauses(Runtime runtime, Expression condition, And and) {
         Expression[] filtered = and.expressions().stream().filter(e -> !inExpression(e, condition)).toArray(Expression[]::new);
         if (filtered.length == and.expressions().size()) return and;
-        return evaluationContext.newAnd(filtered);
+        return runtime.newAnd(filtered);
     }
 
     private static boolean inExpression(Expression e, Expression container) {
@@ -303,7 +254,7 @@ public class EvaluateInlineConditional {
         return false;
     }
 
-    private static Expression edgeCases(EvaluationResult evaluationContext,
+    private static Expression edgeCases(Runtime runtime,
                                         Expression condition, Expression ifTrue, Expression ifFalse) {
         if (ifTrue.isEmpty() || ifFalse.isEmpty()) {
             /*
@@ -316,8 +267,8 @@ public class EvaluateInlineConditional {
         // x ? a : a == a
         if (ifTrue.equals(ifFalse)) return ifTrue;
         // a ? a : !a == a == !a ? !a : a
-        if (condition.equals(ifTrue) && condition.equals(evaluationContext.negate(ifFalse))) {
-            return evaluationContext.runtime().constantTrue();
+        if (condition.equals(ifTrue) && condition.equals(runtime.negate(ifFalse))) {
+            return runtime.constantTrue();
         }
         // !a ? a : !a == !a == a ? !a : a --> will not happen, as we've already swapped
 
@@ -327,15 +278,15 @@ public class EvaluateInlineConditional {
         // a ? false: b --> !a && b
         if (ifTrue.isBooleanConstant()) {
             if (ifTrue.isBoolValueTrue()) {
-                return evaluationContext.newOr(condition, ifFalse);
+                return runtime.newOr(condition, ifFalse);
             }
-            return evaluationContext.newAnd(evaluationContext.negate(condition), ifFalse);
+            return runtime.newAnd(runtime.negate(condition), ifFalse);
         }
         if (ifFalse.isBooleanConstant()) {
             if (ifFalse.isBoolValueTrue()) {
-                return evaluationContext.newOr(evaluationContext.negate(condition), ifTrue);
+                return runtime.newOr(runtime.negate(condition), ifTrue);
             }
-            return evaluationContext.newAnd(condition, ifTrue);
+            return runtime.newAnd(condition, ifTrue);
         }
 
         // x ? a : a --> a, but only if x is not modifying TODO needs implementing!!

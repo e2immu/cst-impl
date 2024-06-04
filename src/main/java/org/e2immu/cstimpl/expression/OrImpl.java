@@ -5,7 +5,6 @@ import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
-import org.e2immu.cstapi.runtime.EvaluationResult;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.e2immu.cstimpl.expression.ExpressionCanBeTooComplex.reducedComplexity;
@@ -37,7 +35,7 @@ public class OrImpl extends ExpressionImpl implements And {
         booleanPt = runtime.booleanParameterizedType();
     }
 
-    public Expression evaluate(EvaluationResult context, boolean allowEqualsToCallContext, List<Expression> values) {
+    public Expression evaluate(Runtime runtime, boolean allowEqualsToCallContext, List<Expression> values) {
 
         // STEP 1: trivial reductions
 
@@ -59,10 +57,10 @@ public class OrImpl extends ExpressionImpl implements And {
         And firstAnd = null;
 
         int complexity = values.stream().mapToInt(Expression::complexity).sum();
-        boolean changes = complexity < context.limitOnComplexity();
+        boolean changes = complexity < runtime.limitOnComplexity();
         if (!changes) {
             LOGGER.debug("Not analysing OR operation, complexity {}", complexity);
-            return reducedComplexity(context, expressions, values);
+            return reducedComplexity(runtime, expressions, values);
         }
         assert complexity < ExpressionImpl.HARD_LIMIT_ON_COMPLEXITY : "Complexity reached " + complexity;
 
@@ -78,7 +76,7 @@ public class OrImpl extends ExpressionImpl implements And {
             for (Expression value : concat) {
                 if (value instanceof BooleanConstant bc && bc.constant()) {
                     LOGGER.debug("Return TRUE in Or, found TRUE");
-                    return context.runtime().constantTrue();
+                    return runtime.constantTrue();
                 }
             }
             concat.removeIf(value -> value instanceof BooleanConstant); // FALSE can go
@@ -93,7 +91,7 @@ public class OrImpl extends ExpressionImpl implements And {
                 // A || !A will always sit next to each other
                 if (value instanceof Negation ne && ne.expression().equals(prev)) {
                     LOGGER.debug("Return TRUE in Or, found opposites {}", value);
-                    return context.runtime().constantTrue();
+                    return runtime.constantTrue();
                 }
 
                 GreaterThanZero gt0;
@@ -101,13 +99,13 @@ public class OrImpl extends ExpressionImpl implements And {
                 if ((gt1 = value.asInstanceOf(GreaterThanZero.class)) != null
                     && prev != null
                     && (gt0 = prev.asInstanceOf(GreaterThanZero.class)) != null) {
-                    GreaterThanZero.XB xb0 = gt0.extract(context);
-                    GreaterThanZero.XB xb1 = gt1.extract(context);
+                    GreaterThanZero.XB xb0 = gt0.extract(runtime);
+                    GreaterThanZero.XB xb1 = gt1.extract(runtime);
                     if (xb0.x().equals(xb1.x())) {
 
                         // x>=a || x <= a-1
                         if (xb0.lessThan() == !xb1.lessThan() && orComparisonTrue(xb0.lessThan(), xb0.b(), xb1.b())) {
-                            return context.runtime().constantTrue();
+                            return runtime.constantTrue();
                         }
                         // x<=a || x<=b --> x<=max(a,b)
                         if (xb0.lessThan() && xb1.lessThan()) {
@@ -154,16 +152,13 @@ public class OrImpl extends ExpressionImpl implements And {
         }
         ArrayList<Expression> finalValues = concat;
         if (firstAnd != null) {
-            Expression[] components = firstAnd.expressions().toArray(new Expression[0]);
-            ().stream()
-                    .map(v -> append(context, allowEqualsToCallContext, ListUtil.immutableConcat(finalValues, List.of(v))))
-                    .toArray(Expression[]::new);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Found And-clause {}, components for new And are {}", firstAnd, Arrays.toString(components));
-            }
-            int complexityComponents = Arrays.stream(components).mapToInt(Expression::complexity).sum();
-            if (complexityComponents < context.evaluationContext().limitOnComplexity()) {
-                return And.and(context, allowEqualsToCallContext, components);
+            List<Expression> components = firstAnd.expressions().stream()
+                    .map(v -> runtime.newAnd(allowEqualsToCallContext, ListUtil.immutableConcat(finalValues, List.of(v))))
+                    .toList();
+            LOGGER.debug("Found And-clause {}, components for new And are {}", firstAnd, components);
+            int complexityComponents = components.stream().mapToInt(Expression::complexity).sum();
+            if (complexityComponents < runtime.limitOnComplexity()) {
+                return runtime.newAnd(allowEqualsToCallContext, components);
             }
         }
         if (finalValues.size() == 1) return finalValues.get(0);
@@ -174,9 +169,9 @@ public class OrImpl extends ExpressionImpl implements And {
 
         if (finalValues.isEmpty()) {
             LOGGER.debug("Empty disjunction returned as false");
-            return context.runtime().constantFalse();
+            return runtime.constantFalse();
         }
-        return new OrImpl(context.runtime(), finalValues);
+        return new OrImpl(runtime, finalValues);
     }
 
     /*

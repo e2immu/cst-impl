@@ -2,19 +2,27 @@ package org.e2immu.cstimpl.variable;
 
 import org.e2immu.annotation.NotNull;
 import org.e2immu.annotation.Nullable;
+import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.VariableExpression;
 import org.e2immu.cstapi.info.FieldInfo;
+import org.e2immu.cstapi.output.OutputBuilder;
+import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.*;
 import org.e2immu.cstimpl.expression.TypeExpressionImpl;
 import org.e2immu.cstimpl.expression.VariableExpressionImpl;
+import org.e2immu.cstimpl.output.*;
 import org.e2immu.cstimpl.type.DiamondImpl;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static org.e2immu.cstimpl.output.QualifiedName.Required.*;
 
 public class FieldReferenceImpl extends VariableImpl implements FieldReference {
     @NotNull
@@ -79,18 +87,33 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
             }
         }
         this.fullyQualifiedName = computeFqn();
-        assert (scopeVariable == null) == isStatic;
+        assert (scopeVariable == null) == fieldInfo.isStatic();
     }
 
-    private LocalVariable newScopeVariable(Expression scope) {
-        Identifier identifier = scope.getIdentifier();
-        // in the first iteration, we have
-        // "assert identifier instanceof Identifier.PositionalIdentifier;"
-        // because it must come from the inspector.
-        // but in a InlinedMethod replacement, the scope can literally come from everywhere
-        String name = "scope-" + identifier.compact();
-        VariableNature vn = new VariableNature.ScopeVariable();
-        return new LocalVariable(Set.of(LocalVariableModifier.FINAL), name, scope.parameterizedType(), List.of(), owningType, vn);
+    protected Variable newScopeVariable(Expression scope) {
+        int unique = Math.abs(scope.hashCode());
+        String name = "scope" + unique;
+        return new LocalVariableImpl(name, scope.parameterizedType(), scope);
+    }
+
+    @Override
+    public String fullyQualifiedName() {
+        return fullyQualifiedName;
+    }
+
+    @Override
+    public String simpleName() {
+        return fieldInfo.name();
+    }
+
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return fieldInfo.isStatic();
     }
 
     private String computeFqn() {
@@ -107,10 +130,74 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
     }
 
     @Override
-    public Stream<Variable> variables(DescendModeEnum descendMode) {
+    public void visit(Predicate<Element> predicate) {
+        if (scope != null) scope.visit(predicate);
+    }
+
+    @Override
+    public void visit(Visitor visitor) {
+        if (visitor.beforeVariable(this)) {
+            if (scope != null) {
+                scope.visit(visitor);
+            }
+        }
+        visitor.afterVariable(this);
+    }
+
+    @Override
+    public OutputBuilder print(Qualification qualification) {
+        if (scope instanceof VariableExpression ve && ve.variable() instanceof This thisVar) {
+            ThisName thisName = new ThisName(thisVar.writeSuper(),
+                    TypeName.typeName(thisVar.typeInfo(), qualification.qualifierRequired(thisVar.typeInfo())),
+                    qualification.qualifierRequired(thisVar));
+            return new OutputBuilderImpl().add(new QualifiedName(fieldInfo.name(), thisName,
+                    qualification.qualifierRequired(this) ? YES : NO_FIELD));
+        }
+        // real variable
+        return new OutputBuilderImpl().add(scope.print(qualification)).add(Symbol.DOT)
+                .add(new QualifiedName(simpleName(), null, NEVER));
+    }
+
+    @Override
+    public Stream<Variable> variables(DescendMode descendMode) {
         if (descendMode.isYes() && scopeVariable != null) {
             return Stream.concat(Stream.of(this), scopeVariable.variables(descendMode));
         }
         return Stream.of(this);
+    }
+
+    @Override
+    public Stream<TypeReference> typesReferenced() {
+        if (scope != null && !scopeIsThis()) {
+            return Stream.concat(scope.typesReferenced(), parameterizedType().typesReferenced());
+        }
+        return parameterizedType().typesReferenced();
+    }
+
+    @Override
+    public FieldInfo fieldInfo() {
+        return fieldInfo;
+    }
+
+    @Override
+    public Expression scope() {
+        return scope;
+    }
+
+    @Override
+    public Variable scopeVariable() {
+        return scopeVariable;
+    }
+
+    @Override
+    public boolean scopeIsRecursivelyThis() {
+        if (scopeIsThis()) return true;
+        if (scopeVariable instanceof FieldReference fr) return fr.scopeIsRecursivelyThis();
+        return false;
+    }
+
+    @Override
+    public boolean scopeIsThis() {
+        return scopeVariable instanceof This;
     }
 }

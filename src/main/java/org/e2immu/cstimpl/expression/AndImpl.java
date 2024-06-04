@@ -5,7 +5,6 @@ import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
-import org.e2immu.cstapi.runtime.EvaluationResult;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.e2immu.cstimpl.expression.ExpressionCanBeTooComplex.reducedComplexity;
@@ -37,13 +35,12 @@ public class AndImpl extends ExpressionImpl implements And {
         booleanPt = runtime.booleanParameterizedType();
     }
 
-
     private enum Action {
         SKIP, REPLACE, FALSE, TRUE, ADD, ADD_CHANGE
     }
 
     // we try to maintain a CNF
-    public Expression evaluate(EvaluationResult context, boolean allowEqualsToCallContext, List<Expression> values) {
+    public Expression evaluate(Runtime runtime, boolean allowEqualsToCallContext, List<Expression> values) {
 
         // STEP 1: check that all values return boolean!
         int complexity = 0;
@@ -69,10 +66,10 @@ public class AndImpl extends ExpressionImpl implements And {
 
         // STEP 4: loop
 
-        boolean changes = complexity < context.limitOnComplexity();
+        boolean changes = complexity < runtime.limitOnComplexity();
         if (!changes) {
             LOGGER.debug("Not analysing AND operation, complexity {}", complexity);
-            return reducedComplexity(context, expressions, values);
+            return reducedComplexity(runtime, expressions, values);
         }
         assert complexity < ExpressionImpl.HARD_LIMIT_ON_COMPLEXITY : "Complexity reached " + complexity;
 
@@ -88,7 +85,7 @@ public class AndImpl extends ExpressionImpl implements And {
             for (Expression value : concat) {
                 if (value instanceof BooleanConstant bc && !bc.constant()) {
                     LOGGER.debug("Return FALSE in And, found FALSE");
-                    return context.runtime().constantFalse();
+                    return runtime.constantFalse();
                 }
             }
             concat.removeIf(value -> value instanceof BooleanConstant); // TRUE can go
@@ -100,12 +97,12 @@ public class AndImpl extends ExpressionImpl implements And {
             int pos = 0;
             for (Expression value : concat) {
 
-                Action action = analyse(context, allowEqualsToCallContext, pos, newConcat, prev, value);
+                Action action = analyse(runtime, allowEqualsToCallContext, pos, newConcat, prev, value);
                 switch (action) {
                     case FALSE:
-                        return context.runtime().constantFalse();
+                        return runtime.constantFalse();
                     case TRUE:
-                        return context.runtime().constantTrue();
+                        return runtime.constantTrue();
                     case ADD:
                         newConcat.add(value);
                         break;
@@ -131,18 +128,18 @@ public class AndImpl extends ExpressionImpl implements And {
         }
         if (concat.isEmpty()) {
             LOGGER.debug("And reduced to 0 components, return true");
-            return context.runtime().constantTrue();
+            return runtime.constantTrue();
         }
         if (concat.size() == 1) {
             LOGGER.debug("And reduced to 1 component: {}", concat.get(0));
             return concat.get(0);
         }
-        And res = new AndImpl(context.runtime(), List.copyOf(concat));
+        And res = new AndImpl(runtime, List.copyOf(concat));
         LOGGER.debug("Constructed {}", res);
         return res;
     }
 
-    private Action analyse(EvaluationResult context,
+    private Action analyse(Runtime runtime,
                            boolean allowEqualsToCallContext,
                            int pos, ArrayList<Expression> newConcat,
                            Expression prev, Expression value) {
@@ -168,7 +165,7 @@ public class AndImpl extends ExpressionImpl implements And {
         InlineConditional conditionalValue2;
         if (prev != null
             && (conditionalValue2 = prev.asInstanceOf(InlineConditional.class)) != null
-            && conditionalValue2.condition().equals(context.negate(value))) {
+            && conditionalValue2.condition().equals(runtime.negate(value))) {
             newConcat.set(newConcat.size() - 1, conditionalValue2.ifFalse());
             return Action.ADD;
         }
@@ -183,7 +180,7 @@ public class AndImpl extends ExpressionImpl implements And {
             boolean changed = false;
             while (iterator.hasNext()) {
                 Expression value1 = iterator.next();
-                Expression negated1 = context.negate(value1, allowEqualsToCallContext);
+                Expression negated1 = runtime.negate(value1, allowEqualsToCallContext);
                 boolean found = false;
                 for (int pos2 = 0; pos2 < newConcat.size(); pos2++) {
                     if (pos2 != pos && negated1.equals(newConcat.get(pos2))) {
@@ -202,7 +199,7 @@ public class AndImpl extends ExpressionImpl implements And {
                     return Action.FALSE;
                 }
                 // replace
-                Expression orValue = context.newOr(remaining);
+                Expression orValue = runtime.newOr(remaining);
                 LOGGER.debug("Replace {} by {}, found opposite in {}", value, orValue, newConcat);
                 newConcat.add(orValue);
                 return Action.SKIP;
@@ -231,14 +228,14 @@ public class AndImpl extends ExpressionImpl implements And {
             for (Expression value1 : components) {
                 if (prevComponents.contains(value1)) {
                     equal.add(value1);
-                } else if (!prevComponents.contains(context.negate(value1))) {
+                } else if (!prevComponents.contains(runtime.negate(value1))) {
                     // not opposite, e.g. C
                     ok = false;
                     break;
                 }
             }
             if (ok && !equal.isEmpty()) {
-                Expression orValue = context.runtime().createOr(equal);
+                Expression orValue = runtime.createOr(equal);
                 newConcat.set(newConcat.size() - 1, orValue);
                 LOGGER.debug("Skipping {} in OR, simplified to {}", value, orValue);
                 return Action.SKIP;
@@ -250,7 +247,7 @@ public class AndImpl extends ExpressionImpl implements And {
         GreaterThanZero gt0;
         if ((gt0 = value.asInstanceOf(GreaterThanZero.class)) != null && gt0.expression().variableList().size() > 1) {
             // it may be interesting to run the inequality solver
-            InequalitySolver inequalitySolver = new InequalitySolver(context, newConcat);
+            InequalitySolver inequalitySolver = new InequalitySolver(runtime, newConcat);
             Boolean resolve = inequalitySolver.evaluate(value);
             if (resolve == Boolean.FALSE) return Action.FALSE;
         }
@@ -268,20 +265,20 @@ public class AndImpl extends ExpressionImpl implements And {
         }
 
         // x.equals(y)
-        Action actionEqualsEquals = analyseEqualsEquals(context, allowEqualsToCallContext, prev, value, newConcat);
+        Action actionEqualsEquals = analyseEqualsEquals(runtime, allowEqualsToCallContext, prev, value, newConcat);
         if (actionEqualsEquals != null) return actionEqualsEquals;
 
         // x == y
-        Action actionEqEq = analyseEqEq(context, allowEqualsToCallContext, prev, value, newConcat);
+        Action actionEqEq = analyseEqEq(runtime, allowEqualsToCallContext, prev, value, newConcat);
         if (actionEqEq != null) return actionEqEq;
 
-        Action actionGeNotEqual = analyseGeNotEq(context, newConcat, prev, value);
+        Action actionGeNotEqual = analyseGeNotEq(runtime, newConcat, prev, value);
         if (actionGeNotEqual != null) return actionGeNotEqual;
 
-        Action actionGeGe = analyseGeGe(context, newConcat, prev, value);
+        Action actionGeGe = analyseGeGe(runtime, newConcat, prev, value);
         if (actionGeGe != null) return actionGeGe;
 
-        Action actionInstanceOf = analyseInstanceOf(context, prev, value);
+        Action actionInstanceOf = analyseInstanceOf(runtime, prev, value);
         if (actionInstanceOf != null) return actionInstanceOf;
 
 
@@ -299,7 +296,7 @@ public class AndImpl extends ExpressionImpl implements And {
         return Action.ADD;
     }
 
-    private Action analyseEqualsEquals(EvaluationResult evaluationContext,
+    private Action analyseEqualsEquals(Runtime runtime,
                                        boolean allowEqualsToCallContext,
                                        Expression prev,
                                        Expression value,
@@ -309,7 +306,7 @@ public class AndImpl extends ExpressionImpl implements And {
             Action a = equalsRhs(ev1, value);
             if (a != null) return a;
 
-            return equalsAndOr(evaluationContext, allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
+            return equalsAndOr(runtime, allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
         }
         return null;
     }
@@ -334,14 +331,14 @@ public class AndImpl extends ExpressionImpl implements And {
         return null;
     }
 
-    private Action analyseEqEq(EvaluationResult evaluationContext,
+    private Action analyseEqEq(Runtime runtime,
                                boolean allowEqualsToCallContext,
                                Expression prev,
                                Expression value,
                                ArrayList<Expression> newConcat) {
         Equals ev1;
         if (prev != null && (ev1 = prev.asInstanceOf(Equals.class)) != null) {
-            Action skip = equalsAndOr(evaluationContext, allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
+            Action skip = equalsAndOr(runtime, allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
             if (skip != null) return skip;
             Equals ev2;
             if ((ev2 = value.asInstanceOf(Equals.class)) != null) {
@@ -354,7 +351,7 @@ public class AndImpl extends ExpressionImpl implements And {
                 if ((remainder = ev1.rhs().asInstanceOf(Remainder.class)) != null
                     && ev2.rhs().equals(remainder.lhs())) {
                     // let's evaluate x == y%r; if true, we can skip; if false, we can bail out
-                    Expression yModR = evaluationContext.remainder(ev2.lhs(), remainder.rhs());
+                    Expression yModR = runtime.remainder(ev2.lhs(), remainder.rhs());
                     if (yModR.isNumeric() && ev1.lhs().isNumeric()) {
                         if (yModR.equals(ev1.lhs())) {
                             return Action.REPLACE;
@@ -379,7 +376,7 @@ public class AndImpl extends ExpressionImpl implements And {
             // GE and EQ (note: GE always comes after EQ)
             GreaterThanZero ge;
             if ((ge = value.asInstanceOf(GreaterThanZero.class)) != null) {
-                GreaterThanZero.XB xb = ge.extract(evaluationContext);
+                GreaterThanZero.XB xb = ge.extract(runtime);
                 Numeric ev1ln;
                 if ((ev1ln = ev1.lhs().asInstanceOf(Numeric.class)) != null && ev1.rhs().equals(xb.x())) {
                     double y = ev1ln.doubleValue();
@@ -401,7 +398,7 @@ public class AndImpl extends ExpressionImpl implements And {
         return null;
     }
 
-    private Action equalsAndOr(EvaluationResult evaluationContext,
+    private Action equalsAndOr(Runtime runtime,
                                boolean allowEqualsToCallContext,
                                Expression prev,
                                Expression value,
@@ -414,7 +411,7 @@ public class AndImpl extends ExpressionImpl implements And {
                 List<Expression> result = new ArrayList<>(or.expressions().size());
                 boolean foundTrue = false;
                 for (Expression clause : or.expressions()) {
-                    Expression and = evaluate(evaluationContext, allowEqualsToCallContext, List.of(prev, clause));
+                    Expression and = evaluate(runtime, allowEqualsToCallContext, List.of(prev, clause));
                     if (and.isBoolValueTrue()) {
                         foundTrue = true;
                         break;
@@ -430,7 +427,7 @@ public class AndImpl extends ExpressionImpl implements And {
                     return Action.FALSE;
                 }
                 if (result.size() < or.expressions().size()) {
-                    Expression newOr = evaluationContext.newOr(result);
+                    Expression newOr = runtime.newOr(result);
                     newConcat.set(newConcat.size() - 1, newOr); // full replace
                     return Action.ADD_CHANGE;
                 }
@@ -461,7 +458,7 @@ public class AndImpl extends ExpressionImpl implements And {
     }
 
 
-    private Action analyseGeNotEq(EvaluationResult evaluationContext, ArrayList<Expression> newConcat, Expression prev, Expression value) {
+    private Action analyseGeNotEq(Runtime runtime, ArrayList<Expression> newConcat, Expression prev, Expression value) {
         //  GE and NOT EQ
         GreaterThanZero ge;
         Negation prevNeg;
@@ -470,7 +467,7 @@ public class AndImpl extends ExpressionImpl implements And {
             && prev != null
             && (prevNeg = prev.asInstanceOf(Negation.class)) != null
             && (equalsValue = prevNeg.expression().asInstanceOf(Equals.class)) != null) {
-            GreaterThanZero.XB xb = ge.extract(evaluationContext);
+            GreaterThanZero.XB xb = ge.extract(runtime);
             if (equalsValue.lhs() instanceof Numeric eqLn && equalsValue.rhs().equals(xb.x())) {
                 double y = eqLn.doubleValue();
 
@@ -482,12 +479,11 @@ public class AndImpl extends ExpressionImpl implements And {
                 if (y == xb.b() && ge.allowEquals()) {
                     newConcat.remove(newConcat.size() - 1);
                     GreaterThanZero gt;
-                    Runtime rt = evaluationContext.runtime();
-                    if (ge.expression().parameterizedType().equals(rt.intParameterizedType())) {
-                        Expression oneLess = evaluationContext.sum(ge.expression(), rt.minusOne());
-                        gt = rt.newGreaterThanZero(oneLess, true);
+                    if (ge.expression().parameterizedType().equals(runtime.intParameterizedType())) {
+                        Expression oneLess = runtime.sum(ge.expression(), runtime.minusOne());
+                        gt = runtime.newGreaterThanZero(oneLess, true);
                     } else {
-                        gt = rt.newGreaterThanZero(ge.expression(), false);
+                        gt = runtime.newGreaterThanZero(ge.expression(), false);
                     }
                     newConcat.add(gt);
                     return Action.SKIP;
@@ -497,16 +493,16 @@ public class AndImpl extends ExpressionImpl implements And {
         return null;
     }
 
-    private Action analyseGeGe(EvaluationResult evaluationContext, ArrayList<Expression> newConcat, Expression prev, Expression value) {
+    private Action analyseGeGe(Runtime runtime, ArrayList<Expression> newConcat, Expression prev, Expression value) {
         // GE and GE
         GreaterThanZero ge1;
         GreaterThanZero ge2;
         if ((ge2 = value.asInstanceOf(GreaterThanZero.class)) != null
             && prev != null
             && (ge1 = prev.asInstanceOf(GreaterThanZero.class)) != null) {
-            GreaterThanZero.XB xb1 = ge1.extract(evaluationContext);
-            GreaterThanZero.XB xb2 = ge2.extract(evaluationContext);
-            Expression notXb2x = evaluationContext.negate(xb2.x());
+            GreaterThanZero.XB xb1 = ge1.extract(runtime);
+            GreaterThanZero.XB xb2 = ge2.extract(runtime);
+            Expression notXb2x = runtime.negate(xb2.x());
             Boolean reverse = xb1.x().equals(xb2.x()) ? Boolean.FALSE : xb1.x().equals(notXb2x) ? Boolean.TRUE : null;
             if (reverse != null) {
                 Expression xb1x = xb1.x();
@@ -540,23 +536,21 @@ public class AndImpl extends ExpressionImpl implements And {
                 if (xb1b > xb2b) return !xb1lt ? Action.FALSE : Action.ADD;
                 if (xb1b < xb2b) return !xb1lt ? Action.ADD : Action.FALSE;
                 if (IntUtil.isMathematicalInteger(xb1b)) {
-                    Expression newValue = evaluationContext.equals(
-                            evaluationContext.runtime().intOrDouble(xb1b), xb1x); // null-checks are irrelevant here
+                    Expression newValue = runtime.equals(runtime.intOrDouble(xb1b), xb1x); // null-checks are irrelevant here
                     newConcat.set(newConcat.size() - 1, newValue);
                     return Action.SKIP;
                 }
                 return Action.FALSE;
             }
-            Expression notGe2 = evaluationContext.negate(ge2.expression());
+            Expression notGe2 = runtime.negate(ge2.expression());
             if (ge1.expression().equals(notGe2)) {
                 if (ge1.allowEquals() && ge2.allowEquals()) {
                     // x >= 0, x <= 0 ==> x == 0
                     Expression result;
                     if (ge1.expression() instanceof Sum sum) {
-                        result = sum.isZero(evaluationContext);
+                        result = sum.isZero(runtime);
                     } else {
-                        result = evaluationContext.equals(ge1.expression(),
-                                evaluationContext.runtime().zero());
+                        result = runtime.equals(ge1.expression(), runtime.zero());
                     }
                     newConcat.set(newConcat.size() - 1, result);
                     return Action.SKIP;
@@ -567,14 +561,14 @@ public class AndImpl extends ExpressionImpl implements And {
         return null;
     }
 
-    private Action analyseInstanceOf(EvaluationResult evaluationContext, Expression prev, Expression value) {
+    private Action analyseInstanceOf(Runtime runtime, Expression prev, Expression value) {
         // a instanceof A && a instanceof B
         if (value instanceof InstanceOf i1 && prev instanceof InstanceOf i2 && i1.expression().equals(i2.expression())) {
-            if (i1.parameterizedType().isAssignableFrom(evaluationContext.runtime(), i2.parameterizedType())) {
+            if (i1.parameterizedType().isAssignableFrom(runtime, i2.parameterizedType())) {
                 // i1 is the most generic, so skip
                 return Action.SKIP;
             }
-            if (i2.parameterizedType().isAssignableFrom(evaluationContext.runtime(), i1.parameterizedType())) {
+            if (i2.parameterizedType().isAssignableFrom(runtime, i1.parameterizedType())) {
                 // i2 is the most generic, so keep current
                 return Action.REPLACE;
             }
@@ -585,11 +579,11 @@ public class AndImpl extends ExpressionImpl implements And {
         // is written as: a instanceof A && (null==a||!(a instanceof B))
         InstanceOf negI1 = isNegationOfInstanceOf(value);
         if (negI1 != null && prev instanceof InstanceOf i2 && negI1.expression().equals(i2.expression())) {
-            if (negI1.parameterizedType().isAssignableFrom(evaluationContext.runtime(), i2.parameterizedType())) {
+            if (negI1.parameterizedType().isAssignableFrom(runtime, i2.parameterizedType())) {
                 // B is the most generic, so we have a contradiction
                 return Action.FALSE;
             }
-            if (i2.parameterizedType().isAssignableFrom(evaluationContext.runtime(), negI1.parameterizedType())) {
+            if (i2.parameterizedType().isAssignableFrom(runtime, negI1.parameterizedType())) {
                 // i1 is the most generic, i2 is more specific; we keep what we have
                 return Action.ADD;
             }
@@ -600,11 +594,11 @@ public class AndImpl extends ExpressionImpl implements And {
         // !(a instanceof A) && a instanceof B
         InstanceOf negI2 = isNegationOfInstanceOf(prev);
         if (value instanceof InstanceOf i1 && negI2 != null && negI2.expression().equals(i1.expression())) {
-            if (negI2.parameterizedType().isAssignableFrom(evaluationContext.runtime(), i1.parameterizedType())) {
+            if (negI2.parameterizedType().isAssignableFrom(runtime, i1.parameterizedType())) {
                 // B is the most generic, so we have a contradiction
                 return Action.FALSE;
             }
-            if (i1.parameterizedType().isAssignableFrom(evaluationContext.runtime(), negI2.parameterizedType())) {
+            if (i1.parameterizedType().isAssignableFrom(runtime, negI2.parameterizedType())) {
                 // i1 is the most generic, i2 is more specific; we keep what we have
                 return Action.ADD;
             }

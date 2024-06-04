@@ -12,6 +12,8 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.ElementImpl;
+import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 
@@ -81,5 +83,17 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
     @Override
     public Precedence precedence() {
         return PrecedenceEnum.TOP;
+    }
+
+    @Override
+    public int order() {
+        return ExpressionComparator.ORDER_TYPE;
+    }
+
+    @Override
+    public int internalCompareTo(Expression expression) {
+        if (expression instanceof TypeExpression te) {
+            return parameterizedType.detailedString().compareTo(te.parameterizedType().detailedString());
+        } else throw new InternalCompareToException();
     }
 }

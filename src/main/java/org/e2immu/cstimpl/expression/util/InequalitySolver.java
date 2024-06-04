@@ -16,7 +16,7 @@ package org.e2immu.cstimpl.expression.util;
 
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.expression.util.OneVariable;
-import org.e2immu.cstapi.runtime.EvaluationResult;
+import org.e2immu.cstapi.runtime.Runtime;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +32,7 @@ as object. Rat
  */
 public class InequalitySolver {
     private final Map<OneVariable, List<Expression>> perComponent;
-    private final EvaluationResult evaluationContext;
+    private final Runtime runtime;
 
     /*
     expression is the "given": we extract components that have only one variable (i>0, j<0, k!=3).
@@ -40,20 +40,20 @@ public class InequalitySolver {
     We're assuming that per single variable, the expressions are consistent (i.e., not i>0 and i<0 together),
     and not redundant (i>0, i>1).
      */
-    public InequalitySolver(EvaluationResult evaluationContext, Expression expression) {
-        this.evaluationContext = evaluationContext;
+    public InequalitySolver(Runtime runtime, Expression expression) {
+        this.runtime = runtime;
         Map<OneVariable, List<Expression>> builder = new HashMap<>();
         And and;
         if ((and = expression.asInstanceOf(And.class)) != null) {
-            and.getExpressions().forEach(e -> tryToAddSingleNumericVariableComparison(builder, e));
+            and.expressions().forEach(e -> tryToAddSingleNumericVariableComparison(builder, e));
         } else {
             tryToAddSingleNumericVariableComparison(builder, expression);
         }
         perComponent = Map.copyOf(builder);
     }
 
-    public InequalitySolver(EvaluationResult evaluationContext, List<Expression> expressions) {
-        this.evaluationContext = evaluationContext;
+    public InequalitySolver(Runtime runtime, List<Expression> expressions) {
+        this.runtime = runtime;
         Map<OneVariable, List<Expression>> builder = new HashMap<>();
         expressions.forEach(e -> tryToAddSingleNumericVariableComparison(builder, e));
         perComponent = Map.copyOf(builder);
@@ -111,7 +111,7 @@ public class InequalitySolver {
     public Boolean evaluate(Expression expression) {
         And and;
         if ((and = expression.asInstanceOf(And.class)) != null) {
-            return and.getExpressions().stream().map(this::accept)
+            return and.expressions().stream().map(this::accept)
                     .reduce(true, (v1, v2) -> v2 == null ? v1 : v1 && v2);
         }
         return accept(expression);
