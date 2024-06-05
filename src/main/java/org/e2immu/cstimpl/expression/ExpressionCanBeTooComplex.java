@@ -17,16 +17,13 @@ public abstract class ExpressionCanBeTooComplex extends ExpressionImpl {
     // make a MultiValue with one component per variable (so that they are marked "read")
     // and one per assignment. Even though the And may be too complex, we should not ignore READ/ASSIGNED AT
     // information
-    public static Expression reducedComplexity(Runtime runtime,
-                                               List<Expression> expressions,
-                                               List<Expression> values) {
+    public static Expression reducedComplexity(Runtime runtime, List<Expression> values) {
         ParameterizedType booleanType = runtime.booleanParameterizedType();
 
         Expression instance = runtime.newInstanceForTooComplex(booleanType);
 
         // IMPORTANT: instance has to be the last one, it determines type, delay, etc.
-        Stream<Expression> components = Stream.concat(values.stream(), expressions.stream())
-                .flatMap(e -> collect(runtime, e).stream());
+        Stream<Expression> components = values.stream().flatMap(e -> collect(runtime, e).stream());
         List<Expression> newExpressions = Stream.concat(components.distinct().sorted(), Stream.of(instance))
                 .toList();
         return runtime.newMultiExpressions(newExpressions);

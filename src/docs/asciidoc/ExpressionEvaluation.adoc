@@ -1,0 +1,13 @@
+
+== Expression creation and evaluation
+
+`Sum`, `Product`, `Equals`, `Negation`, etc.
+
+The user uses the `Runtime` interface to
+
+- create an object, using a `newSum` operation; this is in the `Factory` interface
+- create the optimal object, using a `sum` operation; this is in the `Eval` interface
+
+
+Evaluation classes such as `EvalSum` can be overridden by more performant versions.
+
