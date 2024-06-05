@@ -14,6 +14,18 @@ public class TestSum extends CommonTest {
         assertEquals("1+i", s.toString());
         Expression s2 = r.sum(r.newInt(2), s);
         assertEquals("3+i", s2.toString());
+        Expression s3 = r.sum(i, r.one());
+        assertEquals(s, s3);
+        assertEquals("1+i", s3.toString());
+    }
+
+    @Test
+    public void test4() {
+        Expression s1 = r.sum(i, j);
+        Expression s2 = r.sum(j, i);
+        assertEquals(s1, s2);
+        assertEquals("i+j", s1.toString());
+        assertEquals("i+j", s2.toString());
     }
 
     @Test

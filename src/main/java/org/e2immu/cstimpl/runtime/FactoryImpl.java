@@ -1,6 +1,7 @@
 package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.element.Comment;
+import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.MethodModifier;
@@ -16,6 +17,8 @@ import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
+import org.e2immu.cstimpl.statement.BlockImpl;
+import org.e2immu.cstimpl.statement.ReturnStatementImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
@@ -93,8 +96,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ArrayLength newArrayLength(Expression e) {
-        return null;
+    public ArrayInitializer newArrayInitializer(List<Expression> expressions, ParameterizedType commonType) {
+        return new ArrayInitializerImpl(expressions, commonType);
+    }
+
+    @Override
+    public ArrayLength newArrayLength(Expression scope) {
+        return new ArrayLengthImpl(this, scope);
     }
 
     @Override
@@ -134,7 +142,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public ReturnStatement newReturnStatement(Expression expression) {
-        return null;
+        return newReturnStatement(expression);
+    }
+
+    @Override
+    public Element.Builder newReturnStatementBuilder() {
+        return new ReturnStatementImpl.Builder();
     }
 
     @Override
@@ -144,12 +157,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public Block.Builder newBlockBuilder() {
-        return null;
+        return new BlockImpl.Builder();
     }
 
     @Override
     public Block emptyBlock() {
-        return null;
+        return new BlockImpl();
     }
 
     @Override
