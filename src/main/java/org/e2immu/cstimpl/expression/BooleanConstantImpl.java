@@ -2,13 +2,12 @@ package org.e2immu.cstimpl.expression;
 
 import org.e2immu.cstapi.expression.BooleanConstant;
 import org.e2immu.cstapi.expression.Expression;
-import org.e2immu.cstapi.expression.Negatable;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 
-public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> implements Negatable {
+public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> {
     private final ParameterizedType booleanPt;
     private final boolean constant;
 
@@ -44,7 +43,6 @@ public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> impleme
         return null;
     }
 
-    @Override
     public Expression negate() {
         return new BooleanConstantImpl(booleanPt, !constant);
     }

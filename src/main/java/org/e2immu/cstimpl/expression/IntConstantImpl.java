@@ -21,6 +21,11 @@ public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements 
         this.parameterizedType = runtime.intParameterizedType();
     }
 
+    private IntConstantImpl(ParameterizedType parameterizedType, int value) {
+        this.parameterizedType = parameterizedType;
+        this.value = value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,5 +72,10 @@ public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements 
     @Override
     public Integer constant() {
         return value;
+    }
+
+    @Override
+    public Expression negate() {
+        return new IntConstantImpl(parameterizedType, -value);
     }
 }

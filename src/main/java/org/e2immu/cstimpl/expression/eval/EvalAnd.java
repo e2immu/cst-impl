@@ -33,7 +33,7 @@ public class EvalAnd {
     }
 
     // we try to maintain a CNF
-    public Expression eval(boolean allowEqualsToCallContext, List<Expression> values) {
+    public Expression eval(List<Expression> values) {
 
         // STEP 1: check that all values return boolean!
         int complexity = 0;
@@ -89,7 +89,7 @@ public class EvalAnd {
             int pos = 0;
             for (Expression value : concat) {
 
-                Action action = analyse(allowEqualsToCallContext, pos, newConcat, prev, value);
+                Action action = analyse(pos, newConcat, prev, value);
                 switch (action) {
                     case FALSE:
                         return runtime.constantFalse();
@@ -131,9 +131,7 @@ public class EvalAnd {
         return res;
     }
 
-    private Action analyse(boolean allowEqualsToCallContext,
-                           int pos, ArrayList<Expression> newConcat,
-                           Expression prev, Expression value) {
+    private Action analyse(int pos, ArrayList<Expression> newConcat, Expression prev, Expression value) {
         // A && A
         if (value.equals(prev)) return Action.SKIP;
 
@@ -171,7 +169,7 @@ public class EvalAnd {
             boolean changed = false;
             while (iterator.hasNext()) {
                 Expression value1 = iterator.next();
-                Expression negated1 = runtime.negate(value1, allowEqualsToCallContext);
+                Expression negated1 = runtime.negate(value1);
                 boolean found = false;
                 for (int pos2 = 0; pos2 < newConcat.size(); pos2++) {
                     if (pos2 != pos && negated1.equals(newConcat.get(pos2))) {
@@ -190,7 +188,7 @@ public class EvalAnd {
                     return Action.FALSE;
                 }
                 // replace
-                Expression orValue = runtime.newOr(remaining);
+                Expression orValue = runtime.or(remaining);
                 LOGGER.debug("Replace {} by {}, found opposite in {}", value, orValue, newConcat);
                 newConcat.add(orValue);
                 return Action.SKIP;
@@ -256,11 +254,11 @@ public class EvalAnd {
         }
 
         // x.equals(y)
-        Action actionEqualsEquals = analyseEqualsEquals(allowEqualsToCallContext, prev, value, newConcat);
+        Action actionEqualsEquals = analyseEqualsEquals(prev, value, newConcat);
         if (actionEqualsEquals != null) return actionEqualsEquals;
 
         // x == y
-        Action actionEqEq = analyseEqEq(allowEqualsToCallContext, prev, value, newConcat);
+        Action actionEqEq = analyseEqEq(prev, value, newConcat);
         if (actionEqEq != null) return actionEqEq;
 
         Action actionGeNotEqual = analyseGeNotEq(newConcat, prev, value);
@@ -287,8 +285,7 @@ public class EvalAnd {
         return Action.ADD;
     }
 
-    private Action analyseEqualsEquals(boolean allowEqualsToCallContext,
-                                       Expression prev,
+    private Action analyseEqualsEquals(Expression prev,
                                        Expression value,
                                        ArrayList<Expression> newConcat) {
         LhsRhs ev1 = LhsRhs.equalsMethodCall(prev);
@@ -296,7 +293,7 @@ public class EvalAnd {
             Action a = equalsRhs(ev1, value);
             if (a != null) return a;
 
-            return equalsAndOr(allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
+            return equalsAndOr(prev, value, newConcat, ev1.rhs());
         }
         return null;
     }
@@ -321,13 +318,10 @@ public class EvalAnd {
         return null;
     }
 
-    private Action analyseEqEq(boolean allowEqualsToCallContext,
-                               Expression prev,
-                               Expression value,
-                               ArrayList<Expression> newConcat) {
+    private Action analyseEqEq(Expression prev, Expression value, ArrayList<Expression> newConcat) {
         Equals ev1;
         if (prev != null && (ev1 = prev.asInstanceOf(Equals.class)) != null) {
-            Action skip = equalsAndOr(allowEqualsToCallContext, prev, value, newConcat, ev1.rhs());
+            Action skip = equalsAndOr(prev, value, newConcat, ev1.rhs());
             if (skip != null) return skip;
             Equals ev2;
             if ((ev2 = value.asInstanceOf(Equals.class)) != null) {
@@ -387,8 +381,7 @@ public class EvalAnd {
         return null;
     }
 
-    private Action equalsAndOr(boolean allowEqualsToCallContext,
-                               Expression prev,
+    private Action equalsAndOr(Expression prev,
                                Expression value,
                                ArrayList<Expression> newConcat,
                                Expression equalityRhs) {
@@ -399,7 +392,7 @@ public class EvalAnd {
                 List<Expression> result = new ArrayList<>(or.expressions().size());
                 boolean foundTrue = false;
                 for (Expression clause : or.expressions()) {
-                    Expression and = eval(allowEqualsToCallContext, List.of(prev, clause));
+                    Expression and = eval(List.of(prev, clause));
                     if (and.isBoolValueTrue()) {
                         foundTrue = true;
                         break;
@@ -415,7 +408,7 @@ public class EvalAnd {
                     return Action.FALSE;
                 }
                 if (result.size() < or.expressions().size()) {
-                    Expression newOr = runtime.newOr(result);
+                    Expression newOr = runtime.or(result);
                     newConcat.set(newConcat.size() - 1, newOr); // full replace
                     return Action.ADD_CHANGE;
                 }

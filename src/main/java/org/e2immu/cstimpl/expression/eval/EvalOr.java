@@ -24,7 +24,7 @@ public class EvalOr {
         this.runtime = runtime;
     }
 
-    public Expression eval(boolean allowEqualsToCallContext, List<Expression> values) {
+    public Expression eval(List<Expression> values) {
 
         // STEP 1: trivial reductions
 
@@ -141,12 +141,12 @@ public class EvalOr {
         ArrayList<Expression> finalValues = concat;
         if (firstAnd != null) {
             List<Expression> components = firstAnd.expressions().stream()
-                    .map(v -> runtime.newAnd(allowEqualsToCallContext, ListUtil.immutableConcat(finalValues, List.of(v))))
+                    .map(v -> runtime.and(ListUtil.immutableConcat(finalValues, List.of(v))))
                     .toList();
             LOGGER.debug("Found And-clause {}, components for new And are {}", firstAnd, components);
             int complexityComponents = components.stream().mapToInt(Expression::complexity).sum();
             if (complexityComponents < runtime.limitOnComplexity()) {
-                return runtime.newAnd(allowEqualsToCallContext, components);
+                return runtime.and(components);
             }
         }
         if (finalValues.size() == 1) return finalValues.get(0);

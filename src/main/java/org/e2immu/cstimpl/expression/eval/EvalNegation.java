@@ -16,55 +16,65 @@ public class EvalNegation {
         this.runtime = runtime;
     }
 
-    public Expression eval( boolean allowEqualsToCallContext, @NotNull Expression v) {
+    public Expression eval(@NotNull Expression v) {
         Objects.requireNonNull(v);
         if (v instanceof BooleanConstant boolValue) {
             return boolValue.negate();
         }
-        if (v instanceof Negatable negatable) {
-            return negatable.negate();
+        if (v instanceof Numeric numeric) {
+            return numeric.negate();
         }
-        if (v.isEmpty()) return v;
-
+        if (v.isEmpty()) {
+            return v;
+        }
         if (v instanceof Or or) {
             List<Expression> negated = or.expressions().stream().map(runtime::negate).toList();
-            return runtime.newAnd(negated);
+            return runtime.and(negated);
         }
         if (v instanceof And and) {
             List<Expression> negated = and.expressions().stream().map(runtime::negate).toList();
-            return runtime.newOr(negated);
+            return runtime.or(negated);
         }
         if (v instanceof Sum sum) {
-            return runtime.sum(runtime.negate(sum.lhs()), runtime.negate(sum.rhs()));
+            return negate(sum);
         }
         if (v instanceof GreaterThanZero greaterThanZero) {
-            return greaterThanZero.negate(context);
+            return negate(greaterThanZero);
         }
-
         if (v instanceof Equals equals) {
-            InlineConditional icl;
-            if ((icl = equals.lhs().asInstanceOf(InlineConditional.class)) != null) {
-                EvaluationResult safeEvaluationContext = context.copyToPreventAbsoluteStateComputation();
-                Expression result = Equals.tryToRewriteConstantEqualsInlineNegative(safeEvaluationContext,
-                        allowEqualsToCallContext, equals.rhs, icl);
-                if (result != null) return result;
-            }
-            InlineConditional icr;
-            if ((icr = equals.rhs().asInstanceOf(InlineConditional.class)) != null) {
-                EvaluationResult safeEvaluationContext = context.copyToPreventAbsoluteStateComputation();
-                Expression result = Equals.tryToRewriteConstantEqualsInlineNegative(safeEvaluationContext,
-                        allowEqualsToCallContext, equals.lhs(), icr);
-                if (result != null) return result;
-            }
+            Expression res = negate(equals);
+            if (res != null) return res;
         }
 
         MethodInfo operator = v.isNumeric() ? runtime.unaryMinusOperatorInt() : runtime.logicalNotOperatorBool();
         Negation negation = new NegationImpl(operator, runtime.precedenceUNARY(), v);
 
         if (v instanceof InstanceOf i) {
-            Expression varIsNull = runtime.equals(allowEqualsToCallContext, runtime.nullConstant(), i.expression());
-            return runtime.newOr(allowEqualsToCallContext, negation, varIsNull);
+            Expression varIsNull = runtime.equals(runtime.nullConstant(), i.expression());
+            return runtime.or(negation, varIsNull);
         }
         return negation;
+    }
+
+    public Expression negate(Sum sum) {
+        return runtime.sum(runtime.negate(sum.lhs()), runtime.negate(sum.rhs()));
+    }
+
+    public Expression negate(GreaterThanZero gt0) {
+        Expression negated = eval(gt0.expression());
+        return runtime.greater(negated, runtime.zero(), !gt0.allowEquals());
+    }
+
+    public Expression negate(Equals equals) {
+        InlineConditional icl;
+        if ((icl = equals.lhs().asInstanceOf(InlineConditional.class)) != null) {
+            Expression result = new EvalEquals(runtime).tryToRewriteConstantEqualsInlineNegative(equals.rhs(), icl);
+            if (result != null) return result;
+        }
+        InlineConditional icr;
+        if ((icr = equals.rhs().asInstanceOf(InlineConditional.class)) != null) {
+            return new EvalEquals(runtime).tryToRewriteConstantEqualsInlineNegative(equals.lhs(), icr);
+        }
+        return null;
     }
 }

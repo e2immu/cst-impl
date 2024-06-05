@@ -21,6 +21,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.Diamond;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeParameter;
+import org.e2immu.cstapi.type.Wildcard;
 import org.e2immu.cstimpl.output.*;
 
 import java.util.ArrayList;
@@ -65,17 +66,13 @@ public class ParameterizedTypePrinter {
                                       boolean withoutArrays,
                                       Set<TypeParameter> visitedTypeParameters) {
         OutputBuilder outputBuilder = new OutputBuilderImpl();
-        switch (parameterizedType.wildcard()) {
-            case UNBOUND:
-                outputBuilder.add(new Text("?"));
-                break;
-            case EXTENDS:
-                outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.EXTENDS).add(Space.ONE);
-                break;
-            case SUPER:
-                outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.SUPER).add(Space.ONE);
-                break;
-            case NONE:
+        Wildcard w = parameterizedType.wildcard();
+        if (w.isUnbound()) {
+            outputBuilder.add(new Text("?"));
+        } else if (w.isExtends()) {
+            outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.EXTENDS).add(Space.ONE);
+        } else if (w.isSuper()) {
+            outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.SUPER).add(Space.ONE);
         }
         TypeParameter tp = parameterizedType.typeParameter();
         if (tp != null) {
