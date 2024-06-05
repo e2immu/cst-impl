@@ -56,7 +56,7 @@ public class AndImpl extends ExpressionImpl implements And {
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
+    public Stream<Element.TypeReference> typesReferenced() {
         return expressions.stream().flatMap(Expression::typesReferenced);
     }
 

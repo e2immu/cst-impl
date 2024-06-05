@@ -39,7 +39,7 @@ public abstract class ConstantExpressionImpl<T> extends ExpressionImpl implement
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
+    public Stream<Element.TypeReference> typesReferenced() {
         return Stream.empty();
     }
 

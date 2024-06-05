@@ -11,6 +11,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class OutputBuilderImpl implements OutputBuilder {
 
@@ -41,6 +42,11 @@ public class OutputBuilderImpl implements OutputBuilder {
     @Override
     public boolean notStart() {
         return !list.stream().allMatch(outputElement -> outputElement instanceof Guide);
+    }
+
+    @Override
+    public String toString() {
+        return list.stream().map(OutputElement::minimal).collect(Collectors.joining());
     }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining() {

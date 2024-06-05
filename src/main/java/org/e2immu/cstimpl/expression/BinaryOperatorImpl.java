@@ -33,10 +33,10 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
 
     public BinaryOperatorImpl(MethodInfo operator, Precedence precedence, Expression lhs, Expression rhs) {
         super(1 + lhs.complexity() + rhs.complexity());
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.operator = operator;
-        this.precedence = precedence;
+        this.lhs = Objects.requireNonNull(lhs);
+        this.rhs = Objects.requireNonNull(rhs);
+        this.operator = Objects.requireNonNull(operator);
+        this.precedence = Objects.requireNonNull(precedence);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
 
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
+    public Stream<Element.TypeReference> typesReferenced() {
         return Stream.concat(lhs.typesReferenced(), rhs.typesReferenced());
     }
 }

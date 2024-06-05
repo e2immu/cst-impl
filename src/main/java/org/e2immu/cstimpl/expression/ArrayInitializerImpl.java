@@ -106,11 +106,11 @@ public class ArrayInitializerImpl extends ExpressionImpl implements ArrayInitial
 
     @Override
     public Stream<Variable> variables(DescendMode descendMode) {
-        return Stream.empty();
+        return expressions.stream().flatMap(e -> e.variables(descendMode));
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
-        return Stream.empty();
+    public Stream<Element.TypeReference> typesReferenced() {
+        return expressions.stream().flatMap(Expression::typesReferenced);
     }
 }

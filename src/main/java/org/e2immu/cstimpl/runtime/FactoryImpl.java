@@ -18,22 +18,21 @@ import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
 import org.e2immu.cstimpl.type.DiamondEnum;
+import org.e2immu.cstimpl.variable.LocalVariableImpl;
 import org.e2immu.cstimpl.variable.ThisImpl;
 
 import java.util.List;
 
-public class FactoryImpl implements Factory {
-    private final Predefined predefined;
+public class FactoryImpl extends PredefinedImpl implements Factory {
 
     private final IntConstant zero;
     private final IntConstant one;
     private final IntConstant minusOne;
 
-    public FactoryImpl(Predefined predefined) {
-        this.predefined = predefined;
-        zero = new IntConstantImpl(predefined, 0);
-        one = new IntConstantImpl(predefined, 1);
-        minusOne = new IntConstantImpl(predefined, -1);
+    public FactoryImpl() {
+        zero = new IntConstantImpl(this, 0);
+        one = new IntConstantImpl(this, 1);
+        minusOne = new IntConstantImpl(this, -1);
     }
 
     @Override
@@ -48,8 +47,8 @@ public class FactoryImpl implements Factory {
 
     @Override
     public Equals newEquals(Expression lhs, Expression rhs) {
-        MethodInfo operator = lhs.isNumeric() && rhs.isNumeric() ? predefined.equalsOperatorInt()
-                : predefined.equalsOperatorObject();
+        MethodInfo operator = lhs.isNumeric() && rhs.isNumeric() ? equalsOperatorInt()
+                : equalsOperatorObject();
         return new EqualsImpl(operator, PrecedenceEnum.EQUALITY, lhs, rhs);
     }
 
@@ -235,7 +234,7 @@ public class FactoryImpl implements Factory {
 
     @Override
     public Or createOr(List<Expression> expressions) {
-        return new OrImpl(predefined, expressions);
+        return new OrImpl(this, expressions);
     }
 
     @Override
@@ -280,7 +279,7 @@ public class FactoryImpl implements Factory {
 
     @Override
     public BooleanConstant newBooleanConstant(boolean value) {
-        return new BooleanConstantImpl(predefined, value);
+        return new BooleanConstantImpl(this, value);
     }
 
     @Override
@@ -310,46 +309,86 @@ public class FactoryImpl implements Factory {
 
     @Override
     public Precedence precedenceUNARY() {
-        return null;
+        return PrecedenceEnum.UNARY;
     }
 
     @Override
     public Precedence precedenceEQUALITY() {
-        return null;
+        return PrecedenceEnum.EQUALITY;
     }
 
     @Override
     public Expression nullValue(TypeInfo typeInfo) {
-        return null;
+        if (typeInfo != null) {
+            if (typeInfo.isBoolean()) return newBooleanConstant(false);
+            if (typeInfo.isInt()) return zero;
+            if (typeInfo.isLong()) return newLongConstant(0L);
+            if (typeInfo.isShort()) return newShortConstant((short) 0);
+            if (typeInfo.isByte()) return newByteConstant((byte) 0);
+            if (typeInfo.isFloat()) return newFloatConstant(0);
+            if (typeInfo.isDouble()) return newDoubleConstant(0);
+            if (typeInfo.isChar()) return newCharConstant('\0');
+        }
+        return nullConstant();
+    }
+
+    @Override
+    public Precedence precedenceGREATERTHAN() {
+        return PrecedenceEnum.EQUALITY;
     }
 
     @Override
     public Precedence precedenceAND() {
-        return null;
+        return PrecedenceEnum.AND;
     }
 
     @Override
     public Precedence precedenceOR() {
-        return null;
+        return PrecedenceEnum.OR;
     }
 
     @Override
     public Precedence precedenceASSIGNMENT() {
-        return null;
+        return PrecedenceEnum.ASSIGNMENT;
     }
 
     @Override
     public Precedence precedenceMULTIPLICATIVE() {
-        return null;
+        return PrecedenceEnum.MULTIPLICATIVE;
     }
 
     @Override
     public Precedence precedenceADDITIVE() {
-        return null;
+        return PrecedenceEnum.ADDITIVE;
     }
 
     @Override
     public IntConstant newIntConstant(int i) {
+        return new IntConstantImpl(this, i);
+    }
+
+    @Override
+    public LongConstant newLongConstant(long l) {
+        return new LongConstantImpl(this, l);
+    }
+
+    @Override
+    public ShortConstant newShortConstant(short s) {
+        return null;
+    }
+
+    @Override
+    public ByteConstant newByteConstant(byte b) {
+        return null;
+    }
+
+    @Override
+    public FloatConstant newFloatConstant(float f) {
+        return null;
+    }
+
+    @Override
+    public DoubleConstant newDoubleConstant(double d) {
         return null;
     }
 
@@ -361,5 +400,10 @@ public class FactoryImpl implements Factory {
     @Override
     public Expression nullConstant() {
         return null;
+    }
+
+    @Override
+    public LocalVariable newLocalVariable(String name, ParameterizedType parameterizedType) {
+        return new LocalVariableImpl(name, parameterizedType, null);
     }
 }

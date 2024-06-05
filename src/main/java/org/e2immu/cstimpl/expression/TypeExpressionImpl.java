@@ -60,7 +60,7 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
+    public Stream<Element.TypeReference> typesReferenced() {
         return Stream.of(new ElementImpl.TypeReference(parameterizedType().typeInfo(), true));
     }
 

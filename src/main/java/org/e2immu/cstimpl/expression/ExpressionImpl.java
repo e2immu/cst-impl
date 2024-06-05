@@ -7,13 +7,14 @@ import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.Symbol;
 
 import java.util.List;
 
-public abstract class ExpressionImpl implements Expression {
+public abstract class ExpressionImpl extends ElementImpl implements Expression {
 
     public static final int HARD_LIMIT_ON_COMPLEXITY = 5000;
     public static final int SOFT_LIMIT_ON_COMPLEXITY = 500;

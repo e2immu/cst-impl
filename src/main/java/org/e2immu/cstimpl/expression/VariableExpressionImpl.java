@@ -62,7 +62,7 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
+    public Stream<Element.TypeReference> typesReferenced() {
         return variable.typesReferenced();
     }
 

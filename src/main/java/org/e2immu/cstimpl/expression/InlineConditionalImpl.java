@@ -146,7 +146,8 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
     }
 
     @Override
-    public Stream<TypeReference> typesReferenced() {
-        return Stream.concat(condition.typesReferenced(), Stream.concat(ifTrue.typesReferenced(), ifFalse.typesReferenced()));
+    public Stream<Element.TypeReference> typesReferenced() {
+        return Stream.concat(condition.typesReferenced(),
+                Stream.concat(ifTrue.typesReferenced(), ifFalse.typesReferenced()));
     }
 }
