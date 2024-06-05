@@ -20,7 +20,7 @@ public class EvalSum {
 
     public Expression eval(Expression l, Expression r, boolean tryAgain) {
         if (l.equals(r))
-            return runtime.product(runtime.newIntConstant(2), l);
+            return runtime.product(runtime.newInt(2), l);
 
         Double ln = l.numericValue();
         Double rn = r.numericValue();
@@ -38,10 +38,10 @@ public class EvalSum {
 
         // similar code in Equals (common terms)
 
-        Expression[] terms = Stream.concat(expandTerms( l, false),
-                expandTerms( r, false)).toArray(Expression[]::new);
+        Expression[] terms = Stream.concat(expandTerms(l, false),
+                expandTerms(r, false)).toArray(Expression[]::new);
         Arrays.sort(terms);
-        Expression[] termsOfProducts = makeProducts( terms);
+        Expression[] termsOfProducts = makeProducts(terms);
         if (termsOfProducts.length == 0) return runtime.zero();
         if (termsOfProducts.length == 1) return termsOfProducts[0];
         Expression newL, newR;
@@ -49,7 +49,7 @@ public class EvalSum {
             newL = termsOfProducts[0];
             newR = termsOfProducts[1];
         } else {
-            newL = wrapInSum( termsOfProducts, termsOfProducts.length - 1);
+            newL = wrapInSum(termsOfProducts, termsOfProducts.length - 1);
             newR = termsOfProducts[termsOfProducts.length - 1];
         }
 
@@ -65,11 +65,14 @@ public class EvalSum {
     public Expression[] makeProducts(Expression[] terms) {
         List<Expression> result = new ArrayList<>(terms.length);
         int pos = 1;
-        result.add(terms[0]); // set the first
+        Expression term0 = terms[0];
+        assert term0 != null;
+        result.add(term0); // set the first
         while (pos < terms.length) {
             Expression e = terms[pos];
             int latestIndex = result.size() - 1;
             Expression latest = result.get(latestIndex);
+            assert latest != null;
             Numeric ln;
             Numeric rn;
             if ((ln = e.asInstanceOf(Numeric.class)) != null
@@ -105,6 +108,7 @@ public class EvalSum {
     }
 
     protected Factor getFactor(Expression term) {
+        assert term != null;
         if (term instanceof Negation neg) {
             Factor f = getFactor(neg.expression());
             return new Factor(-f.factor, f.term);

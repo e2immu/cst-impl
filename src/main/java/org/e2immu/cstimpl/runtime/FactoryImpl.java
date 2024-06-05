@@ -6,7 +6,6 @@ import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Factory;
-import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.DependentVariable;
@@ -18,6 +17,7 @@ import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
 import org.e2immu.cstimpl.type.DiamondEnum;
+import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
 import org.e2immu.cstimpl.variable.ThisImpl;
 
@@ -41,7 +41,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Assignment createAssignment(Expression target, Expression value) {
+    public Assignment newAssignment(Expression target, Expression value) {
         return null;
     }
 
@@ -113,32 +113,32 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public IfElseStatement createIfElseStatement(String label, Expression condition, Block ifBlock, Block elseBlock, Comment comment) {
+    public IfElseStatement newIfElseStatement(String label, Expression condition, Block ifBlock, Block elseBlock, Comment comment) {
         return null;
     }
 
     @Override
-    public ExpressionAsStatement createExpressionAsStatement(Expression standardized) {
+    public ExpressionAsStatement newExpressionAsStatement(Expression standardized) {
         return null;
     }
 
     @Override
-    public ThrowStatement createThrowStatement(String label, Expression expression, Comment comment) {
+    public ThrowStatement newThrowStatement(String label, Expression expression, Comment comment) {
         return null;
     }
 
     @Override
-    public AssertStatement createAssertStatement(String label, Expression check, Expression message) {
+    public AssertStatement newAssertStatement(String label, Expression check, Expression message) {
         return null;
     }
 
     @Override
-    public ReturnStatement createReturnStatement(Expression expression) {
+    public ReturnStatement newReturnStatement(Expression expression) {
         return null;
     }
 
     @Override
-    public WhileStatement createWhileStatement(String label, Expression loopCondition, Block block, Comment comment) {
+    public WhileStatement newWhileStatement(String label, Expression loopCondition, Block block, Comment comment) {
         return null;
     }
 
@@ -153,7 +153,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Assignment createAssignment(Expression target, Expression value, MethodInfo assignmentOperator, Boolean prefixPrimitiveOperator, boolean complainAboutAssignmentOutsideType, boolean allowStaticallyAssigned, Expression evaluationOfValue) {
+    public Assignment newAssignment(Expression target, Expression value, MethodInfo assignmentOperator, Boolean prefixPrimitiveOperator, boolean complainAboutAssignmentOutsideType, boolean allowStaticallyAssigned, Expression evaluationOfValue) {
         return null;
     }
 
@@ -233,7 +233,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Or createOr(List<Expression> expressions) {
+    public Or newOr(List<Expression> expressions) {
         return new OrImpl(this, expressions);
     }
 
@@ -268,7 +268,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public DependentVariable createDependentVariable(Expression array, Expression index, String statementIndex, TypeInfo owningType) {
+    public DependentVariable newDependentVariable(Expression array, Expression index, String statementIndex, TypeInfo owningType) {
         return null;
     }
 
@@ -322,11 +322,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
         if (typeInfo != null) {
             if (typeInfo.isBoolean()) return newBooleanConstant(false);
             if (typeInfo.isInt()) return zero;
-            if (typeInfo.isLong()) return newLongConstant(0L);
-            if (typeInfo.isShort()) return newShortConstant((short) 0);
-            if (typeInfo.isByte()) return newByteConstant((byte) 0);
-            if (typeInfo.isFloat()) return newFloatConstant(0);
-            if (typeInfo.isDouble()) return newDoubleConstant(0);
+            if (typeInfo.isLong()) return newLong(0L);
+            if (typeInfo.isShort()) return newShort((short) 0);
+            if (typeInfo.isByte()) return newByte((byte) 0);
+            if (typeInfo.isFloat()) return newFloat(0);
+            if (typeInfo.isDouble()) return newDouble(0);
             if (typeInfo.isChar()) return newCharConstant('\0');
         }
         return nullConstant();
@@ -363,38 +363,45 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public IntConstant newIntConstant(int i) {
+    public IntConstant newInt(int i) {
         return new IntConstantImpl(this, i);
     }
 
     @Override
-    public LongConstant newLongConstant(long l) {
+    public LongConstant newLong(long l) {
         return new LongConstantImpl(this, l);
     }
 
     @Override
-    public ShortConstant newShortConstant(short s) {
+    public ShortConstant newShort(short s) {
         return null;
     }
 
     @Override
-    public ByteConstant newByteConstant(byte b) {
+    public ByteConstant newByte(byte b) {
         return null;
     }
 
     @Override
-    public FloatConstant newFloatConstant(float f) {
+    public FloatConstant newFloat(float f) {
         return null;
     }
 
     @Override
-    public DoubleConstant newDoubleConstant(double d) {
+    public DoubleConstant newDouble(double d) {
         return null;
     }
 
     @Override
     public Numeric intOrDouble(double v) {
-        return null;
+        if (IntUtil.isMathematicalInteger(v)) {
+            long l = Math.round(v);
+            if (l > Integer.MAX_VALUE || l < Integer.MIN_VALUE) {
+                return newLong(l);
+            }
+            return newInt((int) l);
+        }
+        return newDouble(v);
     }
 
     @Override
