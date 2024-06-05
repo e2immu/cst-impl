@@ -14,11 +14,9 @@ import org.e2immu.cstapi.variable.*;
 import org.e2immu.cstimpl.expression.TypeExpressionImpl;
 import org.e2immu.cstimpl.expression.VariableExpressionImpl;
 import org.e2immu.cstimpl.output.*;
-import org.e2immu.cstimpl.type.DiamondImpl;
+import org.e2immu.cstimpl.type.DiamondEnum;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -56,7 +54,7 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
         this.fieldInfo = Objects.requireNonNull(fieldInfo);
         if (fieldInfo.isStatic()) {
             // IMPORTANT: the owner doesn't necessarily have a decent identifier, but the field should have one
-            this.scope = new TypeExpressionImpl(fieldInfo.owner().asSimpleParameterizedType(), DiamondImpl.NO);
+            this.scope = new TypeExpressionImpl(fieldInfo.owner().asSimpleParameterizedType(), DiamondEnum.NO);
             isDefaultScope = true;
             this.scopeVariable = null;
         } else if (scope == null) {

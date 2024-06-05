@@ -5,6 +5,7 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
+import org.e2immu.cstapi.expression.UnaryOperator;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -19,7 +20,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class UnaryOperatorImpl extends ExpressionImpl {
+public class UnaryOperatorImpl extends ExpressionImpl implements UnaryOperator {
     public final Expression expression;
     public final Precedence precedence;
     public final MethodInfo operator;
@@ -42,6 +43,11 @@ public class UnaryOperatorImpl extends ExpressionImpl {
 
     public Expression expression() {
         return expression;
+    }
+
+    @Override
+    public MethodInfo operator() {
+        return operator;
     }
 
     @Override

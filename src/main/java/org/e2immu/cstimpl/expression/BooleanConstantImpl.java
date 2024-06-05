@@ -4,14 +4,19 @@ import org.e2immu.cstapi.expression.BooleanConstant;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 
-public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> {
+public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> implements BooleanConstant {
     private final ParameterizedType booleanPt;
     private final boolean constant;
 
-    public BooleanConstantImpl(ParameterizedType booleanPt, boolean constant) {
+    public BooleanConstantImpl(Predefined predefined, boolean constant) {
+        this(predefined.booleanParameterizedType(), constant);
+    }
+
+    protected BooleanConstantImpl(ParameterizedType booleanPt, boolean constant) {
         this.booleanPt = booleanPt;
         this.constant = constant;
     }
@@ -43,7 +48,7 @@ public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> {
         return null;
     }
 
-    public Expression negate() {
+    public BooleanConstant negate() {
         return new BooleanConstantImpl(booleanPt, !constant);
     }
 }

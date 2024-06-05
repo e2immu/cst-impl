@@ -5,33 +5,29 @@ import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
-import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.*;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.Symbol;
-import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.util.ListUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static org.e2immu.cstimpl.expression.ExpressionCanBeTooComplex.reducedComplexity;
 
-public class OrImpl extends ExpressionImpl implements And {
+public class OrImpl extends ExpressionImpl implements Or {
 
     private final List<Expression> expressions;
     private final ParameterizedType booleanPt;
 
-    public OrImpl(Runtime runtime, List<Expression> expressions) {
+    public OrImpl(Predefined predefined, List<Expression> expressions) {
         super(1 + expressions.stream().mapToInt(Expression::complexity).sum());
         this.expressions = expressions;
-        booleanPt = runtime.booleanParameterizedType();
+        booleanPt = predefined.booleanParameterizedType();
     }
 
     @Override

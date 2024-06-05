@@ -42,7 +42,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 
     public OutputBuilder print(Qualification qualification) {
         return ParameterizedTypePrinter.print(qualification, this,
-                false, DiamondImpl.SHOW_ALL, false);
+                false, DiamondEnum.SHOW_ALL, false);
     }
 
     @Override

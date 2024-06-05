@@ -156,11 +156,11 @@ public class ParameterizedTypePrinter {
         } else {
             outputBuilder.add(TypeName.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
         }
-        if (!typeParameters.isEmpty() && diamond != DiamondImpl.NO) {
+        if (!typeParameters.isEmpty() && diamond != DiamondEnum.NO) {
             outputBuilder.add(Symbol.LEFT_ANGLE_BRACKET);
-            if (diamond == DiamondImpl.SHOW_ALL) {
+            if (diamond == DiamondEnum.SHOW_ALL) {
                 outputBuilder.add(typeParameters.stream().map(tp -> print(qualification,
-                                tp, false, DiamondImpl.SHOW_ALL, false, visitedTypeParameters))
+                                tp, false, DiamondEnum.SHOW_ALL, false, visitedTypeParameters))
                         .collect(OutputBuilderImpl.joining(Symbol.COMMA)));
             }
             outputBuilder.add(Symbol.RIGHT_ANGLE_BRACKET);

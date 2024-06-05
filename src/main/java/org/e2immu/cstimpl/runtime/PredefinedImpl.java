@@ -1,6 +1,6 @@
 package org.e2immu.cstimpl.runtime;
 
-import org.e2immu.cstapi.expression.AnnotationExpression;
+import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Predefined;
@@ -14,54 +14,53 @@ public class PredefinedImpl implements Predefined {
     private static final String JAVA_PRIMITIVE = "";
     private static final String JAVA_LANG = "";
 
-    public static final String ANNOTATION_TYPE = "annotation type";
-    public final TypeInfo intTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "int");
-    public final ParameterizedType intParameterizedType = intTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo intTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "int");
+    private final ParameterizedType intParameterizedType = intTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo integerTypeInfo = new TypeInfoImpl(JAVA_LANG, "Integer");
+    private final TypeInfo integerTypeInfo = new TypeInfoImpl(JAVA_LANG, "Integer");
 
-    public final TypeInfo charTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "char");
-    public final ParameterizedType charParameterizedType = charTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo charTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "char");
+    private final ParameterizedType charParameterizedType = charTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo characterTypeInfo = new TypeInfoImpl(JAVA_LANG, "Character");
+    private final TypeInfo characterTypeInfo = new TypeInfoImpl(JAVA_LANG, "Character");
 
-    public final TypeInfo booleanTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "boolean");
-    public final ParameterizedType booleanParameterizedType = booleanTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo booleanTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "boolean");
+    private final ParameterizedType booleanParameterizedType = booleanTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedBooleanTypeInfo = new TypeInfoImpl(JAVA_LANG, "Boolean");
-    public final ParameterizedType boxedBooleanParameterizedType = boxedBooleanTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo boxedBooleanTypeInfo = new TypeInfoImpl(JAVA_LANG, "Boolean");
+    private final ParameterizedType boxedBooleanParameterizedType = boxedBooleanTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo longTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "long");
-    public final ParameterizedType longParameterizedType = longTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo longTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "long");
+    private final ParameterizedType longParameterizedType = longTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedLongTypeInfo = new TypeInfoImpl(JAVA_LANG, "Long");
+    private final TypeInfo boxedLongTypeInfo = new TypeInfoImpl(JAVA_LANG, "Long");
 
-    public final TypeInfo shortTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "short");
-    public final ParameterizedType shortParameterizedType = shortTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo shortTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "short");
+    private final ParameterizedType shortParameterizedType = shortTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedShortTypeInfo = new TypeInfoImpl(JAVA_LANG, "Short");
+    private final TypeInfo boxedShortTypeInfo = new TypeInfoImpl(JAVA_LANG, "Short");
 
-    public final TypeInfo byteTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "byte");
-    public final ParameterizedType byteParameterizedType = byteTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo byteTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "byte");
+    private final ParameterizedType byteParameterizedType = byteTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedByteTypeInfo = new TypeInfoImpl(JAVA_LANG, "Byte");
+    private final TypeInfo boxedByteTypeInfo = new TypeInfoImpl(JAVA_LANG, "Byte");
 
-    public final TypeInfo doubleTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "double");
-    public final ParameterizedType doubleParameterizedType = doubleTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo doubleTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "double");
+    private final ParameterizedType doubleParameterizedType = doubleTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedDoubleTypeInfo = new TypeInfoImpl(JAVA_LANG, "Double");
+    private final TypeInfo boxedDoubleTypeInfo = new TypeInfoImpl(JAVA_LANG, "Double");
 
-    public final TypeInfo floatTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "float");
-    public final ParameterizedType floatParameterizedType = floatTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo floatTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "float");
+    private final ParameterizedType floatParameterizedType = floatTypeInfo.asSimpleParameterizedType();
 
-    public final TypeInfo boxedFloatTypeInfo = new TypeInfoImpl(JAVA_LANG, "Float");
+    private final TypeInfo boxedFloatTypeInfo = new TypeInfoImpl(JAVA_LANG, "Float");
 
-    public final TypeInfo voidTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "void");
-    public final ParameterizedType voidParameterizedType = voidTypeInfo.asSimpleParameterizedType();
-    public final TypeInfo boxedVoidTypeInfo = new TypeInfoImpl(JAVA_LANG, "Void");
+    private final TypeInfo voidTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "void");
+    private final ParameterizedType voidParameterizedType = voidTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo boxedVoidTypeInfo = new TypeInfoImpl(JAVA_LANG, "Void");
 
-    public final TypeInfo stringTypeInfo = new TypeInfoImpl(JAVA_LANG, "String");
-    public final ParameterizedType stringParameterizedType = stringTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo stringTypeInfo = new TypeInfoImpl(JAVA_LANG, "String");
+    private final ParameterizedType stringParameterizedType = stringTypeInfo.asSimpleParameterizedType();
 
     public ParameterizedType stringParameterizedType() {
         return stringParameterizedType;
@@ -125,75 +124,75 @@ public class PredefinedImpl implements Predefined {
         return mi;
     }
 
-    public final TypeInfo functionalInterface = new TypeInfoImpl(JAVA_LANG, "FunctionalInterface");
-    public final AnnotationExpression functionalInterfaceAnnotationExpression =
+    private final TypeInfo functionalInterface = new TypeInfoImpl(JAVA_LANG, "FunctionalInterface");
+    private final AnnotationExpression functionalInterfaceAnnotationExpression =
             new AnnotationExpressionImpl(functionalInterface, List.of());
 
-    public final TypeInfo classTypeInfo = new TypeInfoImpl(JAVA_LANG, "Class");
+    private final TypeInfo classTypeInfo = new TypeInfoImpl(JAVA_LANG, "Class");
 
-    public final TypeInfo objectTypeInfo = new TypeInfoImpl(JAVA_LANG, "Object");
-    public final ParameterizedType objectParameterizedType = objectTypeInfo.asSimpleParameterizedType();
+    private final TypeInfo objectTypeInfo = new TypeInfoImpl(JAVA_LANG, "Object");
+    private final ParameterizedType objectParameterizedType = objectTypeInfo.asSimpleParameterizedType();
 
     private final List<ParameterizedType> intInt = List.of(intParameterizedType, intParameterizedType);
     private final List<ParameterizedType> boolBool = List.of(booleanParameterizedType, booleanParameterizedType);
 
-    public final MethodInfo plusOperatorInt = createOperator(intTypeInfo, "+", intInt, intParameterizedType);
-    public final MethodInfo minusOperatorInt = createOperator(intTypeInfo, "-", intInt, intParameterizedType);
-    public final MethodInfo bitwiseOrOperatorInt = createOperator(intTypeInfo, "|", intInt, intParameterizedType);
-    public final MethodInfo bitwiseAndOperatorInt = createOperator(intTypeInfo, "&", intInt, intParameterizedType);
-    public final MethodInfo bitwiseXorOperatorInt = createOperator(intTypeInfo, "^", intInt, intParameterizedType);
-    public final MethodInfo remainderOperatorInt = createOperator(intTypeInfo, "%", intInt, intParameterizedType);
-    public final MethodInfo signedRightShiftOperatorInt = createOperator(intTypeInfo, ">>", intInt, intParameterizedType);
-    public final MethodInfo unsignedRightShiftOperatorInt = createOperator(intTypeInfo, ">>>", intInt, intParameterizedType);
-    public final MethodInfo leftShiftOperatorInt = createOperator(intTypeInfo, "<<", intInt, intParameterizedType);
-    public final MethodInfo divideOperatorInt = createOperator(intTypeInfo, "/", intInt, intParameterizedType);
-    public final MethodInfo multiplyOperatorInt = createOperator(intTypeInfo, "*", intInt, intParameterizedType);
+    private final MethodInfo plusOperatorInt = createOperator(intTypeInfo, "+", intInt, intParameterizedType);
+    private final MethodInfo minusOperatorInt = createOperator(intTypeInfo, "-", intInt, intParameterizedType);
+    private final MethodInfo bitwiseOrOperatorInt = createOperator(intTypeInfo, "|", intInt, intParameterizedType);
+    private final MethodInfo bitwiseAndOperatorInt = createOperator(intTypeInfo, "&", intInt, intParameterizedType);
+    private final MethodInfo bitwiseXorOperatorInt = createOperator(intTypeInfo, "^", intInt, intParameterizedType);
+    private final MethodInfo remainderOperatorInt = createOperator(intTypeInfo, "%", intInt, intParameterizedType);
+    private final MethodInfo signedRightShiftOperatorInt = createOperator(intTypeInfo, ">>", intInt, intParameterizedType);
+    private final MethodInfo unsignedRightShiftOperatorInt = createOperator(intTypeInfo, ">>>", intInt, intParameterizedType);
+    private final MethodInfo leftShiftOperatorInt = createOperator(intTypeInfo, "<<", intInt, intParameterizedType);
+    private final MethodInfo divideOperatorInt = createOperator(intTypeInfo, "/", intInt, intParameterizedType);
+    private final MethodInfo multiplyOperatorInt = createOperator(intTypeInfo, "*", intInt, intParameterizedType);
 
-    public final MethodInfo equalsOperatorInt = createOperator(intTypeInfo, "==", intInt, booleanParameterizedType);
-    public final MethodInfo notEqualsOperatorInt = createOperator(intTypeInfo, "!=", intInt, booleanParameterizedType);
-    public final MethodInfo greaterOperatorInt = createOperator(intTypeInfo, ">", intInt, booleanParameterizedType);
-    public final MethodInfo greaterEqualsOperatorInt = createOperator(intTypeInfo, ">=", intInt, booleanParameterizedType);
-    public final MethodInfo lessOperatorInt = createOperator(intTypeInfo, "<", intInt, booleanParameterizedType);
-    public final MethodInfo lessEqualsOperatorInt = createOperator(intTypeInfo, "<=", intInt, booleanParameterizedType);
+    private final MethodInfo equalsOperatorInt = createOperator(intTypeInfo, "==", intInt, booleanParameterizedType);
+    private final MethodInfo notEqualsOperatorInt = createOperator(intTypeInfo, "!=", intInt, booleanParameterizedType);
+    private final MethodInfo greaterOperatorInt = createOperator(intTypeInfo, ">", intInt, booleanParameterizedType);
+    private final MethodInfo greaterEqualsOperatorInt = createOperator(intTypeInfo, ">=", intInt, booleanParameterizedType);
+    private final MethodInfo lessOperatorInt = createOperator(intTypeInfo, "<", intInt, booleanParameterizedType);
+    private final MethodInfo lessEqualsOperatorInt = createOperator(intTypeInfo, "<=", intInt, booleanParameterizedType);
 
-    public final MethodInfo assignOperatorInt = createOperator(intTypeInfo, "=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignPlusOperatorInt = createOperator(intTypeInfo, "+=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignMinusOperatorInt = createOperator(intTypeInfo, "-=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignMultiplyOperatorInt = createOperator(intTypeInfo, "*=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignDivideOperatorInt = createOperator(intTypeInfo, "/=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignOrOperatorInt = createOperator(intTypeInfo, "|=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignAndOperatorInt = createOperator(intTypeInfo, "&=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignXorOperatorInt = createOperator(intTypeInfo, "^=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignLeftShiftOperator = createOperator(intTypeInfo, "<<=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignSignedRightShiftOperator = createOperator(intTypeInfo, ">>=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignUnsignedRightShiftOperator = createOperator(intTypeInfo, ">>>=", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo assignRemainderOperatorInt = createOperator(intTypeInfo, "%=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignOperatorInt = createOperator(intTypeInfo, "=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignPlusOperatorInt = createOperator(intTypeInfo, "+=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignMinusOperatorInt = createOperator(intTypeInfo, "-=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignMultiplyOperatorInt = createOperator(intTypeInfo, "*=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignDivideOperatorInt = createOperator(intTypeInfo, "/=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignOrOperatorInt = createOperator(intTypeInfo, "|=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignAndOperatorInt = createOperator(intTypeInfo, "&=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignXorOperatorInt = createOperator(intTypeInfo, "^=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignLeftShiftOperator = createOperator(intTypeInfo, "<<=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignSignedRightShiftOperator = createOperator(intTypeInfo, ">>=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignUnsignedRightShiftOperator = createOperator(intTypeInfo, ">>>=", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo assignRemainderOperatorInt = createOperator(intTypeInfo, "%=", List.of(intParameterizedType), intParameterizedType);
 
     // TODO long instead of int to distinguish statically (isPostfix) This is a hack!
-    public final MethodInfo postfixIncrementOperatorInt = createOperator(intTypeInfo, "++", List.of(), longParameterizedType);
-    public final MethodInfo prefixIncrementOperatorInt = createOperator(intTypeInfo, "++", List.of(), intParameterizedType);
-    public final MethodInfo postfixDecrementOperatorInt = createOperator(intTypeInfo, "--", List.of(), longParameterizedType);
-    public final MethodInfo prefixDecrementOperatorInt = createOperator(intTypeInfo, "--", List.of(), intParameterizedType);
+    private final MethodInfo postfixIncrementOperatorInt = createOperator(intTypeInfo, "++", List.of(), longParameterizedType);
+    private final MethodInfo prefixIncrementOperatorInt = createOperator(intTypeInfo, "++", List.of(), intParameterizedType);
+    private final MethodInfo postfixDecrementOperatorInt = createOperator(intTypeInfo, "--", List.of(), longParameterizedType);
+    private final MethodInfo prefixDecrementOperatorInt = createOperator(intTypeInfo, "--", List.of(), intParameterizedType);
 
-    public final MethodInfo unaryPlusOperatorInt = createOperator(intTypeInfo, "+", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo unaryMinusOperatorInt = createOperator(intTypeInfo, "-", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo unaryPlusOperatorInt = createOperator(intTypeInfo, "+", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo unaryMinusOperatorInt = createOperator(intTypeInfo, "-", List.of(intParameterizedType), intParameterizedType);
 
-    public final MethodInfo bitWiseNotOperatorInt = createOperator(intTypeInfo, "~", List.of(intParameterizedType), intParameterizedType);
-    public final MethodInfo logicalNotOperatorBool = createOperator(booleanTypeInfo, "!", List.of(booleanParameterizedType), booleanParameterizedType);
-    public final MethodInfo orOperatorBool = createOperator(booleanTypeInfo, "||", boolBool, booleanParameterizedType);
-    public final MethodInfo andOperatorBool = createOperator(booleanTypeInfo, "&&", boolBool, booleanParameterizedType);
-    public final MethodInfo xorOperatorBool = createOperator(booleanTypeInfo, "^", boolBool, booleanParameterizedType);
+    private final MethodInfo bitWiseNotOperatorInt = createOperator(intTypeInfo, "~", List.of(intParameterizedType), intParameterizedType);
+    private final MethodInfo logicalNotOperatorBool = createOperator(booleanTypeInfo, "!", List.of(booleanParameterizedType), booleanParameterizedType);
+    private final MethodInfo orOperatorBool = createOperator(booleanTypeInfo, "||", boolBool, booleanParameterizedType);
+    private final MethodInfo andOperatorBool = createOperator(booleanTypeInfo, "&&", boolBool, booleanParameterizedType);
+    private final MethodInfo xorOperatorBool = createOperator(booleanTypeInfo, "^", boolBool, booleanParameterizedType);
 
-    public final MethodInfo plusOperatorString = createOperator(stringTypeInfo, "+", List.of(stringParameterizedType,
+    private final MethodInfo plusOperatorString = createOperator(stringTypeInfo, "+", List.of(stringParameterizedType,
             stringParameterizedType), stringParameterizedType);
 
-    public final MethodInfo equalsOperatorObject = createOperator(objectTypeInfo, "==",
+    private final MethodInfo equalsOperatorObject = createOperator(objectTypeInfo, "==",
             List.of(objectParameterizedType, objectParameterizedType), booleanParameterizedType);
-    public final MethodInfo notEqualsOperatorObject = createOperator(objectTypeInfo, "!=",
+    private final MethodInfo notEqualsOperatorObject = createOperator(objectTypeInfo, "!=",
             List.of(objectParameterizedType, objectParameterizedType), booleanParameterizedType);
 
-    public final Map<String, TypeInfo> primitiveByName = new HashMap<>();
-    public final Map<String, TypeInfo> typeByName = new HashMap<>();
+    private final Map<String, TypeInfo> primitiveByName = new HashMap<>();
+    private final Map<String, TypeInfo> typeByName = new HashMap<>();
 
     public Map<String, TypeInfo> getTypeByName() {
         return typeByName;
@@ -203,10 +202,10 @@ public class PredefinedImpl implements Predefined {
         return primitiveByName;
     }
 
-    public final Set<TypeInfo> boxed = Set.of(boxedBooleanTypeInfo, boxedByteTypeInfo, boxedDoubleTypeInfo, boxedFloatTypeInfo,
+    private final Set<TypeInfo> boxed = Set.of(boxedBooleanTypeInfo, boxedByteTypeInfo, boxedDoubleTypeInfo, boxedFloatTypeInfo,
             boxedLongTypeInfo, boxedShortTypeInfo, boxedVoidTypeInfo, integerTypeInfo, characterTypeInfo);
 
-    public final Set<TypeInfo> primitives = Set.of(booleanTypeInfo, byteTypeInfo, doubleTypeInfo, floatTypeInfo,
+    private final Set<TypeInfo> primitives = Set.of(booleanTypeInfo, byteTypeInfo, doubleTypeInfo, floatTypeInfo,
             longTypeInfo, shortTypeInfo, voidTypeInfo, intTypeInfo, charTypeInfo);
 
 

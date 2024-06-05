@@ -5,23 +5,22 @@ import org.e2immu.cstapi.expression.IntConstant;
 import org.e2immu.cstapi.expression.Numeric;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
-import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.Text;
 
-public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements Numeric {
+public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements Numeric, IntConstant {
 
     private final int value;
     private final ParameterizedType parameterizedType;
 
-    public IntConstantImpl(Runtime runtime, int value) {
-        this.value = value;
-        this.parameterizedType = runtime.intParameterizedType();
+    public IntConstantImpl(Predefined predefined, int value) {
+        this(predefined.intParameterizedType(), value);
     }
 
-    private IntConstantImpl(ParameterizedType parameterizedType, int value) {
+    protected IntConstantImpl(ParameterizedType parameterizedType, int value) {
         this.parameterizedType = parameterizedType;
         this.value = value;
     }
