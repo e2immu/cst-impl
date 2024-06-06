@@ -9,6 +9,7 @@ import org.e2immu.cstimpl.expression.eval.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class EvalImpl implements Eval {
     private final EvalProduct evalProduct;
@@ -92,5 +93,10 @@ public class EvalImpl implements Eval {
     @Override
     public int limitOnComplexity() {
         return ExpressionImpl.SOFT_LIMIT_ON_COMPLEXITY;
+    }
+
+    @Override
+    public Stream<Expression> expandTerms(Expression expression, boolean negate) {
+        return evalSum.expandTerms(expression, negate);
     }
 }

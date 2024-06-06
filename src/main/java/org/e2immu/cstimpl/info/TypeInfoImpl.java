@@ -13,6 +13,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.type.ParameterizedTypeImpl;
 import org.e2immu.support.Either;
+import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -24,6 +25,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     private final String fullyQualifiedName;
     private final String simpleName;
     private final Either<String, TypeInfo> packageNameOrEnclosingType;
+    private final EventuallyFinal<TypeInspection> inspection = new EventuallyFinal<>();
 
     public TypeInfoImpl(String packageName, String simpleName) {
         fullyQualifiedName = packageName + "." + simpleName;
@@ -68,6 +70,26 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public ParameterizedType parentClass() {
+        return inspection.get().parentClass();
+    }
+
+    @Override
+    public List<ParameterizedType> interfacesImplemented() {
+        return inspection.get().interfacesImplemented();
+    }
+
+    @Override
+    public Stream<MethodInfo> methodStream(Methods methods) {
+        return inspection.get().methodStream(methods);
+    }
+
+    @Override
+    public List<MethodInfo> constructors() {
+        return inspection.get().constructors();
+    }
+
+    @Override
     public boolean doesNotRequirePackage() {
         return true;
     }
@@ -93,6 +115,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     @Override
     public boolean isStatic() {
         return true;
+    }
+
+    @Override
+    public boolean isInterface() {
+        return false;
     }
 
     @Override
@@ -238,12 +265,12 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public boolean isPublic() {
-        throw new UnsupportedOperationException();//FIXME
+        return inspection.get().isPublic();
     }
 
     @Override
     public int complexity() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

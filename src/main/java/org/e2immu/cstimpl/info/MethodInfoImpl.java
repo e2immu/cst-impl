@@ -6,6 +6,7 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.info.TypeInfo;
@@ -203,7 +204,12 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isOverloadOfJLOEquals() {
-        return false;
+        return parameters().size() == 1 && "equals".equals(name);
+    }
+
+    @Override
+    public Set<MethodInfo> overrides() {
+        return inspection.get().overrides();
     }
 
     @Override
@@ -225,5 +231,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public boolean isFluent() {
         return analysedOrDefault(PropertyImpl.FLUENT, ValueImpl.FALSE).isTrue();
+    }
+
+    @Override
+    public List<AnnotationExpression> annotations() {
+        return inspection.get().annotations();
     }
 }

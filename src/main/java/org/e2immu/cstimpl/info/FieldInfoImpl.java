@@ -9,6 +9,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.analysis.PropertyImpl;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -52,6 +53,11 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     @Override
     public boolean isStatic() {
         return isStatic;
+    }
+
+    @Override
+    public boolean isPropertyFinal() {
+        return analysed(PropertyImpl.FINAL).isTrue();
     }
 
     @Override
