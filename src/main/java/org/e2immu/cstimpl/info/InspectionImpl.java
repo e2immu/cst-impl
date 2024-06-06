@@ -14,6 +14,50 @@ public class InspectionImpl implements Inspection {
     private final boolean synthetic;
     private final List<AnnotationExpression> annotations;
 
+    public enum AccessEnum implements Access {
+        PRIVATE(0), PACKAGE(1), PROTECTED(2), PUBLIC(3);
+
+        private final int level;
+
+        AccessEnum(int level) {
+            this.level = level;
+        }
+
+        public Access combine(Access other) {
+            if (level < other.level()) return this;
+            return other;
+        }
+
+        @Override
+        public boolean isPublic() {
+            return this == PUBLIC;
+        }
+
+        @Override
+        public boolean isPackage() {
+            return this == PACKAGE;
+        }
+
+        @Override
+        public boolean isPrivate() {
+            return this == PRIVATE;
+        }
+
+        @Override
+        public boolean isProtected() {
+            return this == PROTECTED;
+        }
+
+        @Override
+        public int level() {
+            return level;
+        }
+
+        public boolean le(Access other) {
+            return level <= other.level();
+        }
+    }
+
     public InspectionImpl(Access access,
                           List<Comment> comments,
                           Source source,

@@ -234,7 +234,8 @@ public class EvalAnd {
         // combinations with equality and inequality (GE)
 
         GreaterThanZero gt0;
-        if ((gt0 = value.asInstanceOf(GreaterThanZero.class)) != null && gt0.expression().variableList().size() > 1) {
+        if ((gt0 = value.asInstanceOf(GreaterThanZero.class)) != null
+            && gt0.expression().variableStreamDescend().count() > 1) {
             // it may be interesting to run the inequality solver
             InequalitySolver inequalitySolver = new InequalitySolver(runtime, newConcat);
             Boolean resolve = inequalitySolver.evaluate(value);

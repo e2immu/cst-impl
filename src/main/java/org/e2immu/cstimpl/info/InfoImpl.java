@@ -5,11 +5,14 @@ import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
+import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.SetOnce;
 import org.e2immu.support.SetOnceMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public abstract class InfoImpl implements Element {
 
@@ -44,5 +47,15 @@ public abstract class InfoImpl implements Element {
     @Override
     public Source source() {
         return source.getOrDefaultNull();
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDescend() {
+        return variables(DescendModeEnum.YES);
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDoNotDescend() {
+        return variables(DescendModeEnum.NO);
     }
 }

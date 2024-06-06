@@ -5,14 +5,27 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.output.QualificationImpl;
+import org.e2immu.cstimpl.variable.DescendModeEnum;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class ElementImpl implements Element {
 
     public record TypeReference(TypeInfo typeInfo, boolean explicit) implements Element.TypeReference {
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDescend() {
+        return variables(DescendModeEnum.YES);
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDoNotDescend() {
+        return variables(DescendModeEnum.NO);
     }
 
     @Override

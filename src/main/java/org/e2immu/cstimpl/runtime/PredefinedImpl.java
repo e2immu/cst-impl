@@ -119,7 +119,7 @@ public class PredefinedImpl implements Predefined {
             mi.builder().addParameter(pi); // inspection built when method is built
         }
         mi.builder().setReturnType(returnType);
-        mi.builder().setAccess(Inspection.Access.PUBLIC);
+        mi.builder().setAccess(InspectionImpl.AccessEnum.PUBLIC);
         mi.endOfInspection();
         return mi;
     }

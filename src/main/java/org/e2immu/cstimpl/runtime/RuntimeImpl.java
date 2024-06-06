@@ -66,6 +66,11 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     }
 
     @Override
+    public Expression divide(Expression lhs, Expression rhs) {
+        return eval.divide(lhs, rhs);
+    }
+
+    @Override
     public boolean isNotNull0(Expression expression) {
         return eval.isNotNull0(expression);
     }
@@ -74,5 +79,4 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     public int limitOnComplexity() {
         return ExpressionImpl.SOFT_LIMIT_ON_COMPLEXITY;
     }
-
 }

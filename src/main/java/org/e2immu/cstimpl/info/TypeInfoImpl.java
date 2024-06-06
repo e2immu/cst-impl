@@ -237,6 +237,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public boolean isPublic() {
+        throw new UnsupportedOperationException();//FIXME
+    }
+
+    @Override
     public int complexity() {
        throw new UnsupportedOperationException();
     }

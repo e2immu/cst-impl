@@ -1,7 +1,5 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.annotation.Fluent;
-import org.e2immu.annotation.Modified;
 import org.e2immu.annotation.NotNull;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Source;
@@ -11,23 +9,23 @@ import java.util.List;
 
 public interface Inspection {
 
-    enum Access {
-        PRIVATE(0), PACKAGE(1), PROTECTED(2), PUBLIC(3);
+    interface Access {
 
-        private final int level;
+        int level();
 
-        Access(int level) {
-            this.level = level;
+        Access combine(Access other);
+
+        default boolean le(Access other) {
+            return level() <= other.level();
         }
 
-        public Access combine(Access other) {
-            if (level < other.level) return this;
-            return other;
-        }
+        boolean isPublic();
 
-        public boolean le(Access other) {
-            return level <= other.level;
-        }
+        boolean isPrivate();
+
+        boolean isProtected();
+
+        boolean isPackage();
     }
 
     Access access();
@@ -43,19 +41,19 @@ public interface Inspection {
     boolean isSynthetic();
 
     default boolean isPublic() {
-        return access() == Access.PUBLIC;
+        return access().isPublic();
     }
 
     default boolean isPrivate() {
-        return access() == Access.PRIVATE;
+        return access().isPrivate();
     }
 
     default boolean isProtected() {
-        return access() == Access.PROTECTED;
+        return access().isProtected();
     }
 
     default boolean isPackagePrivate() {
-        return access() == Access.PACKAGE;
+        return access().isPackage();
     }
 
     @NotNull(content = true)

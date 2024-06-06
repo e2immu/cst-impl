@@ -6,6 +6,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.Variable;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class VariableImpl implements Variable {
 
@@ -28,5 +29,15 @@ public abstract class VariableImpl implements Variable {
     @Override
     public Source source() {
         return null;
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDescend() {
+        return variables(DescendModeEnum.YES);
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDoNotDescend() {
+        return variables(DescendModeEnum.NO);
     }
 }

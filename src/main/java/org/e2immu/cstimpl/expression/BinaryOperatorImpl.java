@@ -136,8 +136,8 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
     }
 
     public static int compareVariables(Expression e1, Expression e2) {
-        List<Variable> variables1 = e1.variableList();
-        List<Variable> variables2 = e2.variableList();
+        List<Variable> variables1 = e1.variableStreamDescend().toList();
+        List<Variable> variables2 = e2.variableStreamDescend().toList();
         int s1 = variables1.size();
         int s2 = variables2.size();
         if (s1 == 0 && s2 == 0) return 0;

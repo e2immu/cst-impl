@@ -55,6 +55,4 @@ public abstract class ExpressionImpl extends ElementImpl implements Expression {
         if (this == v || equals(v)) return 0;
         return ExpressionComparator.SINGLETON.compare(this, v);
     }
-
-
 }

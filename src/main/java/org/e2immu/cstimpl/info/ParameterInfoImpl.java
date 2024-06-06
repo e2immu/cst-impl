@@ -11,6 +11,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class ParameterInfoImpl implements ParameterInfo {
     private final String name;
     private final MethodInfo methodInfo;
     private final ParameterizedType parameterizedType;
-    private final EventuallyFinal<ParameterInspection> inspection ;
+    private final EventuallyFinal<ParameterInspection> inspection;
 
     public ParameterInfoImpl(MethodInfo methodInfo, int index, String name, ParameterizedType parameterizedType) {
         this.methodInfo = methodInfo;
@@ -53,8 +54,8 @@ public class ParameterInfoImpl implements ParameterInfo {
     }
 
     @Override
-    public boolean parameterAnalysisIsSet() {
-        return false;
+    public boolean isVarArgs() {
+        return inspection.get().isVarArgs();
     }
 
     @Override
@@ -115,5 +116,15 @@ public class ParameterInfoImpl implements ParameterInfo {
     @Override
     public Stream<TypeReference> typesReferenced() {
         return Stream.empty();
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDescend() {
+        return variables(DescendModeEnum.YES);
+    }
+
+    @Override
+    public Stream<Variable> variableStreamDoNotDescend() {
+        return variables(DescendModeEnum.NO);
     }
 }

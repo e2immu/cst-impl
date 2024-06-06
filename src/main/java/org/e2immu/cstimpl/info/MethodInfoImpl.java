@@ -207,6 +207,17 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public boolean isPublic() {
+        return inspection.get().isPublic();
+    }
+
+    @Override
+    public boolean isPubliclyAccessible() {
+        if (!isPublic()) return false;
+        return typeInfo.isPublic();
+    }
+
+    @Override
     public boolean isModifying() {
         return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.FALSE).isTrue();
     }

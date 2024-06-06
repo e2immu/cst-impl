@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.runtime;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.runtime.Eval;
 import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstimpl.expression.DivideImpl;
 import org.e2immu.cstimpl.expression.ExpressionImpl;
 import org.e2immu.cstimpl.expression.eval.*;
 
@@ -16,6 +17,7 @@ public class EvalImpl implements Eval {
     private final EvalEquals evalEquals;
     private final EvalAnd evalAnd;
     private final EvalOr evalOr;
+    private final EvalDivide evalDivide;
 
     public EvalImpl(Runtime runtime) {
         evalProduct = new EvalProduct(runtime);
@@ -24,6 +26,12 @@ public class EvalImpl implements Eval {
         evalEquals = new EvalEquals(runtime);
         evalAnd = new EvalAnd(runtime);
         evalOr = new EvalOr(runtime);
+        evalDivide = new EvalDivide(runtime);
+    }
+
+    @Override
+    public Expression divide(Expression lhs, Expression rhs) {
+        return evalDivide.divide(lhs, rhs);
     }
 
     @Override
