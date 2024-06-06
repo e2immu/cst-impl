@@ -7,6 +7,7 @@ import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -112,5 +113,17 @@ public class ArrayInitializerImpl extends ExpressionImpl implements ArrayInitial
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
         return expressions.stream().flatMap(Expression::typesReferenced);
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+        List<Expression> translatedExpressions = expressions.stream()
+                .map(e -> e.translate(translationMap))
+                .collect(translationMap.toList(expressions));
+        ParameterizedType translatedType = translationMap.translateType(commonType);
+        if (translatedType == commonType && translatedExpressions == expressions) return this;
+        return new ArrayInitializerImpl(translatedExpressions, translatedType);
     }
 }

@@ -8,6 +8,7 @@ import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.statement.*;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.DependentVariable;
 import org.e2immu.cstapi.variable.LocalVariable;
@@ -18,7 +19,9 @@ import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
 import org.e2immu.cstimpl.statement.BlockImpl;
+import org.e2immu.cstimpl.statement.LocalVariableCreationImpl;
 import org.e2immu.cstimpl.statement.ReturnStatementImpl;
+import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
@@ -121,7 +124,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public IfElseStatement newIfElseStatement(String label, Expression condition, Block ifBlock, Block elseBlock, Comment comment) {
+    public IfElseStatement newIfElseStatement(Expression condition, Block ifBlock, Block elseBlock) {
         return null;
     }
 
@@ -425,5 +428,37 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public LocalVariable newLocalVariable(String name, ParameterizedType parameterizedType) {
         return new LocalVariableImpl(name, parameterizedType, null);
+    }
+
+    @Override
+    public LocalVariable newLocalVariable(String name,
+                                          ParameterizedType parameterizedType,
+                                          Expression assignmentExpression) {
+        return new LocalVariableImpl(name, parameterizedType, assignmentExpression);
+    }
+
+    @Override
+    public EmptyExpression newEmptyExpression() {
+        return new EmptyExpressionImpl(this, EmptyExpressionImpl.EMPTY_EXPRESSION);
+    }
+
+    @Override
+    public EmptyExpression newEmptyExpression(String msg) {
+        return new EmptyExpressionImpl(this, msg);
+    }
+
+    @Override
+    public LocalVariableCreation newLocalVariableCreation(LocalVariable localVariable) {
+        return new LocalVariableCreationImpl(localVariable);
+    }
+
+    @Override
+    public TranslationMap.Builder newTranslationMapBuilder() {
+        return new TranslationMapImpl.Builder();
+    }
+
+    @Override
+    public TranslationMap.Builder newTranslationMapBuilder(TranslationMap startingPoint) {
+        return new TranslationMapImpl.Builder(startingPoint);
     }
 }

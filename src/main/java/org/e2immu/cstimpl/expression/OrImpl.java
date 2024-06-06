@@ -6,6 +6,7 @@ import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -25,9 +26,13 @@ public class OrImpl extends ExpressionImpl implements Or {
     private final ParameterizedType booleanPt;
 
     public OrImpl(Predefined predefined, List<Expression> expressions) {
+        this(predefined.booleanParameterizedType(), expressions);
+    }
+
+    private OrImpl(ParameterizedType booleanPt, List<Expression> expressions) {
         super(1 + expressions.stream().mapToInt(Expression::complexity).sum());
         this.expressions = expressions;
-        booleanPt = predefined.booleanParameterizedType();
+        this.booleanPt = booleanPt;
     }
 
     @Override
@@ -101,5 +106,17 @@ public class OrImpl extends ExpressionImpl implements Or {
             expressions.forEach(e -> e.visit(visitor));
         }
         visitor.afterExpression(this);
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        List<Expression> translatedExpressions = expressions.isEmpty() ? expressions :
+                expressions.stream().map(e -> e.translate(translationMap))
+                        .collect(translationMap.toList(expressions));
+        if (expressions == translatedExpressions) return this;
+        return new OrImpl(booleanPt, translatedExpressions);
     }
 }

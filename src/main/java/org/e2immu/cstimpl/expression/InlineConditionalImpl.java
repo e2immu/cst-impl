@@ -4,9 +4,11 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.InlineConditional;
+import org.e2immu.cstapi.expression.Negation;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -149,5 +151,23 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
     public Stream<Element.TypeReference> typesReferenced() {
         return Stream.concat(condition.typesReferenced(),
                 Stream.concat(ifTrue.typesReferenced(), ifFalse.typesReferenced()));
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        Expression tc = condition.translate(translationMap);
+        Expression tt = ifTrue.translate(translationMap);
+        Expression tf = ifFalse.translate(translationMap);
+        if (tc == condition && tt == ifTrue && tf == ifFalse) return this;
+        InlineConditional result = tc instanceof Negation negation
+                ? new InlineConditionalImpl(negation.expression(), tf, tt)
+                : new InlineConditionalImpl(tc, tt, tf);
+        if (translationMap.translateAgain()) {
+            return result.translate(translationMap);
+        }
+        return result;
     }
 }

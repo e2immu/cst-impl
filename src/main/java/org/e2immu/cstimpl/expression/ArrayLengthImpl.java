@@ -8,7 +8,7 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
-import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -27,10 +27,10 @@ public class ArrayLengthImpl extends ExpressionImpl implements ArrayLength {
     private final ParameterizedType intPt;
 
     public ArrayLengthImpl(Predefined predefined, Expression scope) {
-        this(scope, predefined.intParameterizedType());
+        this(predefined.intParameterizedType(), scope);
     }
 
-    private ArrayLengthImpl(Expression scope, ParameterizedType intPt) {
+    private ArrayLengthImpl(ParameterizedType intPt, Expression scope) {
         super(1 + scope.complexity());
         this.scope = scope;
         this.intPt = intPt;
@@ -94,5 +94,15 @@ public class ArrayLengthImpl extends ExpressionImpl implements ArrayLength {
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
         return scope.typesReferenced();
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        Expression translatedScope = scope.translate(translationMap);
+        if (translatedScope == scope) return this;
+        return new ArrayLengthImpl(intPt, translatedScope);
     }
 }

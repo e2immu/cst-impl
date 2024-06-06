@@ -11,7 +11,6 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.ReturnStatement;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.Keyword;
 import org.e2immu.cstimpl.output.Space;
 import org.e2immu.cstimpl.output.Symbol;
@@ -39,7 +38,8 @@ public class ReturnStatementImpl extends StatementImpl implements ReturnStatemen
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        OutputBuilder outputBuilder = outputBuilderWithLabel().add(Keyword.RETURN);
+        OutputBuilder outputBuilder = outputBuilder(qualification)
+                .add(Keyword.RETURN);
         if (expression.isEmpty()) {
             outputBuilder.add(Space.ONE).add(expression.print(qualification));
         }

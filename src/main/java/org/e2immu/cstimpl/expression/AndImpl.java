@@ -5,7 +5,9 @@ import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -13,6 +15,7 @@ import org.e2immu.cstimpl.expression.util.*;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.Symbol;
 import org.e2immu.cstimpl.util.ListUtil;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -23,10 +26,14 @@ public class AndImpl extends ExpressionImpl implements And {
     private final List<Expression> expressions;
     private final ParameterizedType booleanPt;
 
-    public AndImpl(Runtime runtime, List<Expression> expressions) {
+    public AndImpl(Predefined predefined, List<Expression> expressions) {
+        this(predefined.booleanParameterizedType(), expressions);
+    }
+
+    private AndImpl(ParameterizedType booleanPt, List<Expression> expressions) {
         super(1 + expressions.stream().mapToInt(Expression::complexity).sum());
         this.expressions = expressions;
-        booleanPt = runtime.booleanParameterizedType();
+        this.booleanPt = booleanPt;
     }
 
     @Override
@@ -100,5 +107,16 @@ public class AndImpl extends ExpressionImpl implements And {
             expressions.forEach(e -> e.visit(visitor));
         }
         visitor.afterExpression(this);
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+        List<Expression> translatedExpressions = expressions.isEmpty() ? expressions : expressions.stream()
+                .map(e -> e.translate(translationMap))
+                .collect(translationMap.toList(expressions));
+        if (expressions == translatedExpressions) return this;
+        return new AndImpl(booleanPt, translatedExpressions);
     }
 }

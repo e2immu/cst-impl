@@ -9,6 +9,7 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -164,9 +165,19 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
                 .add(outputInParenthesis(qualification, precedence(), rhs));
     }
 
-
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
         return Stream.concat(lhs.typesReferenced(), rhs.typesReferenced());
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        Expression translatedLhs = lhs.translate(translationMap);
+        Expression translatedRhs = rhs.translate(translationMap);
+        if (translatedRhs == this.rhs && translatedLhs == this.lhs) return this;
+        return new BinaryOperatorImpl(operator, precedence, translatedLhs, translatedRhs);
     }
 }

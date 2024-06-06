@@ -1,16 +1,24 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.output.OutputBuilder;
+import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeParameter;
+import org.e2immu.cstapi.variable.DescendMode;
+import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.type.ParameterizedTypeImpl;
 import org.e2immu.support.Either;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-public class TypeInfoImpl implements TypeInfo {
+public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     public static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
     private final String fullyQualifiedName;
@@ -226,5 +234,35 @@ public class TypeInfoImpl implements TypeInfo {
     public boolean isPrimitiveExcludingVoid() {
         return this.isByte() || this.isShort() || this.isInt() || this.isLong() ||
                this.isChar() || this.isFloat() || this.isDouble() || this.isBoolean();
+    }
+
+    @Override
+    public int complexity() {
+       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void visit(Predicate<Element> predicate) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void visit(Visitor visitor) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public OutputBuilder print(Qualification qualification) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Stream<Variable> variables(DescendMode descendMode) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Stream<TypeReference> typesReferenced() {
+        throw new UnsupportedOperationException();
     }
 }

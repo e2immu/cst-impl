@@ -123,4 +123,10 @@ public class OutputBuilderImpl implements OutputBuilder {
         };
     }
 
+    public OutputBuilderImpl addIf(boolean b, OutputElement outputElement) {
+        if (b) {
+            add(outputElement);
+        }
+        return this;
+    }
 }

@@ -28,6 +28,11 @@ public class LocalVariableImpl extends VariableImpl implements LocalVariable {
     }
 
     @Override
+    public LocalVariable withAssignmentExpression(Expression expression) {
+        return new LocalVariableImpl(name, parameterizedType(), expression);
+    }
+
+    @Override
     public Expression assignmentExpression() {
         return assignmentExpression;
     }
@@ -67,7 +72,9 @@ public class LocalVariableImpl extends VariableImpl implements LocalVariable {
 
     @Override
     public void visit(Visitor visitor) {
-        visitor.beforeVariable(this);
+        if (visitor.beforeVariable(this) && assignmentExpression != null) {
+            assignmentExpression.visit(visitor);
+        }
         visitor.afterVariable(this);
     }
 

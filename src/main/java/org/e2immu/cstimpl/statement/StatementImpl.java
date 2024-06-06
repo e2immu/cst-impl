@@ -5,6 +5,7 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.output.OutputBuilder;
+import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Statement;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
@@ -38,10 +39,21 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
         this(List.of(), null, List.of(), 1, null);
     }
 
-    protected OutputBuilder outputBuilderWithLabel() {
+    protected OutputBuilder outputBuilder(Qualification qualification) {
         OutputBuilder ob = new OutputBuilderImpl();
+        if (!comments.isEmpty()) {
+            ob.add(comments.stream()
+                    .map(c -> c.print(qualification)).collect(OutputBuilderImpl.joining(Space.NEWLINE)));
+            ob.add(Space.NEWLINE);
+        }
+        if (!annotations.isEmpty()) {
+            ob.add(annotations().stream()
+                    .map(ae -> ae.print(qualification)).collect(OutputBuilderImpl.joining(Symbol.COMMA)));
+            ob.add(Space.NEWLINE);
+        }
         if (label != null) {
-            ob.add(Space.ONE).add(new Text(label)).add(Symbol.COLON_LABEL).add(Space.ONE_IS_NICE_EASY_SPLIT);
+            ob.add(new Text(label)).add(Symbol.COLON_LABEL).add(Space.ONE_IS_NICE_EASY_SPLIT);
+            ob.add(Space.ONE);
         }
         return ob;
     }

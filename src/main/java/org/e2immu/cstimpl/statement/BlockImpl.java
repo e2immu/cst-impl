@@ -87,7 +87,7 @@ public class BlockImpl extends StatementImpl implements Block {
 
     public static class Builder extends StatementImpl.Builder implements Block.Builder {
         private final List<Statement> statements = new ArrayList<>();
-        
+
         @Override
         @Fluent
         public Builder addStatement(Statement statement) {

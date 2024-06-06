@@ -1,5 +1,7 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.analysis.Property;
+import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
@@ -13,14 +15,17 @@ import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.support.EventuallyFinal;
+import org.e2immu.support.SetOnceMap;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class MethodInfoImpl implements MethodInfo {
+public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     public enum MethodType {
         CONSTRUCTOR(true), COMPACT_CONSTRUCTOR(true), SYNTHETIC_CONSTRUCTOR(true),
@@ -203,8 +208,11 @@ public class MethodInfoImpl implements MethodInfo {
 
     @Override
     public boolean isModifying() {
-        return true;
+        return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.FALSE).isTrue();
     }
 
-
+    @Override
+    public boolean isFluent() {
+        return analysedOrDefault(PropertyImpl.FLUENT, ValueImpl.FALSE).isTrue();
+    }
 }
