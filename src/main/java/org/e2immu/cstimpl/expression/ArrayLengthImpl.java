@@ -17,7 +17,7 @@ import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.KeywordImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -83,7 +83,7 @@ public class ArrayLengthImpl extends ExpressionImpl implements ArrayLength {
     @Override
     public OutputBuilder print(Qualification qualification) {
         return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), scope))
-                .add(Symbol.DOT).add(KeywordImpl.LENGTH);
+                .add(SymbolEnum.DOT).add(KeywordImpl.LENGTH);
     }
 
     @Override

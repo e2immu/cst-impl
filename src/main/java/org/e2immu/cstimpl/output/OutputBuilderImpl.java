@@ -12,10 +12,16 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OutputBuilderImpl implements OutputBuilder {
 
     private final List<OutputElement> list = new LinkedList<>();
+
+    @Override
+    public Stream<OutputElement> stream() {
+        return list.stream();
+    }
 
     @Override
     public OutputBuilder add(OutputElement... outputElements) {

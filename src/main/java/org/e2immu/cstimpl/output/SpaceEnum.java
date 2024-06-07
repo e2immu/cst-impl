@@ -15,7 +15,7 @@
 package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
-import org.e2immu.cstapi.output.Space;
+import org.e2immu.cstapi.output.element.Space;
 
 import java.util.Objects;
 

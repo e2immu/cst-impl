@@ -1,13 +1,15 @@
 package org.e2immu.cstimpl.expression;
 
-import org.e2immu.cstapi.expression.*;
-import org.e2immu.cstapi.info.MethodInfo;
+import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.Negation;
+import org.e2immu.cstapi.expression.Numeric;
+import org.e2immu.cstapi.expression.Sum;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 
 public class SumImpl extends BinaryOperatorImpl implements Sum {
@@ -48,7 +50,7 @@ public class SumImpl extends BinaryOperatorImpl implements Sum {
         OutputBuilder outputBuilder = new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), lhs));
         boolean ignoreOperator = rhs instanceof Negation || rhs instanceof Sum sum2 && (sum2.lhs() instanceof Negation);
         if (!ignoreOperator) {
-            outputBuilder.add(Symbol.binaryOperator(operator.name()));
+            outputBuilder.add(SymbolEnum.binaryOperator(operator.name()));
         }
         return outputBuilder.add(outputInParenthesis(qualification, precedence(), rhs));
     }

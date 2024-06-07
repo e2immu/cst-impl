@@ -1,13 +1,15 @@
 package org.e2immu.cstimpl.runtime;
 
-import org.e2immu.cstapi.expression.*;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.element.AnnotationExpressionImpl;
-import org.e2immu.cstimpl.info.*;
+import org.e2immu.cstimpl.info.InspectionImpl;
+import org.e2immu.cstimpl.info.MethodInfoImpl;
+import org.e2immu.cstimpl.info.TypeInfoImpl;
 
 import java.util.*;
 

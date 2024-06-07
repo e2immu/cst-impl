@@ -4,7 +4,6 @@ import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.runtime.Eval;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.expression.DivideImpl;
 import org.e2immu.cstimpl.expression.ExpressionImpl;
 import org.e2immu.cstimpl.expression.eval.*;
 

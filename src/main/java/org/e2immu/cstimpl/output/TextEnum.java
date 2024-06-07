@@ -16,11 +16,12 @@ package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
 import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.element.Text;
 import org.e2immu.cstimpl.util.StringUtil;
 
-public record Text(String text) implements OutputElement {
+public record TextEnum(String text) implements Text {
 
-    public Text {
+    public TextEnum {
         assert text != null && !text.isBlank();
     }
 
@@ -41,6 +42,6 @@ public record Text(String text) implements OutputElement {
 
     @Override
     public String generateJavaForDebugging() {
-        return ".add(new Text(" + StringUtil.quote(text) + "))";
+        return ".add(new TextEnum(" + StringUtil.quote(text) + "))";
     }
 }

@@ -2,7 +2,9 @@ package org.e2immu.cstimpl.expression;
 
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
-import org.e2immu.cstapi.expression.*;
+import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.Or;
+import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
@@ -10,12 +12,14 @@ import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.expression.util.*;
+import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.util.ListUtil;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -58,7 +62,7 @@ public class OrImpl extends ExpressionImpl implements Or {
         Precedence precedence = precedence();
         return new OutputBuilderImpl()
                 .add(expressions.stream().map(e -> outputInParenthesis(qualification, precedence, e))
-                        .collect(OutputBuilderImpl.joining(Symbol.LOGICAL_OR)));
+                        .collect(OutputBuilderImpl.joining(SymbolEnum.LOGICAL_OR)));
     }
 
     @Override

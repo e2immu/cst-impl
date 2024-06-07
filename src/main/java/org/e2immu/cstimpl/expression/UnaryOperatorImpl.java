@@ -14,7 +14,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -75,9 +75,9 @@ public class UnaryOperatorImpl extends ExpressionImpl implements UnaryOperator {
     public OutputBuilder print(Qualification qualification) {
         if (operator.isPostfix()) {
             return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence, expression))
-                    .add(Symbol.plusPlusSuffix(operator.name()));
+                    .add(SymbolEnum.plusPlusSuffix(operator.name()));
         }
-        return new OutputBuilderImpl().add(Symbol.plusPlusPrefix(operator.name()))
+        return new OutputBuilderImpl().add(SymbolEnum.plusPlusPrefix(operator.name()))
                 .add(outputInParenthesis(qualification, precedence, expression));
     }
 

@@ -68,18 +68,18 @@ public class ParameterizedTypePrinter {
         OutputBuilder outputBuilder = new OutputBuilderImpl();
         Wildcard w = parameterizedType.wildcard();
         if (w.isUnbound()) {
-            outputBuilder.add(new Text("?"));
+            outputBuilder.add(new TextEnum("?"));
         } else if (w.isExtends()) {
-            outputBuilder.add(new Text("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
+            outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
         } else if (w.isSuper()) {
-            outputBuilder.add(new Text("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
+            outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
         }
         TypeParameter tp = parameterizedType.typeParameter();
         if (tp != null) {
             outputBuilder.add(tp.print(qualification, visitedTypeParameters));
         } else if (parameterizedType.typeInfo() != null) {
             if (parameterizedType.parameters().isEmpty()) {
-                outputBuilder.add(TypeName.typeName(parameterizedType.typeInfo(),
+                outputBuilder.add(TypeNameImpl.typeName(parameterizedType.typeInfo(),
                         qualification.qualifierRequired(parameterizedType.typeInfo())));
             } else {
                 OutputBuilder sub;
@@ -98,9 +98,9 @@ public class ParameterizedTypePrinter {
                 if (parameterizedType.arrays() == 0) {
                     throw new UnsupportedOperationException("Varargs parameterized types must have arrays>0!");
                 }
-                outputBuilder.add(new Text(("[]".repeat(parameterizedType.arrays() - 1) + "...")));
+                outputBuilder.add(new TextEnum(("[]".repeat(parameterizedType.arrays() - 1) + "...")));
             } else if (parameterizedType.arrays() > 0) {
-                outputBuilder.add(new Text("[]".repeat(parameterizedType.arrays())));
+                outputBuilder.add(new TextEnum("[]".repeat(parameterizedType.arrays())));
             }
         }
         return outputBuilder;
@@ -138,7 +138,7 @@ public class ParameterizedTypePrinter {
         }
         return taps.stream().map(tap -> singleType(qualification,
                         tap.typeInfo, diamond, !tap.isPrimaryType, tap.typeParameters, visitedTypeParameters))
-                .collect(OutputBuilderImpl.joining(Symbol.DOT));
+                .collect(OutputBuilderImpl.joining(SymbolEnum.DOT));
     }
 
     record TypeAndParameters(TypeInfo typeInfo, boolean isPrimaryType, List<ParameterizedType> typeParameters) {
@@ -152,18 +152,18 @@ public class ParameterizedTypePrinter {
                                             Set<TypeParameter> visitedTypeParameters) {
         OutputBuilder outputBuilder = new OutputBuilderImpl();
         if (forceSimple) {
-            outputBuilder.add(new Text(typeInfo.simpleName()));
+            outputBuilder.add(new TextEnum(typeInfo.simpleName()));
         } else {
-            outputBuilder.add(TypeName.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
+            outputBuilder.add(TypeNameImpl.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
         }
         if (!typeParameters.isEmpty() && diamond != DiamondEnum.NO) {
-            outputBuilder.add(Symbol.LEFT_ANGLE_BRACKET);
+            outputBuilder.add(SymbolEnum.LEFT_ANGLE_BRACKET);
             if (diamond == DiamondEnum.SHOW_ALL) {
                 outputBuilder.add(typeParameters.stream().map(tp -> print(qualification,
                                 tp, false, DiamondEnum.SHOW_ALL, false, visitedTypeParameters))
-                        .collect(OutputBuilderImpl.joining(Symbol.COMMA)));
+                        .collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)));
             }
-            outputBuilder.add(Symbol.RIGHT_ANGLE_BRACKET);
+            outputBuilder.add(SymbolEnum.RIGHT_ANGLE_BRACKET);
         }
         return outputBuilder;
     }

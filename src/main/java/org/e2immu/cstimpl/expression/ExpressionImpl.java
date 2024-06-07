@@ -10,7 +10,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public abstract class ExpressionImpl extends ElementImpl implements Expression {
     @NotNull
     protected OutputBuilder outputInParenthesis(Qualification qualification, Precedence precedence, Expression expression) {
         if (precedence.greaterThan(expression.precedence())) {
-            return new OutputBuilderImpl().add(Symbol.LEFT_PARENTHESIS).add(expression.print(qualification)).add(Symbol.RIGHT_PARENTHESIS);
+            return new OutputBuilderImpl().add(SymbolEnum.LEFT_PARENTHESIS).add(expression.print(qualification)).add(SymbolEnum.RIGHT_PARENTHESIS);
         }
         return expression.print(qualification);
     }

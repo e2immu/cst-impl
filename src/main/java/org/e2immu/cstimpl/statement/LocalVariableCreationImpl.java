@@ -118,19 +118,19 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
 
         // declarations
         outputBuilder.add(SpaceEnum.ONE);
-        OutputBuilder first = new OutputBuilderImpl().add(new Text(localVariable.simpleName()));
+        OutputBuilder first = new OutputBuilderImpl().add(new TextEnum(localVariable.simpleName()));
         if (!localVariable.assignmentExpression().isEmpty()) {
-            first.add(Symbol.assignment("=")).add(localVariable.assignmentExpression().print(qualification));
+            first.add(SymbolEnum.assignment("=")).add(localVariable.assignmentExpression().print(qualification));
         }
         Stream<OutputBuilder> rest = otherLocalVariables.stream().map(d -> {
-            OutputBuilder ob = new OutputBuilderImpl().add(new Text(d.simpleName()));
+            OutputBuilder ob = new OutputBuilderImpl().add(new TextEnum(d.simpleName()));
             if (!d.assignmentExpression().isEmpty()) {
-                ob.add(Symbol.assignment("="))
+                ob.add(SymbolEnum.assignment("="))
                         .add(d.assignmentExpression().print(qualification));
             }
             return ob;
         });
-        outputBuilder.add(Stream.concat(Stream.of(first), rest).collect(OutputBuilderImpl.joining(Symbol.COMMA)));
+        outputBuilder.add(Stream.concat(Stream.of(first), rest).collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)));
         return outputBuilder;
     }
 

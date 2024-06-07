@@ -1,12 +1,16 @@
 package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
+import org.e2immu.cstapi.output.element.QualifiedName;
+import org.e2immu.cstapi.output.element.Qualifier;
+import org.e2immu.cstapi.output.element.ThisName;
+import org.e2immu.cstapi.output.element.TypeName;
 import org.e2immu.cstimpl.util.StringUtil;
 
-public record QualifiedName(String name, Qualifier qualifier, Required qualifierRequired) implements Qualifier {
+public record QualifiedNameImpl(String name, Qualifier qualifier, Required qualifierRequired) implements QualifiedName {
 
     // for tests
-    public QualifiedName(String name) {
+    public QualifiedNameImpl(String name) {
         this(name, null, Required.NEVER);
     }
 
@@ -23,16 +27,23 @@ public record QualifiedName(String name, Qualifier qualifier, Required qualifier
     }
 
     @Override
+    public String fullyQualifiedName() {
+        return qualifier.fullyQualifiedName() + "." + name;
+    }
+
+    @Override
     public int length(FormattingOptions options) {
         return minimal().length();
     }
 
     @Override
     public String write(FormattingOptions options) {
-        if (options.allFieldsRequireThis() && qualifierRequired == Required.NO_FIELD && qualifier instanceof ThisName) {
+        if (options.allFieldsRequireThis() && qualifierRequired == Required.NO_FIELD
+            && qualifier instanceof ThisName) {
             return qualifier().write(options) + "." + name;
         }
-        if (options.allStaticFieldsRequireType() && qualifierRequired != Required.NO_FIELD && qualifier instanceof TypeName) {
+        if (options.allStaticFieldsRequireType() && qualifierRequired != Required.NO_FIELD
+            && qualifier instanceof TypeName) {
             return qualifier().write(options) + "." + name;
         }
         return minimal();
@@ -41,6 +52,6 @@ public record QualifiedName(String name, Qualifier qualifier, Required qualifier
     @Override
     public String generateJavaForDebugging() {
         String q = qualifier == null ? "null" : StringUtil.quote(qualifier.minimal());
-        return ".add(new QualifiedName(" + StringUtil.quote(name) + ", " + q + ", " + qualifierRequired + "))";
+        return ".add(new QualifiedNameImpl(" + StringUtil.quote(name) + ", " + q + ", " + qualifierRequired + "))";
     }
 }

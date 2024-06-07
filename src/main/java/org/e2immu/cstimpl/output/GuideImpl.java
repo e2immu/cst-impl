@@ -18,7 +18,7 @@ package org.e2immu.cstimpl.output;
 import org.e2immu.annotation.ImmutableContainer;
 import org.e2immu.annotation.rare.IgnoreModifications;
 import org.e2immu.cstapi.output.FormattingOptions;
-import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.element.Guide;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,7 +30,7 @@ public record GuideImpl(String name,
                         boolean prioritySplit,
                         boolean startWithNewLine,
                         boolean endWithNewLine,
-                        boolean allowNewLineBefore) implements OutputElement {
+                        boolean allowNewLineBefore) implements Guide {
 
     public GuideImpl {
         assert position != null;

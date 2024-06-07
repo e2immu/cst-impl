@@ -10,8 +10,8 @@ import org.e2immu.cstapi.statement.Statement;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SpaceEnum;
-import org.e2immu.cstimpl.output.Symbol;
-import org.e2immu.cstimpl.output.Text;
+import org.e2immu.cstimpl.output.SymbolEnum;
+import org.e2immu.cstimpl.output.TextEnum;
 
 import java.util.List;
 
@@ -48,11 +48,11 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
         }
         if (!annotations.isEmpty()) {
             ob.add(annotations().stream()
-                    .map(ae -> ae.print(qualification)).collect(OutputBuilderImpl.joining(Symbol.COMMA)));
+                    .map(ae -> ae.print(qualification)).collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)));
             ob.add(SpaceEnum.NEWLINE);
         }
         if (label != null) {
-            ob.add(new Text(label)).add(Symbol.COLON_LABEL).add(SpaceEnum.ONE_IS_NICE_EASY_SPLIT);
+            ob.add(new TextEnum(label)).add(SymbolEnum.COLON_LABEL).add(SpaceEnum.ONE_IS_NICE_EASY_SPLIT);
             ob.add(SpaceEnum.ONE);
         }
         return ob;

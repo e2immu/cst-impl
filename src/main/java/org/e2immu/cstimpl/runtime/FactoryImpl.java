@@ -1,6 +1,5 @@
 package org.e2immu.cstimpl.runtime;
 
-import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.FieldInfo;

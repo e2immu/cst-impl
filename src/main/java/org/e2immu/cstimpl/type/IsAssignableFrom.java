@@ -7,7 +7,6 @@ import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeParameter;
 import org.e2immu.cstapi.type.Wildcard;
-import org.e2immu.cstimpl.info.TypeInspection;
 import org.e2immu.cstimpl.util.ListUtil;
 
 import java.util.List;

@@ -10,7 +10,7 @@ import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Text;
+import org.e2immu.cstimpl.output.TextEnum;
 
 public class LongConstantImpl extends ConstantExpressionImpl<Long> implements Numeric, LongConstant {
 
@@ -41,7 +41,7 @@ public class LongConstantImpl extends ConstantExpressionImpl<Long> implements Nu
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(new Text(Long.toString(value)));
+        return new OutputBuilderImpl().add(new TextEnum(Long.toString(value)));
     }
 
     @Override

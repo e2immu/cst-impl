@@ -15,7 +15,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.HashSet;
 import java.util.List;
@@ -161,7 +161,7 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
     @Override
     public OutputBuilder print(Qualification qualification) {
         return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), lhs))
-                .add(Symbol.binaryOperator(operator.name()))
+                .add(SymbolEnum.binaryOperator(operator.name()))
                 .add(outputInParenthesis(qualification, precedence(), rhs));
     }
 

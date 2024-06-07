@@ -9,8 +9,12 @@ import org.e2immu.cstapi.expression.VariableExpression;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.output.element.TypeName;
 import org.e2immu.cstapi.type.ParameterizedType;
-import org.e2immu.cstapi.variable.*;
+import org.e2immu.cstapi.variable.DescendMode;
+import org.e2immu.cstapi.variable.FieldReference;
+import org.e2immu.cstapi.variable.This;
+import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.TypeExpressionImpl;
 import org.e2immu.cstimpl.expression.VariableExpressionImpl;
 import org.e2immu.cstimpl.output.*;
@@ -20,7 +24,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static org.e2immu.cstimpl.output.QualifiedName.Required.*;
+import static org.e2immu.cstimpl.output.QualifiedNameImpl.Required.*;
 
 public class FieldReferenceImpl extends VariableImpl implements FieldReference {
     @NotNull
@@ -145,15 +149,16 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
     @Override
     public OutputBuilder print(Qualification qualification) {
         if (scope instanceof VariableExpression ve && ve.variable() instanceof This thisVar) {
-            ThisName thisName = new ThisName(thisVar.writeSuper(),
-                    TypeName.typeName(thisVar.typeInfo(), qualification.qualifierRequired(thisVar.typeInfo())),
+            TypeName typeName = TypeNameImpl.typeName(thisVar.typeInfo(), qualification.qualifierRequired(thisVar.typeInfo()));
+            ThisNameImpl thisName = new ThisNameImpl(thisVar.writeSuper(),
+                    typeName,
                     qualification.qualifierRequired(thisVar));
-            return new OutputBuilderImpl().add(new QualifiedName(fieldInfo.name(), thisName,
+            return new OutputBuilderImpl().add(new QualifiedNameImpl(fieldInfo.name(), thisName,
                     qualification.qualifierRequired(this) ? YES : NO_FIELD));
         }
         // real variable
-        return new OutputBuilderImpl().add(scope.print(qualification)).add(Symbol.DOT)
-                .add(new QualifiedName(simpleName(), null, NEVER));
+        return new OutputBuilderImpl().add(scope.print(qualification)).add(SymbolEnum.DOT)
+                .add(new QualifiedNameImpl(simpleName(), null, NEVER));
     }
 
     @Override

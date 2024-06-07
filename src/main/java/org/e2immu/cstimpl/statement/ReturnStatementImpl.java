@@ -13,7 +13,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.output.KeywordImpl;
 import org.e2immu.cstimpl.output.SpaceEnum;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -43,7 +43,7 @@ public class ReturnStatementImpl extends StatementImpl implements ReturnStatemen
         if (expression.isEmpty()) {
             outputBuilder.add(SpaceEnum.ONE).add(expression.print(qualification));
         }
-        outputBuilder.add(Symbol.SEMICOLON);
+        outputBuilder.add(SymbolEnum.SEMICOLON);
         return outputBuilder;
     }
 

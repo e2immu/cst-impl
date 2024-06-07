@@ -5,7 +5,6 @@ import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.statement.Statement;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
-import org.e2immu.cstapi.variable.LocalVariable;
 import org.e2immu.cstapi.variable.Variable;
 
 import java.util.*;

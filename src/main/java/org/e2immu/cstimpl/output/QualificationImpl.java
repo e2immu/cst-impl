@@ -15,14 +15,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class QualificationImpl implements Qualification {
-    public static final Qualification FULLY_QUALIFIED_NAMES = new QualificationImpl(false, TypeName.Required.FQN);
-    public static final Qualification SIMPLE_NAMES = new QualificationImpl(false, TypeName.Required.SIMPLE);
+    public static final Qualification FULLY_QUALIFIED_NAMES = new QualificationImpl(false, TypeNameImpl.Required.FQN);
+    public static final Qualification SIMPLE_NAMES = new QualificationImpl(false, TypeNameImpl.Required.SIMPLE);
 
     private final TypeNameRequired typeNameRequired;
     private final Set<FieldInfo> unqualifiedFields = new HashSet<>();
     private final Set<MethodInfo> unqualifiedMethods = new HashSet<>();
     private final Set<This> unqualifiedThis = new HashSet<>();
-    private final Map<TypeInfo, TypeName.Required> typesNotImported;
+    private final Map<TypeInfo, TypeNameImpl.Required> typesNotImported;
     private final Set<String> simpleTypeNames;
     private final QualificationImpl parent;
     private final QualificationImpl top;
@@ -55,7 +55,7 @@ public class QualificationImpl implements Qualification {
     public TypeNameRequired qualifierRequired(TypeInfo typeInfo) {
         if (typeNameRequired != null) return typeNameRequired;
         assert top.typesNotImported != null; // to keep IntelliJ happy
-        return top.typesNotImported.getOrDefault(typeInfo, TypeName.Required.SIMPLE);
+        return top.typesNotImported.getOrDefault(typeInfo, TypeNameImpl.Required.SIMPLE);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class QualificationImpl implements Qualification {
         assert simpleTypeNames != null;
         // IMPROVE also code for subtypes!
         if (simpleTypeNames.contains(typeInfo.simpleName())) {
-            typesNotImported.put(typeInfo, TypeName.Required.FQN);
+            typesNotImported.put(typeInfo, TypeNameImpl.Required.FQN);
             return false;
         } else {
             simpleTypeNames.add(typeInfo.simpleName());

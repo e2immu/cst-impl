@@ -10,7 +10,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.LocalVariable;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.QualifiedName;
+import org.e2immu.cstimpl.output.QualifiedNameImpl;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -90,7 +90,7 @@ public class LocalVariableImpl extends VariableImpl implements LocalVariable {
     @Override
     public OutputBuilder print(Qualification qualification) {
         String name = qualification.isFullyQualifiedNames() ? fullyQualifiedName() : simpleName();
-        return new OutputBuilderImpl().add(new QualifiedName(name, null, QualifiedName.Required.NEVER));
+        return new OutputBuilderImpl().add(new QualifiedNameImpl(name, null, QualifiedNameImpl.Required.NEVER));
     }
 
     @Override

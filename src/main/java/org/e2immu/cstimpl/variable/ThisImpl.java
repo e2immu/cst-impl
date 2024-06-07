@@ -9,8 +9,8 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.This;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.ThisName;
-import org.e2immu.cstimpl.output.TypeName;
+import org.e2immu.cstimpl.output.ThisNameImpl;
+import org.e2immu.cstimpl.output.TypeNameImpl;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -76,8 +76,8 @@ public class ThisImpl extends VariableImpl implements This {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(new ThisName(writeSuper,
-                TypeName.typeName(typeInfo(), qualification.qualifierRequired(typeInfo())),
+        return new OutputBuilderImpl().add(new ThisNameImpl(writeSuper,
+                TypeNameImpl.typeName(typeInfo(), qualification.qualifierRequired(typeInfo())),
                 qualification.qualifierRequired(this)));
     }
 

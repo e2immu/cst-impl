@@ -8,14 +8,14 @@ import org.e2immu.cstapi.expression.Negation;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
-import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -83,9 +83,9 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
     @Override
     public OutputBuilder print(Qualification qualification) {
         return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), condition))
-                .add(Symbol.QUESTION_MARK)
+                .add(SymbolEnum.QUESTION_MARK)
                 .add(outputInParenthesis(qualification, precedence(), ifTrue))
-                .add(Symbol.COLON)
+                .add(SymbolEnum.COLON)
                 .add(outputInParenthesis(qualification, precedence(), ifFalse));
     }
 

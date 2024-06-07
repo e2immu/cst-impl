@@ -8,7 +8,6 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
-import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;

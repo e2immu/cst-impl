@@ -15,8 +15,8 @@
 package org.e2immu.cstimpl.expression.eval;
 
 import org.e2immu.cstapi.expression.*;
-import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.LhsRhs;
 
 public class EvalInlineConditional {

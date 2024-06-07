@@ -5,9 +5,9 @@ import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
-import org.e2immu.cstimpl.output.Text;
-import org.e2immu.cstimpl.output.TypeName;
+import org.e2immu.cstimpl.output.SymbolEnum;
+import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TypeNameImpl;
 
 import java.util.List;
 
@@ -33,17 +33,17 @@ public class AnnotationExpressionImpl implements AnnotationExpression {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        OutputBuilder outputBuilder = new OutputBuilderImpl().add(Symbol.AT)
-                .add(TypeName.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
+        OutputBuilder outputBuilder = new OutputBuilderImpl().add(SymbolEnum.AT)
+                .add(TypeNameImpl.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
         if (!keyValuePairs.isEmpty()) {
-            outputBuilder.add(Symbol.LEFT_PARENTHESIS)
+            outputBuilder.add(SymbolEnum.LEFT_PARENTHESIS)
                     .add(keyValuePairs.stream()
                             .map(kv ->
-                                    new OutputBuilderImpl().addIf(kv.keyIsDefault(), new Text(kv.key()))
-                                            .addIf(kv.keyIsDefault(), Symbol.assignment("="))
+                                    new OutputBuilderImpl().addIf(kv.keyIsDefault(), new TextEnum(kv.key()))
+                                            .addIf(kv.keyIsDefault(), SymbolEnum.assignment("="))
                                             .add(kv.value().print(qualification)))
-                            .collect(OutputBuilderImpl.joining(Symbol.COMMA)))
-                    .add(Symbol.RIGHT_PARENTHESIS);
+                            .collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)))
+                    .add(SymbolEnum.RIGHT_PARENTHESIS);
         }
         return outputBuilder;
     }

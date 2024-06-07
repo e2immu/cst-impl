@@ -17,12 +17,13 @@ package org.e2immu.cstimpl.output;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.FormattingOptions;
 import org.e2immu.cstapi.output.TypeNameRequired;
+import org.e2immu.cstapi.output.element.TypeName;
 import org.e2immu.cstimpl.util.StringUtil;
 
-public record TypeName(String simpleName,
-                       String fullyQualifiedName,
-                       String fromPrimaryTypeDownwards,
-                       TypeNameRequired required) implements Qualifier {
+public record TypeNameImpl(String simpleName,
+                           String fullyQualifiedName,
+                           String fromPrimaryTypeDownwards,
+                           TypeNameRequired required) implements TypeName {
 
     public enum Required implements TypeNameRequired {
         DOLLARIZED_FQN, // com.foo.Bar$Bar2
@@ -32,11 +33,11 @@ public record TypeName(String simpleName,
     }
 
     // for tests
-    public TypeName(String simpleName) {
+    public TypeNameImpl(String simpleName) {
         this(simpleName, simpleName, simpleName, Required.SIMPLE);
     }
 
-    public TypeName {
+    public TypeNameImpl {
         assert simpleName != null;
         assert fullyQualifiedName != null;
         assert fromPrimaryTypeDownwards != null;
@@ -46,7 +47,7 @@ public record TypeName(String simpleName,
     public static TypeName typeName(TypeInfo typeInfo, TypeNameRequired requiresQualifier) {
         String simpleName = typeInfo.simpleName();
         String fqn = typeInfo.doesNotRequirePackage() ? simpleName : typeInfo.fullyQualifiedName();
-        return new TypeName(simpleName, fqn, typeInfo.isPrimaryType() ? simpleName : typeInfo.fromPrimaryTypeDownwards(),
+        return new TypeNameImpl(simpleName, fqn, typeInfo.isPrimaryType() ? simpleName : typeInfo.fromPrimaryTypeDownwards(),
                 requiresQualifier);
     }
 
@@ -74,6 +75,6 @@ public record TypeName(String simpleName,
 
     @Override
     public String generateJavaForDebugging() {
-        return ".add(new TypeName(" + StringUtil.quote(simpleName) + "))";
+        return ".add(new TypeNameImpl(" + StringUtil.quote(simpleName) + "))";
     }
 }

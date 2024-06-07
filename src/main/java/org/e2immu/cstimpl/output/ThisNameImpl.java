@@ -16,25 +16,34 @@ package org.e2immu.cstimpl.output;
 
 
 import org.e2immu.cstapi.output.FormattingOptions;
+import org.e2immu.cstapi.output.element.Qualifier;
+import org.e2immu.cstapi.output.element.ThisName;
 import org.e2immu.cstimpl.util.StringUtil;
 
-public record ThisName(boolean isSuper, Qualifier qualifier, boolean qualifierRequired) implements Qualifier {
+public record ThisNameImpl(boolean isSuper, Qualifier qualifier, boolean qualifierRequired) implements ThisName {
+
+    private String thisOrSuper() {
+        return (isSuper ? KeywordImpl.SUPER : KeywordImpl.THIS).minimal();
+    }
 
     @Override
     public String minimal() {
-        String thisOrSuper = isSuper ? "super" : "this";
-        return qualifierRequired ? qualifier.minimal() + "." + thisOrSuper : thisOrSuper;
+        return qualifierRequired ? qualifier.minimal() + "." + thisOrSuper() : thisOrSuper();
+    }
+
+    @Override
+    public String fullyQualifiedName() {
+        return qualifier.fullyQualifiedName() + "." + thisOrSuper();
     }
 
     @Override
     public String write(FormattingOptions options) {
-        String thisOrSuper = isSuper ? "super" : "this";
-        return qualifierRequired ? qualifier.write(options) + "." + thisOrSuper : thisOrSuper;
+        return qualifierRequired ? qualifier.write(options) + "." + thisOrSuper() : thisOrSuper();
     }
 
     @Override
     public String generateJavaForDebugging() {
         String q = qualifier == null ? "null" : StringUtil.quote(qualifier.minimal());
-        return ".add(new ThisName(" + isSuper + ", " + q + ", " + qualifierRequired + "))";
+        return ".add(new ThisNameImpl(" + isSuper + ", " + q + ", " + qualifierRequired + "))";
     }
 }

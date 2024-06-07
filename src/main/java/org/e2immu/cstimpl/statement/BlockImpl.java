@@ -12,7 +12,6 @@ import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.statement.Statement;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.element.ElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;

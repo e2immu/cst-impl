@@ -18,7 +18,6 @@ package org.e2immu.cstimpl.expression.util;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.runtime.Runtime;
-import org.e2immu.cstapi.variable.This;
 import org.e2immu.cstapi.variable.Variable;
 
 import java.util.HashSet;

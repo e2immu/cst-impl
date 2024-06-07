@@ -1,7 +1,6 @@
 package org.e2immu.cstimpl.info;
 
 import org.e2immu.annotation.Fluent;
-import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.ParameterInfo;

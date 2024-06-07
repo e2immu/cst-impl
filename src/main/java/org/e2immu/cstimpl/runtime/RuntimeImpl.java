@@ -1,8 +1,9 @@
 package org.e2immu.cstimpl.runtime;
 
-import org.e2immu.cstapi.expression.*;
+import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.TypeInfo;
-import org.e2immu.cstapi.runtime.*;
+import org.e2immu.cstapi.runtime.Configuration;
+import org.e2immu.cstapi.runtime.Eval;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.ExpressionImpl;

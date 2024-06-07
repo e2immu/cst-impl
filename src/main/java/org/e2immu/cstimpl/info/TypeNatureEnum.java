@@ -1,6 +1,6 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.output.Keyword;
+import org.e2immu.cstapi.output.element.Keyword;
 import org.e2immu.cstapi.type.TypeNature;
 import org.e2immu.cstimpl.output.KeywordImpl;
 

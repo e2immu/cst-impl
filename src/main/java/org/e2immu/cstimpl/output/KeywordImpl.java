@@ -1,8 +1,7 @@
 package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
-import org.e2immu.cstapi.output.Keyword;
-import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.element.Keyword;
 
 public record KeywordImpl(String keyword) implements Keyword {
 
@@ -44,6 +43,7 @@ public record KeywordImpl(String keyword) implements Keyword {
     public static final Keyword SUPER = new KeywordImpl("super");
     public static final Keyword SWITCH = new KeywordImpl("switch");
     public static final Keyword SYNCHRONIZED = new KeywordImpl("synchronized");
+    public static final Keyword THIS = new KeywordImpl("this");
     public static final Keyword THROW = new KeywordImpl("throw");
     public static final Keyword THROWS = new KeywordImpl("throws");
     public static final Keyword TRANSIENT = new KeywordImpl("transient");

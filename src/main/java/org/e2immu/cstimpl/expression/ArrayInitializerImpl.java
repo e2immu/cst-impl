@@ -15,7 +15,7 @@ import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.Symbol;
+import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.type.ParameterizedTypeImpl;
 import org.e2immu.cstimpl.util.ListUtil;
 
@@ -99,10 +99,10 @@ public class ArrayInitializerImpl extends ExpressionImpl implements ArrayInitial
     @Override
     public OutputBuilder print(Qualification qualification) {
         return new OutputBuilderImpl()
-                .add(Symbol.LEFT_BRACE)
+                .add(SymbolEnum.LEFT_BRACE)
                 .add(expressions.stream().map(expression -> expression.print(qualification))
-                        .collect(OutputBuilderImpl.joining(Symbol.COMMA)))
-                .add(Symbol.RIGHT_BRACE);
+                        .collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)))
+                .add(SymbolEnum.RIGHT_BRACE);
     }
 
     @Override
