@@ -17,6 +17,7 @@ import org.e2immu.support.Either;
 import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -114,6 +115,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public Set<TypeInfo> superTypesExcludingJavaLangObject() {
+        return Set.of(); // FIXME
+    }
+
+    @Override
     public ParameterizedType asParameterizedType() {
         return null; // FIXME
     }
@@ -143,6 +149,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return packageNameOrEnclosingType.isLeft() ? this : packageNameOrEnclosingType.getRight().primaryType();
     }
 
+    @Override
     public boolean isNumeric() {
         return isInt() || isInteger() ||
                isLong() || isBoxedLong() ||
@@ -152,9 +159,15 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
                isDouble() || isBoxedDouble();
     }
 
+    @Override
     public boolean isBoxedExcludingVoid() {
         return isBoxedByte() || isBoxedShort() || isInteger() || isBoxedLong()
                || isCharacter() || isBoxedFloat() || isBoxedDouble() || isBoxedBoolean();
+    }
+
+    @Override
+    public boolean isFunctionalInterface() {
+        return inspection.get().singleAbstractMethod() != null;
     }
 
     public boolean allowInImport() {
@@ -178,15 +191,18 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return JAVA_LANG_OBJECT.equals(this.fullyQualifiedName);
     }
 
-    boolean isJavaLangString() {
+    @Override
+    public boolean isJavaLangString() {
         return "java.lang.String".equals(this.fullyQualifiedName);
     }
 
-    boolean isJavaLangClass() {
+    @Override
+    public boolean isJavaLangClass() {
         return "java.lang.Class".equals(this.fullyQualifiedName);
     }
 
-    boolean isJavaLangVoid() {
+    @Override
+    public boolean isJavaLangVoid() {
         return "java.lang.Void".equals(this.fullyQualifiedName);
     }
 
@@ -195,6 +211,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "java.io.Serializable".equals(fullyQualifiedName);
     }
 
+    @Override
     public boolean isVoid() {
         return "void".equals(this.fullyQualifiedName);
     }
@@ -244,6 +261,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "long".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isBoxedBoolean() {
         return "java.lang.Boolean".equals(this.fullyQualifiedName);
     }

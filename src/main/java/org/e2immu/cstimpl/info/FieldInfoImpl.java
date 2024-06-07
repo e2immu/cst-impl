@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.TypeInfo;
@@ -11,6 +12,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.support.EventuallyFinal;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -22,6 +24,7 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     private final ParameterizedType type;
     private final String fullyQualifiedName;
     private final TypeInfo owner;
+    private final EventuallyFinal<FieldInspection> inspection;
 
     public FieldInfoImpl(String name, boolean isStatic, ParameterizedType type, TypeInfo owner) {
         this.name = name;
@@ -29,6 +32,8 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
         this.type = type;
         this.fullyQualifiedName = owner.fullyQualifiedName() + "." + name;
         this.owner = owner;
+        inspection = new EventuallyFinal<>();
+        inspection.setVariable(new FieldInspectionImpl.Builder(this));
     }
 
     @Override
@@ -57,18 +62,38 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     }
 
     @Override
+    public boolean isFinal() {
+        return inspection.get().fieldModifiers().contains(FieldModifierEnum.FINAL);
+    }
+
+    @Override
+    public boolean isTransient() {
+        return inspection.get().fieldModifiers().contains(FieldModifierEnum.TRANSIENT);
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return inspection.get().fieldModifiers().contains(FieldModifierEnum.VOLATILE);
+    }
+
+    @Override
+    public boolean isPropertyNotNull() {
+        return analysed(PropertyImpl.FIELD_NOT_NULL).isTrue();
+    }
+
+    @Override
     public Access access() {
-        return null;
+        return inspection.get().access();
     }
 
     @Override
     public boolean isPropertyFinal() {
-        return analysed(PropertyImpl.FINAL).isTrue();
+        return analysed(PropertyImpl.FIELD_FINAL).isTrue();
     }
 
     @Override
     public int complexity() {
-        throw new UnsupportedOperationException();
+        return 1 + inspection.get().initializer().complexity();
     }
 
     @Override
@@ -93,7 +118,11 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
 
     @Override
     public Stream<TypeReference> typesReferenced() {
-        throw new UnsupportedOperationException();
+        Expression initializer = inspection.get().initializer();
+        return Stream.concat(type.typesReferenced(), initializer == null ? Stream.of() : initializer.typesReferenced());
     }
 
+    public void commit(FieldInspectionImpl fieldInspection) {
+        inspection.setFinal(fieldInspection);
+    }
 }

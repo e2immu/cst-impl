@@ -26,9 +26,11 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
     private final Block methodBody;
     private final String fullyQualifiedName;
     private final Set<MethodInfo> overrides;
+    private final List<TypeParameter> typeParameters;
 
     public MethodInspectionImpl(Inspection inspection,
                                 ParameterizedType returnType,
+                                List<TypeParameter> typeParameters,
                                 OperatorType operatorType,
                                 Block methodBody,
                                 String fullyQualifiedName,
@@ -40,6 +42,12 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         this.methodBody = methodBody;
         this.fullyQualifiedName = fullyQualifiedName;
         this.overrides = overrides;
+        this.typeParameters = typeParameters;
+    }
+
+    @Override
+    public List<TypeParameter> typeParameters() {
+        return typeParameters;
     }
 
     @Override
@@ -111,6 +119,11 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         }
 
         @Override
+        public List<TypeParameter> typeParameters() {
+            return typeParameters;
+        }
+
+        @Override
         public ParameterizedType returnType() {
             return returnType;
         }
@@ -153,8 +166,8 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         @Override
         public void commit() {
             if (!fullyQualifiedName.isSet()) commitParameters();
-            MethodInspection mi = new MethodInspectionImpl(this, returnType, operatorType, methodBody,
-                    fullyQualifiedName.get(), Set.copyOf(overrides));
+            MethodInspection mi = new MethodInspectionImpl(this, returnType, List.copyOf(typeParameters),
+                    operatorType, methodBody, fullyQualifiedName.get(), Set.copyOf(overrides));
             methodInfo.commit(mi);
         }
 

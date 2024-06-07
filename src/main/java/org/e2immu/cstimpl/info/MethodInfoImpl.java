@@ -6,6 +6,7 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
+import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
@@ -15,6 +16,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeParameter;
+import org.e2immu.cstapi.util.ParSeq;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
@@ -76,6 +78,16 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     public MethodInfo.Builder builder() {
         if (inspection.isVariable()) return (MethodInfo.Builder) inspection.get();
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isPropertyNotNull() {
+        return analysed(PropertyImpl.METHOD_NOT_NULL).isTrue();
+    }
+
+    @Override
+    public boolean isPropertyNullable() {
+        return analysed(PropertyImpl.METHOD_NOT_NULL).isFalse();
     }
 
     public void commit(MethodInspection methodInspection) {
@@ -256,7 +268,17 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public Value.CommutableData commutableData() {
-        return null;
+        return null; // FIXME
+    }
+
+    @Override
+    public ParSeq<ParameterInfo> getParallelGroups() {
+        return null; // FIXME
+    }
+
+    @Override
+    public List<Expression> sortAccordingToParallelGroupsAndNaturalOrder(List<Expression> parameterExpressions) {
+        return List.of(); // FIXME
     }
 
     @Override

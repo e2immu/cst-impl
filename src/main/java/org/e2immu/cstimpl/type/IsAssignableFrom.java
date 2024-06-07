@@ -124,7 +124,7 @@ public record IsAssignableFrom(Runtime runtime,
         }
 
         if (target.typeInfo() != null && from.typeParameter() != null) {
-            List<ParameterizedType> otherTypeBounds = from.typeParameter().getTypeBounds();
+            List<ParameterizedType> otherTypeBounds = from.typeParameter().typeBounds();
             if (otherTypeBounds.isEmpty()) {
                 int pathToJLO = pathToJLO(target);
                 if (mode == Mode.COVARIANT_ERASURE) {
@@ -159,7 +159,7 @@ public record IsAssignableFrom(Runtime runtime,
             return ARRAY_PENALTY * (target.arrays() - from.arrays());
         }
 
-        List<ParameterizedType> targetTypeBounds = target.typeParameter().getTypeBounds();
+        List<ParameterizedType> targetTypeBounds = target.typeParameter().typeBounds();
         if (targetTypeBounds.isEmpty()) {
             int arrayDiff = from.arrays() - target.arrays();
             assert arrayDiff >= 0;
@@ -181,7 +181,7 @@ public record IsAssignableFrom(Runtime runtime,
         }
         // other is a type parameter
         if (from.typeParameter() != null) {
-            List<ParameterizedType> fromTypeBounds = from.typeParameter().getTypeBounds();
+            List<ParameterizedType> fromTypeBounds = from.typeParameter().typeBounds();
             if (fromTypeBounds.isEmpty()) {
                 return TYPE_BOUND;
             }
@@ -299,14 +299,14 @@ public record IsAssignableFrom(Runtime runtime,
     private int hierarchy(ParameterizedType target, ParameterizedType from, Mode mode) {
         TypeInfo other = from.typeInfo();
         for (ParameterizedType interfaceImplemented : other.interfacesImplemented()) {
-            ParameterizedType concreteType = from.concreteDirectSuperType(runtime, interfaceImplemented);
+            ParameterizedType concreteType = from.concreteDirectSuperType(interfaceImplemented);
             int scoreInterface = new IsAssignableFrom(runtime, target, concreteType)
                     .execute(true, mode);
             if (scoreInterface != NOT_ASSIGNABLE) return IN_HIERARCHY + scoreInterface;
         }
         ParameterizedType parentClass = other.parentClass();
         if (parentClass != null && !parentClass.isJavaLangObject()) {
-            ParameterizedType concreteType = from.concreteDirectSuperType(runtime, parentClass);
+            ParameterizedType concreteType = from.concreteDirectSuperType(parentClass);
             int scoreParent = new IsAssignableFrom(runtime, target, concreteType)
                     .execute(true, mode);
             if (scoreParent != NOT_ASSIGNABLE) return IN_HIERARCHY + scoreParent;
@@ -317,8 +317,8 @@ public record IsAssignableFrom(Runtime runtime,
     private int pathToJLO(ParameterizedType type) {
         TypeInfo typeInfo = type.typeInfo();
         if (typeInfo == null) {
-            if (type.typeParameter() != null && !type.typeParameter().getTypeBounds().isEmpty()) {
-                return type.typeParameter().getTypeBounds().stream().mapToInt(this::pathToJLO).min()
+            if (type.typeParameter() != null && !type.typeParameter().typeBounds().isEmpty()) {
+                return type.typeParameter().typeBounds().stream().mapToInt(this::pathToJLO).min()
                         .orElseThrow();
             }
             return 0;

@@ -21,10 +21,12 @@ import org.e2immu.cstimpl.statement.LocalVariableCreationImpl;
 import org.e2immu.cstimpl.statement.ReturnStatementImpl;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
+import org.e2immu.cstimpl.type.TypeParameterImpl;
 import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.variable.FieldReferenceImpl;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
 import org.e2immu.cstimpl.variable.ThisImpl;
+import org.e2immu.support.Either;
 
 import java.util.List;
 
@@ -208,8 +210,22 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt) {
-        return null;
+    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, TypeInfo owner) {
+        return new TypeParameterImpl(tpCnt, typeParameterName, Either.left(owner), List.of());
+    }
+
+    @Override
+    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, MethodInfo owner) {
+        return new TypeParameterImpl(tpCnt, typeParameterName, Either.right(owner), List.of());
+    }
+    @Override
+    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, List<ParameterizedType> typeBounds, TypeInfo owner) {
+        return new TypeParameterImpl(tpCnt, typeParameterName, Either.left(owner), typeBounds);
+    }
+
+    @Override
+    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, List<ParameterizedType> typeBounds, MethodInfo owner) {
+        return new TypeParameterImpl(tpCnt, typeParameterName, Either.right(owner), typeBounds);
     }
 
     @Override
