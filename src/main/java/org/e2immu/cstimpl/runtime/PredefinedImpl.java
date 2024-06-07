@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.MethodInfo;
+import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
@@ -110,17 +111,16 @@ public class PredefinedImpl implements Predefined {
                                      String name,
                                      List<ParameterizedType> parameterizedTypes,
                                      ParameterizedType returnType) {
-        MethodInfoImpl mi = new MethodInfoImpl(MethodInfoImpl.MethodType.STATIC_METHOD, name, owner);
+        MethodInfoImpl mi = new MethodInfoImpl(MethodInfoImpl.MethodTypeEnum.STATIC_METHOD, name, owner);
         int i = 0;
         for (ParameterizedType parameterizedType : parameterizedTypes) {
-            ParameterInfoImpl pi = new ParameterInfoImpl(mi, i, "p" + i, parameterizedType);
-            pi.builder().setVarArgs(true);
-            pi.endOfInspection();
-            mi.builder().addParameter(pi); // inspection built when method is built
+            ParameterInfo pi = mi.builder()
+                    .addParameter("p" + i, parameterizedType); // inspection built when method is built
+            pi.builder().setVarArgs(true).commit();
         }
-        mi.builder().setReturnType(returnType);
-        mi.builder().setAccess(InspectionImpl.AccessEnum.PUBLIC);
-        mi.endOfInspection();
+        MethodInfo.Builder builder = mi.builder().setReturnType(returnType);
+        mi.inspectionBuilder().setAccess(InspectionImpl.AccessEnum.PUBLIC);
+        builder.commit();
         return mi;
     }
 

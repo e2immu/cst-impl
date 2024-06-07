@@ -16,9 +16,10 @@ package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
 import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.Space;
 import org.e2immu.cstimpl.util.StringUtil;
 
-import static org.e2immu.cstimpl.output.Space.*;
+import static org.e2immu.cstimpl.output.SpaceEnum.*;
 
 public record Symbol(String symbol, Space left, Space right, String constant) implements OutputElement {
 

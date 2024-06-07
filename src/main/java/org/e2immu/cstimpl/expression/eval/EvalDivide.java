@@ -13,7 +13,10 @@ public class EvalDivide {
         this.runtime = runtime;
     }
 
-    public Expression divide(Expression l, Expression r) {
+    public Expression divide(Expression lhs, Expression rhs) {
+        Expression l = runtime.sortAndSimplify(lhs);
+        Expression r = runtime.sortAndSimplify(rhs);
+
         if (l instanceof Numeric ln && ln.doubleValue() == 0) return l;
         if (r instanceof Numeric rn && rn.doubleValue() == 1) return l;
         if (l instanceof IntConstant li && r instanceof IntConstant ri)

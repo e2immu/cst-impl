@@ -41,7 +41,7 @@ public class OutputBuilderImpl implements OutputBuilder {
 
     @Override
     public boolean notStart() {
-        return !list.stream().allMatch(outputElement -> outputElement instanceof Guide);
+        return !list.stream().allMatch(outputElement -> outputElement instanceof GuideImpl);
     }
 
     @Override
@@ -50,22 +50,22 @@ public class OutputBuilderImpl implements OutputBuilder {
     }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining() {
-        return joining(Space.NONE, Space.NONE, Space.NONE, Guide.defaultGuideGenerator());
+        return joining(SpaceEnum.NONE, SpaceEnum.NONE, SpaceEnum.NONE, GuideImpl.defaultGuideGenerator());
     }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining(OutputElement separator) {
-        return joining(separator, Space.NONE, Space.NONE, Guide.defaultGuideGenerator());
+        return joining(separator, SpaceEnum.NONE, SpaceEnum.NONE, GuideImpl.defaultGuideGenerator());
     }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining(OutputElement separator,
-                                                                                 Guide.GuideGenerator guideGenerator) {
-        return joining(separator, Space.NONE, Space.NONE, guideGenerator);
+                                                                                 GuideImpl.GuideGenerator guideGenerator) {
+        return joining(separator, SpaceEnum.NONE, SpaceEnum.NONE, guideGenerator);
     }
 
     public static Collector<OutputBuilder, OutputBuilder, OutputBuilder> joining(OutputElement separator,
                                                                                  OutputElement start,
                                                                                  OutputElement end,
-                                                                                 Guide.GuideGenerator guideGenerator) {
+                                                                                 GuideImpl.GuideGenerator guideGenerator) {
         return new Collector<>() {
             private final AtomicInteger countMid = new AtomicInteger();
 
@@ -79,7 +79,7 @@ public class OutputBuilderImpl implements OutputBuilder {
                 return (a, b) -> {
                     if (!b.isEmpty()) {
                         if (a.notStart()) { // means: not empty, not only guides
-                            if (separator != Space.NONE) a.add(separator);
+                            if (separator != SpaceEnum.NONE) a.add(separator);
                             a.add(guideGenerator.mid());
                             countMid.incrementAndGet();
                         }
@@ -93,7 +93,7 @@ public class OutputBuilderImpl implements OutputBuilder {
                 return (a, b) -> {
                     if (a.isEmpty()) return b;
                     if (b.isEmpty()) return a;
-                    if (separator != Space.NONE) a.add(separator);
+                    if (separator != SpaceEnum.NONE) a.add(separator);
                     countMid.incrementAndGet();
                     return a.add(guideGenerator.mid()).add(b);
                 };
@@ -103,7 +103,7 @@ public class OutputBuilderImpl implements OutputBuilder {
             public Function<OutputBuilder, OutputBuilder> finisher() {
                 return t -> {
                     OutputBuilder result = new OutputBuilderImpl();
-                    if (start != Space.NONE) result.add(start);
+                    if (start != SpaceEnum.NONE) result.add(start);
                     if (countMid.get() > 0 || guideGenerator.keepGuidesWithoutMid()) {
                         result.add(guideGenerator.start());
                         result.add(t);
@@ -111,7 +111,7 @@ public class OutputBuilderImpl implements OutputBuilder {
                     } else {
                         result.add(t); // without the guides
                     }
-                    if (end != Space.NONE) result.add(end);
+                    if (end != SpaceEnum.NONE) result.add(end);
                     return result;
                 };
             }

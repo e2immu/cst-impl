@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.runtime;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.expression.*;
+import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.TypeInfo;
@@ -10,12 +11,10 @@ import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
-import org.e2immu.cstapi.variable.DependentVariable;
-import org.e2immu.cstapi.variable.LocalVariable;
-import org.e2immu.cstapi.variable.This;
-import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstapi.variable.*;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
+import org.e2immu.cstimpl.info.MethodInfoImpl;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
 import org.e2immu.cstimpl.statement.BlockImpl;
@@ -24,6 +23,7 @@ import org.e2immu.cstimpl.statement.ReturnStatementImpl;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.util.IntUtil;
+import org.e2immu.cstimpl.variable.FieldReferenceImpl;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
 import org.e2immu.cstimpl.variable.ThisImpl;
 
@@ -134,12 +134,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ThrowStatement newThrowStatement(String label, Expression expression, Comment comment) {
+    public ThrowStatement newThrowStatement(Expression expression) {
         return null;
     }
 
     @Override
-    public AssertStatement newAssertStatement(String label, Expression check, Expression message) {
+    public AssertStatement newAssertStatement(Expression check, Expression message) {
         return null;
     }
 
@@ -154,7 +154,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public WhileStatement newWhileStatement(String label, Expression loopCondition, Block block, Comment comment) {
+    public WhileStatement newWhileStatement(Expression loopCondition, Block block) {
         return null;
     }
 
@@ -461,4 +461,35 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public TranslationMap.Builder newTranslationMapBuilder(TranslationMap startingPoint) {
         return new TranslationMapImpl.Builder(startingPoint);
     }
+
+    @Override
+    public Lambda newLambda(ParameterizedType abstractFunctionalType, ParameterizedType implementation, ParameterizedType concreteReturnType, List<Lambda.OutputVariant> outputVariants) {
+        return null;
+    }
+
+    @Override
+    public FieldReference newFieldReference(FieldInfo fieldInfo, Expression scope) {
+        return new FieldReferenceImpl(fieldInfo, scope);
+    }
+
+    @Override
+    public MethodInfo newMethod(TypeInfo owner) {
+        return new MethodInfoImpl(owner);
+    }
+
+    @Override
+    public MethodInfo newMethod(TypeInfo owner, String name, MethodInfo.MethodType methodType) {
+        return new MethodInfoImpl(methodType, name, owner);
+    }
+
+    @Override
+    public MethodInfo.MethodType newMethodTypeMethod() {
+        return MethodInfoImpl.MethodTypeEnum.METHOD;
+    }
+
+    @Override
+    public MethodInfo.MethodType newMethodTypeStaticMethod() {
+        return MethodInfoImpl.MethodTypeEnum.STATIC_METHOD;
+    }
+
 }

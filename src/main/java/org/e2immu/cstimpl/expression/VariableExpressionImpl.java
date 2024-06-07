@@ -20,15 +20,31 @@ import java.util.stream.Stream;
 public class VariableExpressionImpl extends ExpressionImpl implements VariableExpression {
 
     private final Variable variable;
+    private final Suffix suffix;
 
     public VariableExpressionImpl(Variable variable) {
+        this(variable, null);
+    }
+
+    public VariableExpressionImpl(Variable variable, Suffix suffix) {
         super(variable.complexity());
         this.variable = variable;
+        this.suffix = suffix;
+    }
+
+    @Override
+    public Suffix suffix() {
+        return suffix;
     }
 
     @Override
     public Variable variable() {
         return variable;
+    }
+
+    @Override
+    public VariableExpression withSuffix(Suffix suffix) {
+        return new VariableExpressionImpl(variable, suffix);
     }
 
     @Override

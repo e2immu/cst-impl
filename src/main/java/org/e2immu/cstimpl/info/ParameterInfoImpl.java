@@ -11,6 +11,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.analysis.PropertyImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.EventuallyFinal;
 
@@ -31,16 +32,18 @@ public class ParameterInfoImpl implements ParameterInfo {
         this.name = name;
         this.parameterizedType = parameterizedType;
         inspection = new EventuallyFinal<>();
-        inspection.setVariable(new ParameterInspectionImpl.Builder());
+        inspection.setVariable(new ParameterInspectionImpl.Builder(this));
     }
 
-    public ParameterInspectionImpl.Builder builder() {
+    public ParameterInspectionImpl.Builder inspectionBuilder() {
         if (inspection.isVariable()) return (ParameterInspectionImpl.Builder) inspection.get();
         throw new UnsupportedOperationException();
     }
 
-    public void endOfInspection() {
-        inspection.setFinal(((ParameterInspectionImpl.Builder) inspection.get()).build());
+    @Override
+    public Builder builder() {
+        if (inspection.isVariable()) return (ParameterInfo.Builder) inspection.get();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -95,12 +98,13 @@ public class ParameterInfoImpl implements ParameterInfo {
 
     @Override
     public void visit(Predicate<Element> predicate) {
-
+        predicate.test(this);
     }
 
     @Override
     public void visit(Visitor visitor) {
-
+        visitor.beforeVariable(this);
+        visitor.afterVariable(this);
     }
 
     @Override
@@ -126,5 +130,14 @@ public class ParameterInfoImpl implements ParameterInfo {
     @Override
     public Stream<Variable> variableStreamDoNotDescend() {
         return variables(DescendModeEnum.NO);
+    }
+
+    @Override
+    public boolean isModified() {
+        return analysed(PropertyImpl.MODIFIED_PARAMETER).isTrue();
+    }
+
+    public void commit(ParameterInspection pi) {
+        inspection.setFinal(pi);
     }
 }

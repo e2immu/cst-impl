@@ -1,16 +1,17 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.output.Keyword;
 import org.e2immu.cstapi.type.TypeNature;
-import org.e2immu.cstimpl.output.Keyword;
+import org.e2immu.cstimpl.output.KeywordImpl;
 
 public enum TypeNatureEnum implements TypeNature {
 
-    ANNOTATION(Keyword.AT_INTERFACE),
-    CLASS(Keyword.CLASS),
-    ENUM(Keyword.ENUM),
-    INTERFACE(Keyword.INTERFACE),
+    ANNOTATION(KeywordImpl.AT_INTERFACE),
+    CLASS(KeywordImpl.CLASS),
+    ENUM(KeywordImpl.ENUM),
+    INTERFACE(KeywordImpl.INTERFACE),
     PRIMITIVE(null),
-    RECORD(Keyword.RECORD);
+    RECORD(KeywordImpl.RECORD);
 
     private final Keyword keyword;
 

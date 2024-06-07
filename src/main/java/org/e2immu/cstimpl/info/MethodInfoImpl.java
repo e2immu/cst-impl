@@ -1,16 +1,12 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.analysis.Property;
 import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
-import org.e2immu.cstapi.info.MethodInfo;
-import org.e2immu.cstapi.info.MethodModifier;
-import org.e2immu.cstapi.info.ParameterInfo;
-import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
@@ -20,7 +16,6 @@ import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
 import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.support.EventuallyFinal;
-import org.e2immu.support.SetOnceMap;
 
 import java.util.List;
 import java.util.Set;
@@ -29,33 +24,43 @@ import java.util.stream.Stream;
 
 public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
-    public enum MethodType {
+    public enum MethodTypeEnum implements MethodType {
         CONSTRUCTOR(true), COMPACT_CONSTRUCTOR(true), SYNTHETIC_CONSTRUCTOR(true),
         STATIC_BLOCK(false), DEFAULT_METHOD(false), STATIC_METHOD(false),
         ABSTRACT_METHOD(false), METHOD(false);
         final boolean constructor;
 
-        MethodType(boolean constructor) {
+        MethodTypeEnum(boolean constructor) {
             this.constructor = constructor;
         }
 
+        @Override
         public boolean isConstructor() {
             return constructor;
+        }
+
+        @Override
+        public boolean isStatic() {
+            return this == STATIC_BLOCK || this == STATIC_METHOD;
         }
     }
 
     private final TypeInfo typeInfo; // back reference, only @ContextClass after...
     private final String name;
-    private final MethodType methodType;
+    private final MethodInfo.MethodType methodType;
     private final EventuallyFinal<MethodInspection> inspection = new EventuallyFinal<>();
 
-    public MethodInfoImpl(MethodType methodType,
+    public MethodInfoImpl(TypeInfo typeInfo) {
+        this(MethodTypeEnum.CONSTRUCTOR, "<init>", typeInfo);
+    }
+
+    public MethodInfoImpl(MethodInfo.MethodType methodType,
                           String name,
                           TypeInfo typeInfo) {
         this.name = name;
         this.methodType = methodType;
         this.typeInfo = typeInfo;
-        inspection.setVariable(new MethodInspectionImpl.Builder());
+        inspection.setVariable(new MethodInspectionImpl.Builder(this));
     }
 
     public MethodInspectionImpl.Builder inspectionBuilder() {
@@ -63,8 +68,14 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
         throw new UnsupportedOperationException();
     }
 
-    public void endOfInspection() {
-        inspection.setFinal(((MethodInspectionImpl.Builder) inspection.get()).build());
+    @Override
+    public MethodInfo.Builder builder() {
+        if (inspection.isVariable()) return (MethodInfo.Builder) inspection.get();
+        throw new UnsupportedOperationException();
+    }
+
+    public void commit(MethodInspection methodInspection) {
+        inspection.setFinal(methodInspection);
     }
 
     @Override
@@ -163,24 +174,24 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isDefault() {
-        return methodType == MethodType.DEFAULT_METHOD;
+        return methodType == MethodTypeEnum.DEFAULT_METHOD;
     }
 
     public boolean isCompactConstructor() {
-        return methodType == MethodType.COMPACT_CONSTRUCTOR;
+        return methodType == MethodTypeEnum.COMPACT_CONSTRUCTOR;
     }
 
     public boolean isSyntheticConstructor() {
-        return methodType == MethodType.SYNTHETIC_CONSTRUCTOR;
+        return methodType == MethodTypeEnum.SYNTHETIC_CONSTRUCTOR;
     }
 
     public boolean isStaticBlock() {
-        return methodType == MethodType.STATIC_BLOCK;
+        return methodType == MethodTypeEnum.STATIC_BLOCK;
     }
 
     @Override
     public boolean isStatic() {
-        return methodType == MethodType.STATIC_METHOD || methodType == MethodType.STATIC_BLOCK;
+        return methodType == MethodTypeEnum.STATIC_METHOD || methodType == MethodTypeEnum.STATIC_BLOCK;
     }
 
     @Override
@@ -225,6 +236,11 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public boolean isSynthetic() {
+        return inspection.get().isSynthetic();
+    }
+
+    @Override
     public boolean isModifying() {
         return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.FALSE).isTrue();
     }
@@ -235,49 +251,22 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public Value.CommutableData commutableData() {
+        return null;
+    }
+
+    @Override
     public List<AnnotationExpression> annotations() {
         return inspection.get().annotations();
     }
 
-    class BuilderImpl implements MethodInfo.Builder {
-
-        @Override
-        public void commit() {
-
-        }
-
-        @Override
-        public MethodInfo.Builder setMethodBody(Block block) {
-            return null;
-        }
-
-        @Override
-        public MethodInfo.Builder addMethodModifier(MethodModifier methodModifier) {
-            return null;
-        }
-
-        @Override
-        public MethodInfo.Builder addAndCommitParameter(String name, ParameterizedType type) {
-            return null;
-        }
-
-        @Override
-        public MethodInfo.Builder setReturnType(ParameterizedType returnType) {
-            return null;
-        }
-
-        @Override
-        public ParameterInfo addParameter(String name, ParameterizedType type) {
-            return null;
-        }
+    @Override
+    public Block methodBody() {
+        return inspection.get().methodBody();
     }
 
-    // FIXME important: if method type is STATIC, then add methodModifier "static"
     @Override
-    public MethodInfo.Builder builder() {
-        if (methodType.isStatic()) {
-
-        }
-        return new BuilderImpl();
+    public Access access() {
+        return inspection.get().access();
     }
 }

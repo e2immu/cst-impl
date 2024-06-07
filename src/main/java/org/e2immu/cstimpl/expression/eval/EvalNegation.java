@@ -47,7 +47,8 @@ public class EvalNegation {
         }
 
         MethodInfo operator = v.isNumeric() ? runtime.unaryMinusOperatorInt() : runtime.logicalNotOperatorBool();
-        Negation negation = new NegationImpl(operator, runtime.precedenceUNARY(), v);
+        Expression sorted = runtime.sortAndSimplify(v);
+        Negation negation = new NegationImpl(operator, runtime.precedenceUNARY(), sorted);
 
         if (v instanceof InstanceOf i) {
             Expression varIsNull = runtime.equals(runtime.nullConstant(), i.expression());

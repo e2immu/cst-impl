@@ -18,7 +18,10 @@ public class EvalSum {
         this.runtime = runtime;
     }
 
-    public Expression eval(Expression l, Expression r, boolean tryAgain) {
+    public Expression eval(Expression lhs, Expression rhs, boolean tryAgain) {
+        Expression l = runtime.sortAndSimplify(lhs);
+        Expression r = runtime.sortAndSimplify(rhs);
+
         if (l.equals(r))
             return runtime.product(runtime.newInt(2), l);
 

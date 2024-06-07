@@ -200,6 +200,31 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
 
     @Override
+    public TypeInfo toBoxed(Runtime runtime) {
+        return null;
+    }
+
+    @Override
+    public String printForMethodFQN(boolean varArgs, Diamond diamond) {
+        return "";
+    }
+
+    @Override
+    public boolean equalsIgnoreArrays(ParameterizedType other) {
+        return false;
+    }
+
+    @Override
+    public boolean isTypeOfNullConstant() {
+        return false;
+    }
+
+    @Override
+    public ParameterizedType concreteDirectSuperType(Runtime runtime, ParameterizedType interfaceImplemented) {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return (typeParameter != null ? "Type " : isTypeParameter() ? "Type param " : "") + detailedString();
     }

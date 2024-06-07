@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
@@ -308,6 +309,16 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public Stream<TypeReference> typesReferenced() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Access access() {
+        return null;
+    }
+
+    @Override
+    public MethodInfo singleAbstractMethod() {
         throw new UnsupportedOperationException();
     }
 }

@@ -64,7 +64,7 @@ public record IsAssignableFrom(Runtime runtime,
         if (target == from || target.equals(from) || ignoreArrays && target.equalsIgnoreArrays(from)) return EQUALS;
 
         // NULL
-        if (from == ParameterizedType.NULL_CONSTANT) {
+        if (from.isTypeOfNullConstant()) {
             if (target.isPrimitiveExcludingVoid()) return NOT_ASSIGNABLE;
             return ASSIGN_TO_NULL;
         }
@@ -228,15 +228,17 @@ public record IsAssignableFrom(Runtime runtime,
         }
         return ListUtil.joinLists(target.parameters(), from.parameters())
                 .mapToInt(p -> {
-                    Mode newMode = mode == Mode.INVARIANT ? Mode.INVARIANT :
-                            switch (p.k().wildCard) {
-                                case EXTENDS -> mode == Mode.COVARIANT ? Mode.COVARIANT : Mode.CONTRAVARIANT;
-                                case SUPER -> mode == Mode.COVARIANT ? Mode.CONTRAVARIANT : Mode.COVARIANT;
-                                case NONE -> Mode.INVARIANT;
-                                case UNBOUND -> Mode.ANY;
-                            };
-                    return new IsAssignableFrom(p.k(), p.v()).execute(true, newMode);
+                    Mode newMode = mode == Mode.INVARIANT ? Mode.INVARIANT : modeFromWildcard(mode, p.k().wildcard());
+                    return new IsAssignableFrom(runtime, p.k(), p.v()).execute(true, newMode);
                 }).reduce(0, REDUCER);
+    }
+
+    private Mode modeFromWildcard(Mode mode, Wildcard wildcard) {
+        if (wildcard == null) return Mode.INVARIANT;
+        if (wildcard.isUnbound()) return Mode.ANY;
+        if (wildcard.isExtends()) return mode == Mode.COVARIANT ? Mode.COVARIANT : Mode.CONTRAVARIANT;
+        assert wildcard.isSuper();
+        return mode == Mode.COVARIANT ? Mode.CONTRAVARIANT : Mode.COVARIANT;
     }
 
     private int differentNonNullTypeInfo(Mode mode) {
@@ -258,41 +260,41 @@ public record IsAssignableFrom(Runtime runtime,
     or INVARIANT... all type parameters identical
      */
     private int functionalInterface(Mode mode) {
-        TypeInfo targetInspection =target.typeInfo();
-        MethodInfo mTarget = targetInspection.getSingleAbstractMethod();
-        TypeInfo fromInspection = from.typeInfo();
-        MethodInfo mFrom = fromInspection.getSingleAbstractMethod();
+        TypeInfo targetTi = target.typeInfo();
+        MethodInfo targetMi = targetTi.singleAbstractMethod();
+        TypeInfo fromTi = from.typeInfo();
+        MethodInfo fromMi = fromTi.singleAbstractMethod();
 
         /*
          See call to 'method' in MethodCall_32 for this "if" statement. Both types I and J are functional interfaces,
          with the same return type and parameters. But they're not seen as assignable.
          */
-        if (!mTarget.name().equals(mFrom.name())
-            && isNotSyntheticOrFunctionInterface(mTarget)
-            && isNotSyntheticOrFunctionInterface(mFrom)) {
+        if (!targetMi.name().equals(fromMi.name())
+            && isNotSyntheticOrFunctionInterface(targetMi)
+            && isNotSyntheticOrFunctionInterface(fromMi)) {
             return NOT_ASSIGNABLE;
         }
-        if (mTarget.parameters().size() != mFrom.parameters().size()) return NOT_ASSIGNABLE;
-        boolean targetIsVoid = mTarget.returnType().isVoid();
-        boolean fromIsVoid = mFrom.returnType().isVoid();
+        if (targetMi.parameters().size() != fromMi.parameters().size()) return NOT_ASSIGNABLE;
+        boolean targetIsVoid = targetMi.returnType().isVoid();
+        boolean fromIsVoid = fromMi.returnType().isVoid();
         // target void -> fromIsVoid is unimportant, we can assign a function to a consumer
         if (!targetIsVoid && fromIsVoid) return NOT_ASSIGNABLE;
 
         if (mode == Mode.COVARIANT_ERASURE) return SAME_UNDERLYING_TYPE;
         // now, ensure that all type parameters have equal values
         int i = 0;
-        for (ParameterInfo t : mTarget.parameters()) {
-            ParameterInfo f = mFrom.parameters().get(i);
+        for (ParameterInfo t : targetMi.parameters()) {
+            ParameterInfo f = fromMi.parameters().get(i);
             if (!t.parameterizedType().equals(f.parameterizedType())) return NOT_ASSIGNABLE;
             i++;
         }
-        if (!mTarget.returnType().equals(mFrom.returnType())) return NOT_ASSIGNABLE;
+        if (!targetMi.returnType().equals(fromMi.returnType())) return NOT_ASSIGNABLE;
         return EQUALS;
     }
 
     private boolean isNotSyntheticOrFunctionInterface(MethodInfo methodInfo) {
         String packageName = methodInfo.typeInfo().packageName();
-        return !"java.util.function".equals(packageName) && !Primitives.INTERNAL.equals(packageName);
+        return !"java.util.function".equals(packageName) && !methodInfo.isSynthetic();
     }
 
     private int hierarchy(ParameterizedType target, ParameterizedType from, Mode mode) {

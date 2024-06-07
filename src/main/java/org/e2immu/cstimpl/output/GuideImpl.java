@@ -23,16 +23,16 @@ import org.e2immu.cstapi.output.OutputElement;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ImmutableContainer
-public record Guide(String name,
-                    int index,
-                    Position position,
-                    int tabs,
-                    boolean prioritySplit,
-                    boolean startWithNewLine,
-                    boolean endWithNewLine,
-                    boolean allowNewLineBefore) implements OutputElement {
+public record GuideImpl(String name,
+                        int index,
+                        Position position,
+                        int tabs,
+                        boolean prioritySplit,
+                        boolean startWithNewLine,
+                        boolean endWithNewLine,
+                        boolean allowNewLineBefore) implements OutputElement {
 
-    public Guide {
+    public GuideImpl {
         assert position != null;
     }
 
@@ -108,16 +108,16 @@ public record Guide(String name,
             this.allowNewLineBefore = allowNewLineBefore;
         }
 
-        public Guide start() {
-            return new Guide(name, index, Position.START, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
+        public GuideImpl start() {
+            return new GuideImpl(name, index, Position.START, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
         }
 
-        public Guide mid() {
-            return new Guide(name, index, Position.MID, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
+        public GuideImpl mid() {
+            return new GuideImpl(name, index, Position.MID, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
         }
 
-        public Guide end() {
-            return new Guide(name, index, Position.END, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
+        public GuideImpl end() {
+            return new GuideImpl(name, index, Position.END, tabs, prioritySplit, startWithNewLine, endWithNewLine, allowNewLineBefore);
         }
 
         public boolean keepGuidesWithoutMid() {

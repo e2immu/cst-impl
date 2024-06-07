@@ -104,20 +104,20 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
         // modifiers, in the correct order!
         boolean isFinal = modifiers.stream().anyMatch(Modifier::isFinal);
         if (isFinal) {
-            outputBuilder.add(Keyword.FINAL).add(Space.ONE);
+            outputBuilder.add(KeywordImpl.FINAL).add(SpaceEnum.ONE);
         }
         boolean isVar = modifiers.stream().anyMatch(Modifier::isWithoutTypeSpecification);
 
         // var or type
         if (isVar) {
-            outputBuilder.add(Keyword.VAR);
+            outputBuilder.add(KeywordImpl.VAR);
         } else {
             outputBuilder.add(localVariable.parameterizedType()
                     .print(qualification, false, DiamondEnum.SHOW_ALL));
         }
 
         // declarations
-        outputBuilder.add(Space.ONE);
+        outputBuilder.add(SpaceEnum.ONE);
         OutputBuilder first = new OutputBuilderImpl().add(new Text(localVariable.simpleName()));
         if (!localVariable.assignmentExpression().isEmpty()) {
             first.add(Symbol.assignment("=")).add(localVariable.assignmentExpression().print(qualification));

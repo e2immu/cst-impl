@@ -70,9 +70,9 @@ public class ParameterizedTypePrinter {
         if (w.isUnbound()) {
             outputBuilder.add(new Text("?"));
         } else if (w.isExtends()) {
-            outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.EXTENDS).add(Space.ONE);
+            outputBuilder.add(new Text("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
         } else if (w.isSuper()) {
-            outputBuilder.add(new Text("?")).add(Space.ONE).add(Keyword.SUPER).add(Space.ONE);
+            outputBuilder.add(new Text("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
         }
         TypeParameter tp = parameterizedType.typeParameter();
         if (tp != null) {

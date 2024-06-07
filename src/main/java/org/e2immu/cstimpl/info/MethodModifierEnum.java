@@ -16,17 +16,18 @@ package org.e2immu.cstimpl.info;
 
 
 import org.e2immu.cstapi.info.MethodModifier;
-import org.e2immu.cstimpl.output.Keyword;
+import org.e2immu.cstapi.output.Keyword;
+import org.e2immu.cstimpl.output.KeywordImpl;
 
 public enum MethodModifierEnum implements MethodModifier {
-    PUBLIC(Keyword.PUBLIC),
-    PRIVATE(Keyword.PRIVATE),
-    PROTECTED(Keyword.PROTECTED),
-    ABSTRACT(Keyword.ABSTRACT),
-    DEFAULT(Keyword.DEFAULT),
-    FINAL(Keyword.FINAL),
-    STATIC(Keyword.STATIC),
-    SYNCHRONIZED(Keyword.SYNCHRONIZED);
+    PUBLIC(KeywordImpl.PUBLIC),
+    PRIVATE(KeywordImpl.PRIVATE),
+    PROTECTED(KeywordImpl.PROTECTED),
+    ABSTRACT(KeywordImpl.ABSTRACT),
+    DEFAULT(KeywordImpl.DEFAULT),
+    FINAL(KeywordImpl.FINAL),
+    STATIC(KeywordImpl.STATIC),
+    SYNCHRONIZED(KeywordImpl.SYNCHRONIZED);
 
     public final Keyword keyword;
 

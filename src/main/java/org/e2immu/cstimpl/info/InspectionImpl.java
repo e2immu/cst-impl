@@ -2,12 +2,16 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.annotation.Fluent;
 import org.e2immu.cstapi.element.Comment;
+import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
+import org.e2immu.cstapi.info.Access;
+import org.e2immu.cstapi.info.Info;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class InspectionImpl implements Inspection {
+public abstract class InspectionImpl implements Inspection {
     private final Access access;
     private final List<Comment> comments;
     private final Source source;
@@ -95,8 +99,7 @@ public class InspectionImpl implements Inspection {
         return annotations;
     }
 
-    public static class Builder implements Inspection {
-
+    public static class Builder implements Inspection, Info.Builder {
         private Access access;
         private List<Comment> comments;
         private Source source;
@@ -124,6 +127,34 @@ public class InspectionImpl implements Inspection {
         @Fluent
         public Builder setSource(Source source) {
             this.source = source;
+            return this;
+        }
+
+        @Override
+        public Element.Builder addComment(Comment comment) {
+            if (comments == null) comments = new ArrayList<>();
+            comments.add(comment);
+            return this;
+        }
+
+        @Override
+        public Element.Builder addComments(List<Comment> comments) {
+            if (this.comments == null) this.comments = new ArrayList<>();
+            this.comments.addAll(comments);
+            return this;
+        }
+
+        @Override
+        public Element.Builder addAnnotation(AnnotationExpression annotation) {
+            if (this.annotations == null) this.annotations = new ArrayList<>();
+            annotations.add(annotation);
+            return this;
+        }
+
+        @Override
+        public Element.Builder addAnnotations(List<AnnotationExpression> annotations) {
+            if (this.annotations == null) this.annotations = new ArrayList<>();
+            this.annotations.addAll(annotations);
             return this;
         }
 
@@ -156,10 +187,6 @@ public class InspectionImpl implements Inspection {
         @Override
         public List<AnnotationExpression> annotations() {
             return annotations;
-        }
-
-        public Inspection build() {
-            return new InspectionImpl(access, comments, source, isSynthetic(), annotations);
         }
     }
 }

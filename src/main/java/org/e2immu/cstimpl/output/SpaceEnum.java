@@ -15,14 +15,14 @@
 package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
-import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.Space;
 
 import java.util.Objects;
 
 import static org.e2immu.cstimpl.output.Split.*;
 
 
-public enum Space implements OutputElement {
+public enum SpaceEnum implements Space {
     // no space, do not split
     NONE(ElementarySpace.NONE, ElementarySpace.NONE, NEVER),
 
@@ -53,7 +53,7 @@ public enum Space implements OutputElement {
     private final ElementarySpace nice;
     public final Split split;
 
-    Space(ElementarySpace minimal, ElementarySpace nice, Split split) {
+    SpaceEnum(ElementarySpace minimal, ElementarySpace nice, Split split) {
         this.minimal = Objects.requireNonNull(minimal);
         this.nice = Objects.requireNonNull(nice);
         this.split = Objects.requireNonNull(split);

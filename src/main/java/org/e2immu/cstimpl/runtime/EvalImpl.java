@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.runtime;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.runtime.Eval;
 import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.DivideImpl;
 import org.e2immu.cstimpl.expression.ExpressionImpl;
 import org.e2immu.cstimpl.expression.eval.*;
@@ -19,6 +20,7 @@ public class EvalImpl implements Eval {
     private final EvalAnd evalAnd;
     private final EvalOr evalOr;
     private final EvalDivide evalDivide;
+    private final EvalInlineConditional evalInlineConditional;
 
     public EvalImpl(Runtime runtime) {
         evalProduct = new EvalProduct(runtime);
@@ -28,6 +30,12 @@ public class EvalImpl implements Eval {
         evalAnd = new EvalAnd(runtime);
         evalOr = new EvalOr(runtime);
         evalDivide = new EvalDivide(runtime);
+        evalInlineConditional = new EvalInlineConditional(runtime);
+    }
+
+    @Override
+    public Expression inlineConditional(Expression condition, Expression ifTrue, Expression ifFalse, Variable myself, boolean modifying) {
+        return evalInlineConditional.eval(condition, ifTrue, ifFalse, myself, modifying);
     }
 
     @Override
@@ -62,6 +70,11 @@ public class EvalImpl implements Eval {
 
     @Override
     public Expression greater(Expression lhs, Expression rhs, boolean allowEquals) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression greaterThanZero(Expression expression) {
         throw new UnsupportedOperationException();
     }
 

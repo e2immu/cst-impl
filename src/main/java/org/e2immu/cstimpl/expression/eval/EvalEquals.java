@@ -14,7 +14,10 @@ public class EvalEquals {
         this.runtime = runtime;
     }
 
-    public Expression eval(Expression l, Expression r) {
+    public Expression eval(Expression lhs, Expression rhs) {
+        Expression l = runtime.sortAndSimplify(lhs);
+        Expression r = runtime.sortAndSimplify(rhs);
+
         if (l.equals(r)) return runtime.constantTrue();
 
         ConstantExpression<?> lc, rc;

@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
@@ -53,6 +54,11 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     @Override
     public boolean isStatic() {
         return isStatic;
+    }
+
+    @Override
+    public Access access() {
+        return null;
     }
 
     @Override
