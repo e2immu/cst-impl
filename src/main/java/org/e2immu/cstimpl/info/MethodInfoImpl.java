@@ -8,6 +8,7 @@ import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.MethodInfo;
+import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
@@ -57,7 +58,7 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
         inspection.setVariable(new MethodInspectionImpl.Builder());
     }
 
-    public MethodInspectionImpl.Builder builder() {
+    public MethodInspectionImpl.Builder inspectionBuilder() {
         if (inspection.isVariable()) return (MethodInspectionImpl.Builder) inspection.get();
         throw new UnsupportedOperationException();
     }
@@ -236,5 +237,47 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public List<AnnotationExpression> annotations() {
         return inspection.get().annotations();
+    }
+
+    class BuilderImpl implements MethodInfo.Builder {
+
+        @Override
+        public void commit() {
+
+        }
+
+        @Override
+        public MethodInfo.Builder setMethodBody(Block block) {
+            return null;
+        }
+
+        @Override
+        public MethodInfo.Builder addMethodModifier(MethodModifier methodModifier) {
+            return null;
+        }
+
+        @Override
+        public MethodInfo.Builder addAndCommitParameter(String name, ParameterizedType type) {
+            return null;
+        }
+
+        @Override
+        public MethodInfo.Builder setReturnType(ParameterizedType returnType) {
+            return null;
+        }
+
+        @Override
+        public ParameterInfo addParameter(String name, ParameterizedType type) {
+            return null;
+        }
+    }
+
+    // FIXME important: if method type is STATIC, then add methodModifier "static"
+    @Override
+    public MethodInfo.Builder builder() {
+        if (methodType.isStatic()) {
+
+        }
+        return new BuilderImpl();
     }
 }

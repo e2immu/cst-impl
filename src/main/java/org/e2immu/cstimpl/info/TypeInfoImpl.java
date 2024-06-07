@@ -90,6 +90,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public List<FieldInfo> fields() {
+        return List.of();
+    }
+
+    @Override
     public boolean doesNotRequirePackage() {
         return true;
     }
@@ -108,8 +113,13 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public ParameterizedType asParameterizedType() {
+        return null; // FIXME
+    }
+
+    @Override
     public List<TypeParameter> typeParameters() {
-        return List.of();
+        return List.of(); // FIXME
     }
 
     @Override
@@ -162,6 +172,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return fullyQualifiedName.indexOf('.') > 0 && !fullyQualifiedName.startsWith("java.lang");
     }
 
+    @Override
     public boolean isJavaLangObject() {
         return JAVA_LANG_OBJECT.equals(this.fullyQualifiedName);
     }
@@ -178,6 +189,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "java.lang.Void".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isJavaIoSerializable() {
         return "java.io.Serializable".equals(fullyQualifiedName);
     }
@@ -258,6 +270,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "java.lang.Character".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isPrimitiveExcludingVoid() {
         return this.isByte() || this.isShort() || this.isInt() || this.isLong() ||
                this.isChar() || this.isFloat() || this.isDouble() || this.isBoolean();

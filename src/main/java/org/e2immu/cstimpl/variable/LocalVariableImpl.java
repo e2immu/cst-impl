@@ -9,7 +9,6 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.LocalVariable;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.QualifiedName;
 
@@ -30,6 +29,16 @@ public class LocalVariableImpl extends VariableImpl implements LocalVariable {
     @Override
     public LocalVariable withAssignmentExpression(Expression expression) {
         return new LocalVariableImpl(name, parameterizedType(), expression);
+    }
+
+    @Override
+    public LocalVariable withName(String name) {
+        return new LocalVariableImpl(name, parameterizedType(), assignmentExpression);
+    }
+
+    @Override
+    public LocalVariable withType(ParameterizedType type) {
+        return new LocalVariableImpl(name, type, assignmentExpression);
     }
 
     @Override
