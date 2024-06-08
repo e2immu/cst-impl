@@ -1,22 +1,24 @@
 package org.e2immu.cstimpl.runtime;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.*;
-import org.e2immu.cstapi.info.FieldInfo;
-import org.e2immu.cstapi.info.MethodInfo;
-import org.e2immu.cstapi.info.MethodModifier;
-import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.*;
+import org.e2immu.cstimpl.element.SingleLineComment;
+import org.e2immu.cstimpl.element.SourceImpl;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.MethodInfoImpl;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
 import org.e2immu.cstimpl.statement.BlockImpl;
+import org.e2immu.cstimpl.statement.ExpressionAsStatementImpl;
 import org.e2immu.cstimpl.statement.LocalVariableCreationImpl;
 import org.e2immu.cstimpl.statement.ReturnStatementImpl;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
@@ -111,7 +113,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public MethodCall newMethodCall(Expression object, MethodInfo takeWhile, List<Expression> parameterExpressions) {
-        return null;
+        return new MethodCallImpl(1); // FIXME
     }
 
     @Override
@@ -130,8 +132,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ExpressionAsStatement newExpressionAsStatement(Expression standardized) {
-        return null;
+    public ExpressionAsStatement newExpressionAsStatement(Expression expression) {
+        return new ExpressionAsStatementImpl(expression);
     }
 
     @Override
@@ -218,6 +220,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, MethodInfo owner) {
         return new TypeParameterImpl(tpCnt, typeParameterName, Either.right(owner), List.of());
     }
+
     @Override
     public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, List<ParameterizedType> typeBounds, TypeInfo owner) {
         return new TypeParameterImpl(tpCnt, typeParameterName, Either.left(owner), typeBounds);
@@ -507,4 +510,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
         return MethodInfoImpl.MethodTypeEnum.STATIC_METHOD;
     }
 
+    @Override
+    public Comment newSingleLineComment(String comment) {
+        return new SingleLineComment(comment);
+    }
+
+    @Override
+    public Source newParserSource(Info info, int beginLine, int beginPos, int endLine, int endPos) {
+        return new SourceImpl(info, beginLine, beginPos, endLine, endPos);
+    }
 }

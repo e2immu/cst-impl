@@ -90,6 +90,7 @@ public class BlockImpl extends StatementImpl implements Block {
         @Override
         @Fluent
         public Builder addStatement(Statement statement) {
+            assert statement != null;
             statements.add(statement);
             return this;
         }

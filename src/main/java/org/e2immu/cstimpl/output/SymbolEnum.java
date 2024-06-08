@@ -73,6 +73,8 @@ public record SymbolEnum(String symbol, Space left, Space right, String constant
     public static final Symbol LEFT_BACKTICK = new SymbolEnum("`", ONE_IS_NICE_EASY_L, NONE, "LEFT_BACKTICK");
     public static final Symbol RIGHT_BACKTICK = new SymbolEnum("`", NONE, ONE_IS_NICE_EASY_R, "RIGHT_BACKTICK");
 
+    public static final SymbolEnum SINGLE_LINE_COMMENT = new SymbolEnum("//", NONE, NONE, "SINGLE_LINE_COMMENT");
+
     public static Symbol plusPlusPrefix(String s) {
         return new SymbolEnum(s, ONE_IS_NICE_EASY_SPLIT, NONE, null);
     }
@@ -107,5 +109,10 @@ public record SymbolEnum(String symbol, Space left, Space right, String constant
     @Override
     public String generateJavaForDebugging() {
         return ".add(Symbol" + (constant != null ? "." + constant : ".binaryOperator(" + StringUtil.quote(symbol) + ")") + ")";
+    }
+
+    @Override
+    public String symbol() {
+        return symbol;
     }
 }

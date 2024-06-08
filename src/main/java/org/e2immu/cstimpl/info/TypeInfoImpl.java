@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
@@ -33,6 +35,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         fullyQualifiedName = packageName + "." + simpleName;
         this.simpleName = simpleName;
         packageNameOrEnclosingType = Either.left(packageName);
+        inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
     @Override
@@ -301,6 +304,12 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public TypeInfo.Builder builder() {
+        assert inspection.isVariable();
+        return (TypeInfo.Builder) inspection.get();
+    }
+
+    @Override
     public int complexity() {
         throw new UnsupportedOperationException();
     }
@@ -332,11 +341,26 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public Access access() {
-        return null;
+        return inspection.get().access();
     }
 
     @Override
     public MethodInfo singleAbstractMethod() {
-        throw new UnsupportedOperationException();
+        return inspection.get().singleAbstractMethod();
     }
+
+    public void commit(TypeInspection ti) {
+        inspection.setFinal(ti);
+    }
+
+    @Override
+    public List<Comment> comments() {
+        return inspection.get().comments();
+    }
+
+    @Override
+    public Source source() {
+        return inspection.get().source();
+    }
+
 }
