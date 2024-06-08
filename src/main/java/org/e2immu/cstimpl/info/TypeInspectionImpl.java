@@ -81,7 +81,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         return subTypes;
     }
 
-    public static class Builder extends InspectionImpl.Builder implements TypeInspection, TypeInfo.Builder {
+    public static class Builder extends InspectionImpl.Builder<TypeInfo.Builder> implements TypeInspection, TypeInfo.Builder {
         private final Set<TypeModifier> typeModifiers = new HashSet<>();
         private final List<MethodInfo> methods = new ArrayList<>();
         private final List<MethodInfo> constructors = new ArrayList<>();
