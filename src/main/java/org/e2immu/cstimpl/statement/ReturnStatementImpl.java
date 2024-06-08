@@ -77,7 +77,7 @@ public class ReturnStatementImpl extends StatementImpl implements ReturnStatemen
         visitor.afterStatement(this);
     }
 
-    public static class Builder extends StatementImpl.Builder implements ReturnStatement.Builder {
+    public static class Builder extends StatementImpl.Builder<ReturnStatement.Builder> implements ReturnStatement.Builder {
         private Expression expression;
 
         @Override

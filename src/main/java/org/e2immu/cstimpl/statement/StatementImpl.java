@@ -83,13 +83,14 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
         return label;
     }
 
-    public static abstract class Builder extends ElementImpl.Builder implements Statement.Builder {
+    @SuppressWarnings("unchecked")
+    public static abstract class Builder<B extends Statement.Builder<?>> extends ElementImpl.Builder<B> implements Statement.Builder<B> {
         protected String label;
 
         @Fluent
-        public Builder setLabel(String label) {
+        public B setLabel(String label) {
             this.label = label;
-            return this;
+            return (B) this;
         }
     }
 }

@@ -10,6 +10,7 @@ import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.*;
+import org.e2immu.cstimpl.element.MultiLineComment;
 import org.e2immu.cstimpl.element.SingleLineComment;
 import org.e2immu.cstimpl.element.SourceImpl;
 import org.e2immu.cstimpl.expression.*;
@@ -148,7 +149,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public ReturnStatement newReturnStatement(Expression expression) {
-        return newReturnStatement(expression);
+        return new ReturnStatementImpl(expression);
     }
 
     @Override
@@ -513,6 +514,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Comment newSingleLineComment(String comment) {
         return new SingleLineComment(comment);
+    }
+
+    @Override
+    public Comment newMultilineComment(String comment) {
+        return new MultiLineComment(comment);
     }
 
     @Override

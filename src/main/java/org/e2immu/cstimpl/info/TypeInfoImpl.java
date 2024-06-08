@@ -11,6 +11,7 @@ import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
+import org.e2immu.cstapi.type.TypeNature;
 import org.e2immu.cstapi.type.TypeParameter;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -35,6 +36,13 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         fullyQualifiedName = packageName + "." + simpleName;
         this.simpleName = simpleName;
         packageNameOrEnclosingType = Either.left(packageName);
+        inspection.setVariable(new TypeInspectionImpl.Builder(this));
+    }
+
+    public TypeInfoImpl(TypeInfo enclosing, String simpleName) {
+        fullyQualifiedName = enclosing.fullyQualifiedName() + "." + simpleName;
+        this.simpleName = simpleName;
+        packageNameOrEnclosingType = Either.right(enclosing);
         inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
@@ -270,6 +278,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public List<TypeInfo> subTypes() {
+        return inspection.get().subTypes();
+    }
+
+    @Override
     public boolean isChar() {
         return "char".equals(this.fullyQualifiedName);
     }
@@ -307,6 +320,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     public TypeInfo.Builder builder() {
         assert inspection.isVariable();
         return (TypeInfo.Builder) inspection.get();
+    }
+
+    @Override
+    public TypeNature typeNature() {
+        return inspection.get().typeNature();
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.e2immu.cstimpl.element.AnnotationExpressionImpl;
 import org.e2immu.cstimpl.info.InspectionImpl;
 import org.e2immu.cstimpl.info.MethodInfoImpl;
 import org.e2immu.cstimpl.info.TypeInfoImpl;
+import org.e2immu.cstimpl.info.TypeNatureEnum;
 
 import java.util.*;
 
@@ -118,7 +119,7 @@ public class PredefinedImpl implements Predefined {
         for (ParameterizedType parameterizedType : parameterizedTypes) {
             ParameterInfo pi = mi.builder()
                     .addParameter("p" + i, parameterizedType); // inspection built when method is built
-            pi.builder().setVarArgs(true).commit();
+            pi.builder().setVarArgs(false).commit();
         }
         MethodInfo.Builder builder = mi.builder().setReturnType(returnType);
         mi.inspectionBuilder().setAccess(InspectionImpl.AccessEnum.PUBLIC);
@@ -213,6 +214,9 @@ public class PredefinedImpl implements Predefined {
 
     public PredefinedImpl() {
         for (TypeInfo ti : primitives) {
+            TypeInfo.Builder builder = ti.builder();
+            builder.setTypeNature(TypeNatureEnum.PRIMITIVE);
+            builder.commit();
             primitiveByName.put(ti.simpleName(), ti);
         }
         for (TypeInfo ti : List.of(stringTypeInfo, objectTypeInfo, classTypeInfo, functionalInterface)) {

@@ -67,8 +67,8 @@ public record SymbolEnum(String symbol, Space left, Space right, String constant
     public static final Symbol LAMBDA = binaryOperator("->");
     public static final Symbol NOT_EQUALS = binaryOperator("!=");
 
-    public static final Symbol LEFT_BLOCK_COMMENT = new SymbolEnum("/*", ONE_IS_NICE_EASY_SPLIT, NONE, "LEFT_BLOCK_COMMENT");
-    public static final Symbol RIGHT_BLOCK_COMMENT = new SymbolEnum("*/", NONE, ONE_IS_NICE_EASY_SPLIT, "RIGHT_BLOCK_COMMENT");
+    public static final SymbolEnum LEFT_BLOCK_COMMENT = new SymbolEnum("/*", ONE_IS_NICE_EASY_SPLIT, NONE, "LEFT_BLOCK_COMMENT");
+    public static final SymbolEnum RIGHT_BLOCK_COMMENT = new SymbolEnum("*/", NONE, ONE_IS_NICE_EASY_SPLIT, "RIGHT_BLOCK_COMMENT");
 
     public static final Symbol LEFT_BACKTICK = new SymbolEnum("`", ONE_IS_NICE_EASY_L, NONE, "LEFT_BACKTICK");
     public static final Symbol RIGHT_BACKTICK = new SymbolEnum("`", NONE, ONE_IS_NICE_EASY_R, "RIGHT_BACKTICK");

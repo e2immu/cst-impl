@@ -84,7 +84,7 @@ public class BlockImpl extends StatementImpl implements Block {
         return statements.stream().flatMap(Statement::typesReferenced);
     }
 
-    public static class Builder extends StatementImpl.Builder implements Block.Builder {
+    public static class Builder extends StatementImpl.Builder<Block.Builder> implements Block.Builder {
         private final List<Statement> statements = new ArrayList<>();
 
         @Override

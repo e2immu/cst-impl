@@ -99,7 +99,8 @@ public abstract class InspectionImpl implements Inspection {
         return annotations;
     }
 
-    public static class Builder implements Inspection, Info.Builder {
+    @SuppressWarnings("unchecked")
+    public static class Builder<B extends Info.Builder<?>> implements Inspection, Info.Builder<B> {
         private Access access;
         private List<Comment> comments;
         private Source source;
@@ -107,61 +108,61 @@ public abstract class InspectionImpl implements Inspection {
         private List<AnnotationExpression> annotations;
 
         @Fluent
-        public Builder setAccess(Access access) {
+        public B setAccess(Access access) {
             this.access = access;
-            return this;
+            return (B) this;
         }
 
         @Fluent
-        public Builder setAnnotations(List<AnnotationExpression> annotations) {
+        public B setAnnotations(List<AnnotationExpression> annotations) {
             this.annotations = annotations;
-            return this;
+            return (B) this;
         }
 
         @Fluent
-        public Builder setComments(List<Comment> comments) {
+        public B setComments(List<Comment> comments) {
             this.comments = comments;
-            return this;
+            return (B) this;
         }
 
         @Fluent
-        public Builder setSource(Source source) {
+        public B setSource(Source source) {
             this.source = source;
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Element.Builder addComment(Comment comment) {
+        public B addComment(Comment comment) {
             if (comments == null) comments = new ArrayList<>();
             comments.add(comment);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Element.Builder addComments(List<Comment> comments) {
+        public B addComments(List<Comment> comments) {
             if (this.comments == null) this.comments = new ArrayList<>();
             this.comments.addAll(comments);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Element.Builder addAnnotation(AnnotationExpression annotation) {
+        public B addAnnotation(AnnotationExpression annotation) {
             if (this.annotations == null) this.annotations = new ArrayList<>();
             annotations.add(annotation);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Element.Builder addAnnotations(List<AnnotationExpression> annotations) {
+        public B addAnnotations(List<AnnotationExpression> annotations) {
             if (this.annotations == null) this.annotations = new ArrayList<>();
             this.annotations.addAll(annotations);
-            return this;
+            return (B) this;
         }
 
         @Fluent
-        public Builder setSynthetic(boolean synthetic) {
+        public B setSynthetic(boolean synthetic) {
             this.synthetic = synthetic;
-            return this;
+            return (B) this;
         }
 
         @Override

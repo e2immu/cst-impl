@@ -24,6 +24,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
     private final TypeNature typeNature;
     private final MethodInfo singleAbstractMethod;
     private final List<ParameterizedType> interfacesImplemented;
+    private final List<TypeInfo> subTypes;
 
     public TypeInspectionImpl(Inspection inspection,
                               Set<TypeModifier> typeModifiers,
@@ -32,7 +33,8 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
                               ParameterizedType parentClass,
                               TypeNature typeNature,
                               MethodInfo singleAbstractMethod,
-                              List<ParameterizedType> interfacesImplemented) {
+                              List<ParameterizedType> interfacesImplemented,
+                              List<TypeInfo> subTypes) {
         super(inspection.access(), inspection.comments(), inspection.source(), inspection.isSynthetic(), inspection.annotations());
         this.typeModifiers = typeModifiers;
         this.methods = methods;
@@ -41,6 +43,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         this.typeNature = typeNature;
         this.singleAbstractMethod = singleAbstractMethod;
         this.interfacesImplemented = interfacesImplemented;
+        this.subTypes = subTypes;
     }
 
     @Override
@@ -73,18 +76,30 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         return singleAbstractMethod;
     }
 
+    @Override
+    public List<TypeInfo> subTypes() {
+        return subTypes;
+    }
+
     public static class Builder extends InspectionImpl.Builder implements TypeInspection, TypeInfo.Builder {
         private final Set<TypeModifier> typeModifiers = new HashSet<>();
         private final List<MethodInfo> methods = new ArrayList<>();
         private final List<MethodInfo> constructors = new ArrayList<>();
-        private ParameterizedType parentClass;
         private final List<ParameterizedType> interfacesImplemented = new ArrayList<>();
+        private final List<TypeInfo> subTypes = new ArrayList<>();
+        private ParameterizedType parentClass;
         private TypeNature typeNature;
         private MethodInfo singleAbstractMethod;
         private final TypeInfoImpl typeInfo;
 
         public Builder(TypeInfoImpl typeInfo) {
             this.typeInfo = typeInfo;
+        }
+
+        @Override
+        public TypeInfo.Builder addSubType(TypeInfo subType) {
+            subTypes.add(subType);
+            return this;
         }
 
         @Override
@@ -121,7 +136,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         public void commit() {
             TypeInspection ti = new TypeInspectionImpl(this, Set.copyOf(typeModifiers), List.copyOf(methods),
                     List.copyOf(constructors), parentClass, typeNature, singleAbstractMethod,
-                    List.copyOf(interfacesImplemented));
+                    List.copyOf(interfacesImplemented), List.copyOf(subTypes));
             typeInfo.commit(ti);
         }
 
@@ -153,6 +168,11 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         @Override
         public MethodInfo singleAbstractMethod() {
             return singleAbstractMethod;
+        }
+
+        @Override
+        public List<TypeInfo> subTypes() {
+            return subTypes;
         }
     }
 }

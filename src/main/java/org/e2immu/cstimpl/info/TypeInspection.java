@@ -45,4 +45,6 @@ public interface TypeInspection extends Inspection {
     List<ParameterizedType> interfacesImplemented();
 
     MethodInfo singleAbstractMethod();
+
+    List<TypeInfo> subTypes();
 }

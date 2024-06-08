@@ -33,39 +33,40 @@ public abstract class ElementImpl implements Element {
         return print(QualificationImpl.SIMPLE_NAMES).toString();
     }
 
-    public abstract static class Builder implements Element.Builder {
+    @SuppressWarnings("unchecked")
+    public abstract static class Builder<B extends Element.Builder<?>> implements Element.Builder<B> {
         protected final List<Comment> comments = new ArrayList<>();
         protected final List<AnnotationExpression> annotations = new ArrayList<>();
         protected Source source;
 
         @Override
-        public Builder setSource(Source source) {
+        public B setSource(Source source) {
             this.source = source;
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Builder addComment(Comment comment) {
+        public B addComment(Comment comment) {
             this.comments.add(comment);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Builder addComments(List<Comment> comments) {
+        public B addComments(List<Comment> comments) {
             this.comments.addAll(comments);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Builder addAnnotation(AnnotationExpression annotation) {
+        public B addAnnotation(AnnotationExpression annotation) {
             this.annotations.add(annotation);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public Builder addAnnotations(List<AnnotationExpression> annotations) {
+        public B addAnnotations(List<AnnotationExpression> annotations) {
             this.annotations.addAll(annotations);
-            return this;
+            return (B) this;
         }
 
 

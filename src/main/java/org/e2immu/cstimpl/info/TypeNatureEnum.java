@@ -25,20 +25,25 @@ public enum TypeNatureEnum implements TypeNature {
 
     @Override
     public boolean isClass() {
-        return false;
+        return this == CLASS;
     }
 
     @Override
     public boolean isInterface() {
-        return false;
+        return this == INTERFACE;
     }
 
     @Override
     public boolean isStatic() {
-        return false;
+        return this != CLASS;
     }
 
     public Keyword keyword() {
         return keyword;
+    }
+
+    @Override
+    public boolean isAnnotation() {
+        return this == ANNOTATION;
     }
 }

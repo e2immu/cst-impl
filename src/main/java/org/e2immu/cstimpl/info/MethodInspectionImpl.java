@@ -75,7 +75,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         return fullyQualifiedName;
     }
 
-    public static class Builder extends InspectionImpl.Builder implements MethodInspection, MethodInfo.Builder {
+    public static class Builder extends InspectionImpl.Builder<MethodInfo.Builder> implements MethodInspection, MethodInfo.Builder {
         private ParameterizedType returnType;
         private OperatorType operatorType;
         private Block methodBody;
@@ -106,7 +106,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         }
 
         @Override
-        public MethodInfo.Builder addTypeParameter(TypeParameter typeParameter) {
+        public Builder addTypeParameter(TypeParameter typeParameter) {
             assert typeParameter.isMethodTypeParameter();
             assert typeParameter.getOwner().getRight() == methodInfo;
             typeParameters.add(typeParameter);
@@ -145,7 +145,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         }
 
         @Override
-        public MethodInfo.Builder commitParameters() {
+        public Builder commitParameters() {
             fullyQualifiedName.set(computeFQN());
             return this;
         }
@@ -178,12 +178,12 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         }
 
         @Override
-        public MethodInfo.Builder addMethodModifier(MethodModifier methodModifier) {
+        public Builder addMethodModifier(MethodModifier methodModifier) {
             return null;
         }
 
         @Override
-        public MethodInfo.Builder addAndCommitParameter(String name, ParameterizedType type) {
+        public Builder addAndCommitParameter(String name, ParameterizedType type) {
             return null;
         }
 

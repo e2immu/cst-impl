@@ -16,7 +16,7 @@ public class SingleLineComment implements Comment {
     }
 
     private static String strip(String s) {
-        String leading = SymbolEnum.SINGLE_LINE_COMMENT.symbol().toString();
+        String leading = SymbolEnum.SINGLE_LINE_COMMENT.symbol();
         if (s.startsWith(leading)) return s.substring(leading.length());
         return s;
     }

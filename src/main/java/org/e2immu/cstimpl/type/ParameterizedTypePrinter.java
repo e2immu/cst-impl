@@ -67,12 +67,14 @@ public class ParameterizedTypePrinter {
                                       Set<TypeParameter> visitedTypeParameters) {
         OutputBuilder outputBuilder = new OutputBuilderImpl();
         Wildcard w = parameterizedType.wildcard();
-        if (w.isUnbound()) {
-            outputBuilder.add(new TextEnum("?"));
-        } else if (w.isExtends()) {
-            outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
-        } else if (w.isSuper()) {
-            outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
+        if (w != null) {
+            if (w.isUnbound()) {
+                outputBuilder.add(new TextEnum("?"));
+            } else if (w.isExtends()) {
+                outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
+            } else if (w.isSuper()) {
+                outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
+            }
         }
         TypeParameter tp = parameterizedType.typeParameter();
         if (tp != null) {

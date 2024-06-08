@@ -9,6 +9,7 @@ import org.e2immu.cstapi.runtime.PredefinedWithoutParameterizedType;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstimpl.element.ElementImpl;
+import org.e2immu.cstimpl.output.QualificationImpl;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -276,7 +277,8 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 
     @Override
     public String printForMethodFQN(boolean varArgs, Diamond diamond) {
-        return "";
+        return ParameterizedTypePrinter.print(QualificationImpl.FULLY_QUALIFIED_NAMES,
+                this, varArgs, diamond, false, new HashSet<>()).toString();
     }
 
     @Override

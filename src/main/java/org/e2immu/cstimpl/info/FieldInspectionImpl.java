@@ -25,12 +25,14 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         return initializer;
     }
 
+
     @Override
     public Set<FieldModifier> fieldModifiers() {
         return fieldModifiers;
     }
 
-    public static class Builder extends InspectionImpl.Builder implements FieldInfo.Builder, FieldInspection {
+    @SuppressWarnings("unchecked")
+    public static class Builder<B extends Builder<?>> extends InspectionImpl.Builder<B> implements FieldInfo.Builder<B>, FieldInspection {
         private final FieldInfoImpl fieldInfo;
         private final Set<FieldModifier> fieldModifiers = new HashSet<>();
         private Expression initializer;
@@ -40,15 +42,15 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         }
 
         @Override
-        public FieldInfo.Builder addFieldModifier(FieldModifier fieldModifier) {
+        public B addFieldModifier(FieldModifier fieldModifier) {
             fieldModifiers.add(fieldModifier);
-            return this;
+            return (B) this;
         }
 
         @Override
-        public FieldInfo.Builder setInitializer(Expression initializer) {
+        public B setInitializer(Expression initializer) {
             this.initializer = initializer;
-            return this;
+            return (B) this;
         }
 
         @Override
