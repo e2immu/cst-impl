@@ -27,6 +27,7 @@ import org.e2immu.cstimpl.statement.ReturnStatementImpl;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.type.TypeParameterImpl;
+import org.e2immu.cstimpl.type.WildcardEnum;
 import org.e2immu.cstimpl.util.IntUtil;
 import org.e2immu.cstimpl.variable.FieldReferenceImpl;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
@@ -526,5 +527,10 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public CompilationUnit.Builder newCompilationUnitBuilder() {
         return new CompilationUnitImpl.Builder();
+    }
+
+    @Override
+    public Wildcard wildcardEXTENDS() {
+        return WildcardEnum.EXTENDS;
     }
 }

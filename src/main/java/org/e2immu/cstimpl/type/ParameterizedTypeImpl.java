@@ -12,6 +12,7 @@ import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.QualificationImpl;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ParameterizedTypeImpl implements ParameterizedType {
@@ -434,5 +435,155 @@ public class ParameterizedTypeImpl implements ParameterizedType {
             } // else: in JFocus, we can temporarily have no owner during type generalization
         }
         return null;
+    }
+
+    @Override
+    public ParameterizedType mostSpecific(Runtime runtime, TypeInfo primaryType, ParameterizedType other) {
+        if (equals(other)) return this;
+        if (isType() && typeInfo.isVoid() || other.isType() && other.typeInfo().isVoid()) {
+            return runtime.voidParameterizedType();
+        }
+        if (isTypeParameter()) {
+            if (other.isTypeParameter()) {
+                // a type parameter in the primary type has priority over another one
+                // IMPROVE change this to a hierarchy rather than primary vs other
+                if (primaryType.equals(other.typeParameter().primaryType())) return other;
+                return this;
+            }
+            return other;
+        }
+        if (other.isTypeParameter() && !isTypeParameter()) return this;
+
+        if (isBoxedExcludingVoid() && other.isPrimitiveExcludingVoid()) return other;
+        if (other.isBoxedExcludingVoid() && isPrimitiveExcludingVoid()) return this;
+
+        if (isAssignableFrom(runtime, other)) {
+            return other;
+        }
+        return this;
+    }
+
+    /*
+   Given a concrete type (List<String>) make a map from the type's abstract parameters to its concrete ones (E -> String)
+
+   If the abstract type contains self-references, we cannot recurse, because their type parameters have the same name...
+   With visited, the method returns K=Integer, V=Map<Integer,String> when presented with Map<Integer,Map<Integer,String>>,
+   without visited, it would recurse and return K=Integer, V=String
+   */
+    @Override
+    public Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime) {
+        if (!isType()) return Map.of();
+        if (parameters.isEmpty()) return Map.of();
+        return initialTypeParameterMap(runtime, new HashSet<>());
+    }
+
+    private Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime, Set<TypeInfo> visited) {
+        if (!isType()) return Map.of();
+        visited.add(typeInfo);
+        if (parameters.isEmpty()) return Map.of();
+        ParameterizedType originalType = typeInfo.asParameterizedType();
+        int i = 0;
+        // linkedHashMap to maintain an order for testing
+        Map<NamedType, ParameterizedType> map = new LinkedHashMap<>();
+        for (ParameterizedType parameter : originalType.parameters()) {
+            ParameterizedType recursive;
+            if (parameter.isTypeParameter()) {
+                ParameterizedType pt = parameters.get(i);
+                if (pt != null && pt.isUnboundWildcard() && !parameter.typeParameter().typeBounds().isEmpty()) {
+                    // replace '?' by '? extends X', with 'X' the first type bound, see TypeParameter_3
+                    // but never do this for JLO (see e.g. issues described in MethodCall_73)
+                    TypeInfo bound = parameter.typeParameter().typeBounds().get(0).typeInfo();
+                    if (bound.isJavaLangObject()) {
+                        recursive = WILDCARD_PARAMETERIZED_TYPE;
+                    } else {
+                        recursive = new ParameterizedTypeImpl(bound, runtime.wildcardEXTENDS());
+                    }
+                } else {
+                    recursive = pt;
+                }
+                map.put(parameter.typeParameter(), recursive);
+            } else if (parameter.isType()) {
+                recursive = parameter;
+            } else throw new UnsupportedOperationException();
+            if (recursive != null && recursive.isType() && !visited.contains(recursive.typeInfo())) {
+                Map<NamedType, ParameterizedType> recursiveMap = ((ParameterizedTypeImpl) recursive)
+                        .initialTypeParameterMap(runtime, visited);
+                map.putAll(recursiveMap);
+            }
+            i++;
+        }
+        return map;
+    }
+
+    /*
+    HashMap<K, V> implements Map<K, V>
+    Given Map<K, V>, go from abstract to concrete (HM:K to Map:K, HM:V to Map:V)
+    */
+    @Override
+    public Map<NamedType, ParameterizedType> forwardTypeParameterMap() {
+        if (!isType()) return Map.of();
+        if (parameters.isEmpty()) return Map.of();
+        ParameterizedType originalType = typeInfo.asParameterizedType(); // Map:K, Map:V
+        assert originalType.parameters().size() == parameters.size();
+        int i = 0;
+        // linkedHashMap to maintain an order for testing
+        Map<NamedType, ParameterizedType> map = new LinkedHashMap<>();
+        for (ParameterizedType parameter : originalType.parameters()) {
+            ParameterizedType p = parameters.get(i);
+            if (p.isTypeParameter()) {
+                map.put(p.typeParameter(), parameter);
+            }
+            i++;
+        }
+        return map;
+    }
+
+    /**
+     * IMPORTANT: code copied from MethodTypeParameterMap
+     *
+     * @param translate the map to be applied on the type parameters of this
+     * @return a newly created ParameterizedType
+     */
+    @Override
+    public ParameterizedType applyTranslation(PredefinedWithoutParameterizedType predefined,
+                                              Map<NamedType, ParameterizedType> translate) {
+        return applyTranslation(predefined, translate, 0);
+    }
+
+    private ParameterizedType applyTranslation(PredefinedWithoutParameterizedType primitives,
+                                               Map<NamedType, ParameterizedType> translate,
+                                               int recursionDepth) {
+        if (recursionDepth > 20) {
+            throw new IllegalArgumentException("Reached recursion depth");
+        }
+        if (translate.isEmpty()) return this;
+        ParameterizedType pt = this;
+        if (pt.isTypeParameter()) {
+            boolean add = false;
+            while (pt.isTypeParameter() && translate.containsKey(pt.typeParameter())) {
+                ParameterizedType newPt = translate.get(pt.typeParameter());
+                if (newPt.equals(pt) || newPt.isTypeParameter() && pt.typeParameter().equals(newPt.typeParameter()))
+                    break;
+                pt = newPt;
+                add = true;
+            }
+            // we want to add this.arrays only once, and only when there was a translation (MethodCall_61)
+            if (add) {
+                pt = pt.copyWithArrays(pt.arrays() + arrays);
+            }
+        }
+        // see MethodCall_60,_61,_62
+        final ParameterizedType stablePt = pt;
+        if (stablePt.parameters().isEmpty()) return stablePt;
+        List<ParameterizedType> recursivelyMappedParameters = stablePt.parameters().stream()
+                .map(x -> x == stablePt || x == this
+                        ? stablePt
+                        : ((ParameterizedTypeImpl) x).applyTranslation(primitives, translate, recursionDepth + 1))
+                .map(x -> x.ensureBoxed(primitives))
+                .collect(Collectors.toList());
+        if (stablePt.typeInfo() == null) {
+            throw new UnsupportedOperationException("? input " + stablePt + " has no type");
+        }
+        return new ParameterizedTypeImpl(stablePt.typeInfo(), recursivelyMappedParameters);
     }
 }

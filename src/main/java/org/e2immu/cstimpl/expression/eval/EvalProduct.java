@@ -14,9 +14,7 @@ public class EvalProduct {
     }
 
     // we try to maintain a sum of products
-    public Expression eval(Expression lhs, Expression rhs) {
-        Expression l = runtime.sortAndSimplify(lhs);
-        Expression r = runtime.sortAndSimplify(rhs);
+    public Expression eval(Expression l, Expression r) {
         Double ln = l.numericValue();
         Double rn = r.numericValue();
 
