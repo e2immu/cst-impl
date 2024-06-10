@@ -92,7 +92,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public Cast newCast(Expression e, ParameterizedType parameterizedType) {
-        return null;
+        return new CastImpl(parameterizedType, e);
     }
 
     @Override
@@ -532,5 +532,10 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Wildcard wildcardEXTENDS() {
         return WildcardEnum.EXTENDS;
+    }
+
+    @Override
+    public EnclosedExpression newEnclosedExpression(Expression inner) {
+        return new EnclosedExpressionImpl(inner);
     }
 }
