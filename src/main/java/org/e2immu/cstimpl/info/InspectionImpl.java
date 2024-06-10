@@ -2,7 +2,6 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.annotation.Fluent;
 import org.e2immu.cstapi.element.Comment;
-import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.Access;

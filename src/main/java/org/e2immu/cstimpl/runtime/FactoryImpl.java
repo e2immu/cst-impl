@@ -155,7 +155,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Element.Builder newReturnStatementBuilder() {
+    public ReturnStatement.Builder newReturnStatementBuilder() {
         return new ReturnStatementImpl.Builder();
     }
 
