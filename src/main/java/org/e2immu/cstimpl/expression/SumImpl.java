@@ -9,6 +9,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.QualificationImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
 
@@ -75,5 +76,4 @@ public class SumImpl extends BinaryOperatorImpl implements Sum {
         }
         throw new UnsupportedOperationException();
     }
-
 }

@@ -1,9 +1,6 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.element.Comment;
-import org.e2immu.cstapi.element.Element;
-import org.e2immu.cstapi.element.Source;
-import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.element.*;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
@@ -29,27 +26,27 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     private final String fullyQualifiedName;
     private final String simpleName;
-    private final Either<String, TypeInfo> packageNameOrEnclosingType;
+    private final Either<CompilationUnit, TypeInfo> compilationUnitOrEnclosingType;
     private final EventuallyFinal<TypeInspection> inspection = new EventuallyFinal<>();
 
-    public TypeInfoImpl(String packageName, String simpleName) {
-        fullyQualifiedName = packageName + "." + simpleName;
+    public TypeInfoImpl(CompilationUnit compilationUnit, String simpleName) {
+        fullyQualifiedName = compilationUnit.packageName() + "." + simpleName;
         this.simpleName = simpleName;
-        packageNameOrEnclosingType = Either.left(packageName);
+        compilationUnitOrEnclosingType = Either.left(compilationUnit);
         inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
     public TypeInfoImpl(TypeInfo enclosing, String simpleName) {
         fullyQualifiedName = enclosing.fullyQualifiedName() + "." + simpleName;
         this.simpleName = simpleName;
-        packageNameOrEnclosingType = Either.right(enclosing);
+        compilationUnitOrEnclosingType = Either.right(enclosing);
         inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
     @Override
     public String packageName() {
-        if (packageNameOrEnclosingType.isLeft()) return packageNameOrEnclosingType.getLeft();
-        return packageNameOrEnclosingType.getRight().packageName();
+        if (compilationUnitOrEnclosingType.isLeft()) return compilationUnitOrEnclosingType.getLeft().packageName();
+        return compilationUnitOrEnclosingType.getRight().packageName();
     }
 
     @Override
@@ -114,15 +111,15 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public String fromPrimaryTypeDownwards() {
-        if (packageNameOrEnclosingType.isLeft()) {
+        if (compilationUnitOrEnclosingType.isLeft()) {
             return simpleName;
         }
-        return packageNameOrEnclosingType.getRight().fromPrimaryTypeDownwards() + "." + simpleName;
+        return compilationUnitOrEnclosingType.getRight().fromPrimaryTypeDownwards() + "." + simpleName;
     }
 
     @Override
-    public Either<String, TypeInfo> packageNameOrEnclosingType() {
-        return packageNameOrEnclosingType;
+    public Either<CompilationUnit, TypeInfo> compilationUnitOrEnclosingType() {
+        return compilationUnitOrEnclosingType;
     }
 
     @Override
@@ -157,7 +154,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public TypeInfo primaryType() {
-        return packageNameOrEnclosingType.isLeft() ? this : packageNameOrEnclosingType.getRight().primaryType();
+        return compilationUnitOrEnclosingType.isLeft() ? this : compilationUnitOrEnclosingType.getRight().primaryType();
     }
 
     @Override

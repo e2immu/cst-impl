@@ -130,8 +130,8 @@ public class ParameterizedTypePrinter {
                 typesForTypeInfo.add(parameterizedType.parameters().get(offset + i));
             }
             TypeInfo next;
-            if (typeInfo.packageNameOrEnclosingType().isRight()) {
-                next = typeInfo.packageNameOrEnclosingType().getRight();
+            if (typeInfo.compilationUnitOrEnclosingType().isRight()) {
+                next = typeInfo.compilationUnitOrEnclosingType().getRight();
             } else {
                 next = null;
             }

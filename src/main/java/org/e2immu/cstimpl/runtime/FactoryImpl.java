@@ -1,6 +1,7 @@
 package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.element.Comment;
+import org.e2immu.cstapi.element.CompilationUnit;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.*;
@@ -10,6 +11,7 @@ import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.*;
+import org.e2immu.cstimpl.element.CompilationUnitImpl;
 import org.e2immu.cstimpl.element.MultiLineComment;
 import org.e2immu.cstimpl.element.SingleLineComment;
 import org.e2immu.cstimpl.element.SourceImpl;
@@ -268,11 +270,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Or newOr(List<Expression> expressions) {
-        return new OrImpl(this, expressions);
-    }
-
-    @Override
     public InlineConditional newInlineConditional(Expression condition, Expression ifTrue, Expression ifFalse) {
         return new InlineConditionalImpl(condition, ifTrue, ifFalse);
     }
@@ -524,5 +521,10 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Source newParserSource(Info info, int beginLine, int beginPos, int endLine, int endPos) {
         return new SourceImpl(info, beginLine, beginPos, endLine, endPos);
+    }
+
+    @Override
+    public CompilationUnit.Builder newCompilationUnitBuilder() {
+        return new CompilationUnitImpl.Builder();
     }
 }

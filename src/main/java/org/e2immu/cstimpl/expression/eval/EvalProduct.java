@@ -32,10 +32,14 @@ public class EvalProduct {
         if (l.isEmpty() || r.isEmpty()) throw new UnsupportedOperationException();
 
         if (r instanceof Sum sum) {
-            return runtime.sum(runtime.product(l, sum.lhs()), runtime.product(l, sum.rhs()));
+            Expression p1 = runtime.product(l, sum.lhs());
+            Expression p2 = runtime.product(l, sum.rhs());
+            return runtime.sum(p1, p2);
         }
         if (l instanceof Sum sum) {
-            return runtime.sum(runtime.product(sum.lhs(), r), runtime.product(sum.rhs(), r));
+            Expression p1 = runtime.product(sum.lhs(), r);
+            Expression p2 = runtime.product(sum.rhs(), r);
+            return runtime.sum(p1, p2);
         }
         return l.compareTo(r) < 0 ? new ProductImpl(runtime, l, r) : new ProductImpl(runtime, r, l);
     }

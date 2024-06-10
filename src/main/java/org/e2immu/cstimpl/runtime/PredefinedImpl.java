@@ -1,5 +1,6 @@
 package org.e2immu.cstimpl.runtime;
 
+import org.e2immu.cstapi.element.CompilationUnit;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
@@ -7,6 +8,7 @@ import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.element.AnnotationExpressionImpl;
+import org.e2immu.cstimpl.element.CompilationUnitImpl;
 import org.e2immu.cstimpl.info.InspectionImpl;
 import org.e2immu.cstimpl.info.MethodInfoImpl;
 import org.e2immu.cstimpl.info.TypeInfoImpl;
@@ -15,8 +17,8 @@ import org.e2immu.cstimpl.info.TypeNatureEnum;
 import java.util.*;
 
 public class PredefinedImpl implements Predefined {
-    private static final String JAVA_PRIMITIVE = "";
-    private static final String JAVA_LANG = "";
+    private static final CompilationUnit JAVA_PRIMITIVE = new CompilationUnitImpl.Builder().build();
+    private static final CompilationUnit JAVA_LANG =new CompilationUnitImpl.Builder().build();
 
     private final TypeInfo intTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "int");
     private final ParameterizedType intParameterizedType = intTypeInfo.asSimpleParameterizedType();

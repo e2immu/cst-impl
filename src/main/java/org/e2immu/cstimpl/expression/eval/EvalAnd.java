@@ -224,7 +224,7 @@ public class EvalAnd {
                 }
             }
             if (ok && !equal.isEmpty()) {
-                Expression orValue = runtime.newOr(equal);
+                Expression orValue = runtime.or(equal);
                 newConcat.set(newConcat.size() - 1, orValue);
                 LOGGER.debug("Skipping {} in OR, simplified to {}", value, orValue);
                 return Action.SKIP;
