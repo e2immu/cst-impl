@@ -38,9 +38,8 @@ public class ReturnStatementImpl extends StatementImpl implements ReturnStatemen
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        OutputBuilder outputBuilder = outputBuilder(qualification)
-                .add(KeywordImpl.RETURN);
-        if (expression.isEmpty()) {
+        OutputBuilder outputBuilder = outputBuilder(qualification).add(KeywordImpl.RETURN);
+        if (!expression.isEmpty()) {
             outputBuilder.add(SpaceEnum.ONE).add(expression.print(qualification));
         }
         outputBuilder.add(SymbolEnum.SEMICOLON);

@@ -27,10 +27,12 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
     private final String fullyQualifiedName;
     private final Set<MethodInfo> overrides;
     private final List<TypeParameter> typeParameters;
+    private final List<ParameterInfo> parameters;
 
     public MethodInspectionImpl(Inspection inspection,
                                 ParameterizedType returnType,
                                 List<TypeParameter> typeParameters,
+                                List<ParameterInfo> parameters,
                                 OperatorType operatorType,
                                 Block methodBody,
                                 String fullyQualifiedName,
@@ -39,6 +41,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
                 inspection.annotations());
         this.returnType = returnType;
         this.operatorType = operatorType;
+        this.parameters = parameters;
         this.methodBody = methodBody;
         this.fullyQualifiedName = fullyQualifiedName;
         this.overrides = overrides;
@@ -73,6 +76,11 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
     @Override
     public String fullyQualifiedName() {
         return fullyQualifiedName;
+    }
+
+    @Override
+    public List<ParameterInfo> parameters() {
+        return parameters;
     }
 
     public static class Builder extends InspectionImpl.Builder<MethodInfo.Builder> implements MethodInspection, MethodInfo.Builder {
@@ -167,7 +175,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         public void commit() {
             if (!fullyQualifiedName.isSet()) commitParameters();
             MethodInspection mi = new MethodInspectionImpl(this, returnType, List.copyOf(typeParameters),
-                    operatorType, methodBody, fullyQualifiedName.get(), Set.copyOf(overrides));
+                    List.copyOf(parameters), operatorType, methodBody, fullyQualifiedName.get(), Set.copyOf(overrides));
             methodInfo.commit(mi);
         }
 
@@ -190,6 +198,11 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         @Override
         public String fullyQualifiedName() {
             return fullyQualifiedName.get("FQN has not yet been computed");
+        }
+
+        @Override
+        public List<ParameterInfo> parameters() {
+            return parameters;
         }
 
         @Fluent

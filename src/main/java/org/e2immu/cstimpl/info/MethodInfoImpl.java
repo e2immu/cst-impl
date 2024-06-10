@@ -222,7 +222,7 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public List<ParameterInfo> parameters() {
-        return List.of();
+        return inspection.get().parameters();
     }
 
     @Override

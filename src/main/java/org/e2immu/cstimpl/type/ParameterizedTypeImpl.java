@@ -301,7 +301,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
 
     @Override
-    public ParameterizedType concreteSuperType(ParameterizedType superType) {
+    public ParameterizedType concreteSuperType(Runtime runtime, ParameterizedType superType) {
         TypeInfo bestType = bestTypeInfo();
         if (bestType == superType.typeInfo()) {
             // if we start with Iterable<String>, and we're aiming for Iterable<E>, then
@@ -311,24 +311,24 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         ParameterizedType parentClass = bestType.parentClass();
         if (parentClass != null && !parentClass.isJavaLangObject()) {
             if (parentClass.typeInfo() == superType.typeInfo()) {
-                return concreteDirectSuperType(parentClass);
+                return concreteDirectSuperType(runtime, parentClass);
             }
             /* do a recursion, but accept that we may return null
             we must call concreteSuperType on a concrete version of the parentClass
             */
-            ParameterizedType res = parentClass.concreteSuperType(superType);
+            ParameterizedType res = parentClass.concreteSuperType(runtime, superType);
             if (res != null) {
-                return concreteDirectSuperType(res);
+                return concreteDirectSuperType(runtime, res);
             }
         }
         for (ParameterizedType interfaceType : bestType.interfacesImplemented()) {
             if (interfaceType.typeInfo() == superType.typeInfo()) {
-                return concreteDirectSuperType(interfaceType);
+                return concreteDirectSuperType(runtime, interfaceType);
             }
             // similar to parent
-            ParameterizedType res = interfaceType.concreteSuperType(superType);
+            ParameterizedType res = interfaceType.concreteSuperType(runtime, superType);
             if (res != null) {
-                return concreteDirectSuperType(res);
+                return concreteDirectSuperType(runtime, res);
             }
         }
         return null;
@@ -340,11 +340,11 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
 
     @Override
-    public ParameterizedType concreteDirectSuperType(ParameterizedType parentType) {
+    public ParameterizedType concreteDirectSuperType(Runtime runtime, ParameterizedType parentType) {
         if (parentType.parameters().isEmpty()) return parentType;
 
-        Map<NamedType, ParameterizedType> map = initialTypeParameterMap();
-        ParameterizedType formalType = parentType.typeInfo().asParameterizedType();
+        Map<NamedType, ParameterizedType> map = initialTypeParameterMap(runtime);
+        ParameterizedType formalType = parentType.typeInfo().asParameterizedType(runtime);
         List<ParameterizedType> newParameters = new ArrayList<>(formalType.parameters().size());
         int i = 0;
         for (ParameterizedType param : formalType.parameters()) {
@@ -363,17 +363,18 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         return new ParameterizedTypeImpl(parentType.typeInfo(), List.copyOf(newParameters));
     }
 
-    public Map<NamedType, ParameterizedType> initialTypeParameterMap() {
+    @Override
+    public Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime) {
         if (!isType()) return Map.of();
         if (parameters.isEmpty()) return Map.of();
-        return initialTypeParameterMap(new HashSet<>());
+        return initialTypeParameterMap(runtime, new HashSet<>());
     }
 
-    private Map<NamedType, ParameterizedType> initialTypeParameterMap(Set<TypeInfo> visited) {
+    private Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime, Set<TypeInfo> visited) {
         if (!isType()) return Map.of();
         visited.add(typeInfo);
         if (parameters.isEmpty()) return Map.of();
-        ParameterizedType originalType = typeInfo.asParameterizedType();
+        ParameterizedType originalType = typeInfo.asParameterizedType(runtime);
         int i = 0;
         // linkedHashMap to maintain an order for testing
         Map<NamedType, ParameterizedType> map = new LinkedHashMap<>();
@@ -399,7 +400,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
             } else throw new UnsupportedOperationException();
             if (recursive != null && recursive.isType() && !visited.contains(recursive.typeInfo())) {
                 Map<NamedType, ParameterizedType> recursiveMap = ((ParameterizedTypeImpl) recursive)
-                        .initialTypeParameterMap(visited);
+                        .initialTypeParameterMap(runtime, visited);
                 map.putAll(recursiveMap);
             }
             i++;
@@ -464,66 +465,16 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
 
     /*
-   Given a concrete type (List<String>) make a map from the type's abstract parameters to its concrete ones (E -> String)
-
-   If the abstract type contains self-references, we cannot recurse, because their type parameters have the same name...
-   With visited, the method returns K=Integer, V=Map<Integer,String> when presented with Map<Integer,Map<Integer,String>>,
-   without visited, it would recurse and return K=Integer, V=String
-   */
-    @Override
-    public Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime) {
-        if (!isType()) return Map.of();
-        if (parameters.isEmpty()) return Map.of();
-        return initialTypeParameterMap(runtime, new HashSet<>());
-    }
-
-    private Map<NamedType, ParameterizedType> initialTypeParameterMap(Runtime runtime, Set<TypeInfo> visited) {
-        if (!isType()) return Map.of();
-        visited.add(typeInfo);
-        if (parameters.isEmpty()) return Map.of();
-        ParameterizedType originalType = typeInfo.asParameterizedType();
-        int i = 0;
-        // linkedHashMap to maintain an order for testing
-        Map<NamedType, ParameterizedType> map = new LinkedHashMap<>();
-        for (ParameterizedType parameter : originalType.parameters()) {
-            ParameterizedType recursive;
-            if (parameter.isTypeParameter()) {
-                ParameterizedType pt = parameters.get(i);
-                if (pt != null && pt.isUnboundWildcard() && !parameter.typeParameter().typeBounds().isEmpty()) {
-                    // replace '?' by '? extends X', with 'X' the first type bound, see TypeParameter_3
-                    // but never do this for JLO (see e.g. issues described in MethodCall_73)
-                    TypeInfo bound = parameter.typeParameter().typeBounds().get(0).typeInfo();
-                    if (bound.isJavaLangObject()) {
-                        recursive = WILDCARD_PARAMETERIZED_TYPE;
-                    } else {
-                        recursive = new ParameterizedTypeImpl(bound, runtime.wildcardEXTENDS());
-                    }
-                } else {
-                    recursive = pt;
-                }
-                map.put(parameter.typeParameter(), recursive);
-            } else if (parameter.isType()) {
-                recursive = parameter;
-            } else throw new UnsupportedOperationException();
-            if (recursive != null && recursive.isType() && !visited.contains(recursive.typeInfo())) {
-                Map<NamedType, ParameterizedType> recursiveMap = ((ParameterizedTypeImpl) recursive)
-                        .initialTypeParameterMap(runtime, visited);
-                map.putAll(recursiveMap);
-            }
-            i++;
-        }
-        return map;
-    }
 
     /*
     HashMap<K, V> implements Map<K, V>
     Given Map<K, V>, go from abstract to concrete (HM:K to Map:K, HM:V to Map:V)
     */
     @Override
-    public Map<NamedType, ParameterizedType> forwardTypeParameterMap() {
+    public Map<NamedType, ParameterizedType> forwardTypeParameterMap(Runtime runtime) {
         if (!isType()) return Map.of();
         if (parameters.isEmpty()) return Map.of();
-        ParameterizedType originalType = typeInfo.asParameterizedType(); // Map:K, Map:V
+        ParameterizedType originalType = typeInfo.asParameterizedType(runtime); // Map:K, Map:V
         assert originalType.parameters().size() == parameters.size();
         int i = 0;
         // linkedHashMap to maintain an order for testing

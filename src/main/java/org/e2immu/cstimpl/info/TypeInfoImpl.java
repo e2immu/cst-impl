@@ -7,6 +7,7 @@ import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeNature;
 import org.e2immu.cstapi.type.TypeParameter;
@@ -19,6 +20,7 @@ import org.e2immu.support.EventuallyFinal;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TypeInfoImpl extends InfoImpl implements TypeInfo {
@@ -128,8 +130,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
-    public ParameterizedType asParameterizedType() {
-        return null; // FIXME
+    public ParameterizedType asParameterizedType(Runtime runtime) {
+        List<ParameterizedType> typeParameters = typeParameters()
+                .stream().map(TypeParameter::toParameterizedType)
+                .collect(Collectors.toList());
+        return new ParameterizedTypeImpl(this, typeParameters);
     }
 
     @Override
