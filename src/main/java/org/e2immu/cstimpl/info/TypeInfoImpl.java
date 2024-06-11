@@ -56,6 +56,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
+    public String toString() {
+        return fullyQualifiedName;
+    }
+
+    @Override
     public ParameterizedType asSimpleParameterizedType() {
         return new ParameterizedTypeImpl(this);
     }
@@ -65,7 +70,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         List<MethodInfo> list = methods().stream()
                 .filter(mi -> methodName.equals(mi.name()) && mi.parameters().size() == numberOfParameters)
                 .toList();
-        if (list.size() != 1) throw new UnsupportedOperationException();
+        if (list.size() != 1) {
+            throw new UnsupportedOperationException("Cannot find a unique method named '" + methodName
+                                                    + "', with " + numberOfParameters + " parameters, in type "
+                                                    + fullyQualifiedName);
+        }
         return list.get(0);
     }
 

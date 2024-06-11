@@ -73,11 +73,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodCall newMethodCall(boolean b, Expression newObject, MethodInfo methodInfo, ParameterizedType parameterizedType, List<Expression> newParams) {
-        return null;
-    }
-
-    @Override
     public ConstructorCall newObjectCreation(Expression scope, MethodInfo constructor, ParameterizedType parameterizedType, Diamond diamond, List<Expression> newParams) {
         return null;
     }
@@ -113,8 +108,17 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodCall newMethodCall(Expression object, MethodInfo takeWhile, List<Expression> parameterExpressions) {
-        return new MethodCallImpl(1); // FIXME
+    public MethodCall newMethodCall(Expression object, MethodInfo methodInfo, List<Expression> parameterExpressions) {
+        return new MethodCallImpl.Builder()
+                .setObject(object)
+                .setMethodInfo(methodInfo)
+                .setParameterExpressions(parameterExpressions)
+                .build();
+    }
+
+    @Override
+    public MethodCall.Builder newMethodCallBuilder() {
+        return new MethodCallImpl.Builder();
     }
 
     @Override
@@ -184,7 +188,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public StringConstant newStringConstant(String string) {
-        return null;
+        return new StringConstantImpl(this, string);
     }
 
     @Override
@@ -194,7 +198,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public TypeInfo newTypeInfo(TypeInfo typeInfo, String capitalized) {
-        return null;
+        return new TypeInfoImpl(typeInfo, capitalized);
+    }
+
+    @Override
+    public TypeInfo newTypeInfo(CompilationUnit cu, String simpleName) {
+        return new TypeInfoImpl(cu, simpleName);
     }
 
     @Override
@@ -279,11 +288,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public SwitchEntry newStatementsSwitchEntry(VariableExpression selector, List<Expression> labels, List<Statement> statements) {
-        return null;
-    }
-
-    @Override
-    public MethodCall newMethodCall(boolean objectIsImplicit, Expression object, MethodInfo methodInfo, ParameterizedType parameterizedType, List<Expression> expressions, String modificationTimes) {
         return null;
     }
 
@@ -482,8 +486,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public FieldReference newFieldReference(FieldInfo fieldInfo, Expression scope) {
-        return new FieldReferenceImpl(fieldInfo, scope);
+    public FieldReference newFieldReference(FieldInfo fieldInfo) {
+        return new FieldReferenceImpl(fieldInfo);
+    }
+
+    @Override
+    public FieldReference newFieldReference(FieldInfo fieldInfo, Expression scope, ParameterizedType concreteReturnType) {
+        return new FieldReferenceImpl(fieldInfo, scope, null, concreteReturnType);
     }
 
     @Override

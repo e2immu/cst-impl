@@ -72,6 +72,11 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public String toString() {
+        return fullyQualifiedName();
+    }
+
+    @Override
     public MethodInfo.Builder builder() {
         if (inspection.isVariable()) return (MethodInfo.Builder) inspection.get();
         throw new UnsupportedOperationException();

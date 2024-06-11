@@ -10,6 +10,7 @@ import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.output.element.TypeName;
+import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.FieldReference;
@@ -43,11 +44,6 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
 
     public FieldReferenceImpl(FieldInfo fieldInfo) {
         this(fieldInfo, null, null, null);
-    }
-
-    public FieldReferenceImpl(FieldInfo fieldInfo,
-                              Expression scope) {
-        this(fieldInfo, scope, null, null);
     }
 
     public FieldReferenceImpl(FieldInfo fieldInfo,

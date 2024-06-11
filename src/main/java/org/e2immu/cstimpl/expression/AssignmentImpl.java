@@ -63,17 +63,17 @@ public class AssignmentImpl extends ExpressionImpl implements Assignment {
 
     @Override
     public MethodInfo assignmentOperator() {
-        return null;
+        return assignmentOperator;
     }
 
     @Override
     public Boolean prefixPrimitiveOperator() {
-        return null;
+        return prefixPrimitiveOperator;
     }
 
     @Override
     public MethodInfo binaryOperator() {
-        return null;
+        return binaryOperator;
     }
 
     @Override

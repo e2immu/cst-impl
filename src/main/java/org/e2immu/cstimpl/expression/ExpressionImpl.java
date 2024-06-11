@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.expression;
 import org.e2immu.annotation.NotNull;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Source;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
@@ -22,9 +23,17 @@ public abstract class ExpressionImpl extends ElementImpl implements Expression {
     public static final int COMPLEXITY_LIMIT_OF_INLINED_METHOD = 1000;
 
     private final int complexity;
+    private final Source source;
+    private final List<Comment> comments;
 
     protected ExpressionImpl(int complexity) {
+        this(null, null, complexity);
+    }
+
+    protected ExpressionImpl(Source source, List<Comment> comments, int complexity) {
         this.complexity = complexity;
+        this.source = source;
+        this.comments = comments;
     }
 
     @Override
@@ -34,12 +43,12 @@ public abstract class ExpressionImpl extends ElementImpl implements Expression {
 
     @Override
     public Source source() {
-        return null;
+        return source;
     }
 
     @Override
     public List<Comment> comments() {
-        return List.of();
+        return comments;
     }
 
     @NotNull
