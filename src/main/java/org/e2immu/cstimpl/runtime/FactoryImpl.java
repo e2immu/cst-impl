@@ -52,7 +52,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public Assignment newAssignment(Expression target, Expression value) {
-        return null;
+        return new AssignmentImpl(target, value);
     }
 
     @Override

@@ -148,6 +148,12 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         }
 
         @Override
+        public TypeInfo.Builder addConstructor(MethodInfo constructor) {
+            constructors.add(constructor);
+            return this;
+        }
+
+        @Override
         public TypeInfo.Builder addField(FieldInfo field) {
             fields.add(field);
             return this;
