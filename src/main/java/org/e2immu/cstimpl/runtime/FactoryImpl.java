@@ -660,4 +660,49 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public TypeModifier newTypeModifierStatic() {
         return TypeModifierEnum.STATIC;
     }
+
+    @Override
+    public MethodModifier newMethodModifierAbstract() {
+        return MethodModifierEnum.ABSTRACT;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierDefault() {
+        return MethodModifierEnum.DEFAULT;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierFinal() {
+        return MethodModifierEnum.FINAL;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierPrivate() {
+        return MethodModifierEnum.PRIVATE;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierProtected() {
+        return MethodModifierEnum.PROTECTED;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierPublic() {
+        return MethodModifierEnum.PUBLIC;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierStatic() {
+        return MethodModifierEnum.STATIC;
+    }
+
+    @Override
+    public MethodModifier newMethodModifierSynchronized() {
+        return MethodModifierEnum.SYNCHRONIZED;
+    }
+
+    @Override
+    public MethodInfo.MethodType newMethodTypeConstructor() {
+        return MethodInfoImpl.MethodTypeEnum.CONSTRUCTOR;
+    }
 }

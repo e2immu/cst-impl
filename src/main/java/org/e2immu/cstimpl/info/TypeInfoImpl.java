@@ -1,10 +1,7 @@
 package org.e2immu.cstimpl.info;
 
 import org.e2immu.cstapi.element.*;
-import org.e2immu.cstapi.info.Access;
-import org.e2immu.cstapi.info.FieldInfo;
-import org.e2immu.cstapi.info.MethodInfo;
-import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Runtime;
@@ -156,12 +153,14 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public List<TypeParameter> typeParameters() {
-        return List.of(); // FIXME
+        return inspection.get().typeParameters();
     }
 
     @Override
     public boolean isStatic() {
-        return typeNature().isStatic();
+        return typeNature().isStatic()  // interface, enum, etc.. otherwise: CLASS
+               || isPrimaryType() // otherwise: subtype
+               || inspection.get().modifiers().stream().anyMatch(TypeModifier::isStatic);
     }
 
     @Override
@@ -400,4 +399,13 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return inspection.get().source();
     }
 
+    @Override
+    public boolean isPrivate() {
+        return inspection.get().access().isPrivate();
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return inspection.get().isAbstract();
+    }
 }

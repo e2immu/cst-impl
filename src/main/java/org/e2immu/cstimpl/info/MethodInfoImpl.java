@@ -7,10 +7,7 @@ import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
-import org.e2immu.cstapi.info.Access;
-import org.e2immu.cstapi.info.MethodInfo;
-import org.e2immu.cstapi.info.ParameterInfo;
-import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
@@ -254,6 +251,11 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public boolean isSynthetic() {
         return inspection.get().isSynthetic();
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return inspection.get().modifiers().stream().anyMatch(MethodModifier::isAbstract);
     }
 
     @Override

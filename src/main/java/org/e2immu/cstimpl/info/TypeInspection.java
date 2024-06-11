@@ -3,15 +3,22 @@ package org.e2immu.cstimpl.info;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.info.TypeModifier;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeNature;
+import org.e2immu.cstapi.type.TypeParameter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public interface TypeInspection extends Inspection {
 
     List<FieldInfo> fields();
+
+    List<TypeParameter> typeParameters();
+
+    boolean isAbstract();
 
     enum MethodsEnum implements TypeInfo.Methods {
 
@@ -50,4 +57,6 @@ public interface TypeInspection extends Inspection {
     MethodInfo singleAbstractMethod();
 
     List<TypeInfo> subTypes();
+    
+    Set<TypeModifier> modifiers();
 }

@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.info;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeNature;
+import org.e2immu.cstapi.type.TypeParameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
     private final TypeNature typeNature;
     private final MethodInfo singleAbstractMethod;
     private final List<ParameterizedType> interfacesImplemented;
+    private final List<TypeParameter> typeParameters;
     private final List<TypeInfo> subTypes;
 
     public TypeInspectionImpl(Inspection inspection,
@@ -30,6 +32,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
                               TypeNature typeNature,
                               MethodInfo singleAbstractMethod,
                               List<ParameterizedType> interfacesImplemented,
+                              List<TypeParameter> typeParameters,
                               List<TypeInfo> subTypes) {
         super(inspection.access(), inspection.comments(), inspection.source(), inspection.isSynthetic(), inspection.annotations());
         this.typeModifiers = typeModifiers;
@@ -41,6 +44,17 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         this.interfacesImplemented = interfacesImplemented;
         this.subTypes = subTypes;
         this.fields = fields;
+        this.typeParameters = typeParameters;
+    }
+
+    @Override
+    public List<TypeParameter> typeParameters() {
+        return typeParameters;
+    }
+
+    @Override
+    public Set<TypeModifier> modifiers() {
+        return typeModifiers;
     }
 
     @Override
@@ -83,6 +97,11 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         return fields;
     }
 
+    @Override
+    public boolean isAbstract() {
+        return isAbstract(typeNature, typeModifiers);
+    }
+
     public static class Builder extends InspectionImpl.Builder<TypeInfo.Builder> implements TypeInspection, TypeInfo.Builder {
         private final Set<TypeModifier> typeModifiers = new HashSet<>();
         private final List<MethodInfo> methods = new ArrayList<>();
@@ -90,6 +109,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         private final List<FieldInfo> fields = new ArrayList<>();
         private final List<ParameterizedType> interfacesImplemented = new ArrayList<>();
         private final List<TypeInfo> subTypes = new ArrayList<>();
+        private final List<TypeParameter> typeParameters = new ArrayList<>();
         private ParameterizedType parentClass;
         private TypeNature typeNature;
         private MethodInfo singleAbstractMethod;
@@ -109,6 +129,16 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         public TypeInfo.Builder addTypeModifier(TypeModifier typeModifier) {
             typeModifiers.add(typeModifier);
             return this;
+        }
+
+        @Override
+        public List<TypeParameter> typeParameters() {
+            return typeParameters;
+        }
+
+        @Override
+        public Set<TypeModifier> modifiers() {
+            return typeModifiers;
         }
 
         @Override
@@ -150,7 +180,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         public void commit() {
             TypeInspection ti = new TypeInspectionImpl(this, Set.copyOf(typeModifiers), List.copyOf(methods),
                     List.copyOf(constructors), List.copyOf(fields), parentClass, typeNature, singleAbstractMethod,
-                    List.copyOf(interfacesImplemented), List.copyOf(subTypes));
+                    List.copyOf(interfacesImplemented), List.copyOf(typeParameters), List.copyOf(subTypes));
             typeInfo.commit(ti);
         }
 
@@ -188,5 +218,14 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         public List<TypeInfo> subTypes() {
             return subTypes;
         }
+
+        @Override
+        public boolean isAbstract() {
+            return TypeInspectionImpl.isAbstract(typeNature, typeModifiers);
+        }
+    }
+
+    private static boolean isAbstract(TypeNature typeNature, Set<TypeModifier> typeModifiers) {
+        return typeNature.isInterface() || typeModifiers.stream().anyMatch(TypeModifier::isAbstract);
     }
 }

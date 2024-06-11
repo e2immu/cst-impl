@@ -28,11 +28,13 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
     private final Set<MethodInfo> overrides;
     private final List<TypeParameter> typeParameters;
     private final List<ParameterInfo> parameters;
+    private final Set<MethodModifier> methodModifiers;
 
     public MethodInspectionImpl(Inspection inspection,
                                 ParameterizedType returnType,
                                 List<TypeParameter> typeParameters,
                                 List<ParameterInfo> parameters,
+                                Set<MethodModifier> methodModifiers,
                                 OperatorType operatorType,
                                 Block methodBody,
                                 String fullyQualifiedName,
@@ -46,11 +48,17 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         this.fullyQualifiedName = fullyQualifiedName;
         this.overrides = overrides;
         this.typeParameters = typeParameters;
+        this.methodModifiers = methodModifiers;
     }
 
     @Override
     public List<TypeParameter> typeParameters() {
         return typeParameters;
+    }
+
+    @Override
+    public Set<MethodModifier> modifiers() {
+        return methodModifiers;
     }
 
     @Override
@@ -92,6 +100,7 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         private final List<TypeParameter> typeParameters = new ArrayList<>();
         private final Set<MethodInfo> overrides = new HashSet<>();
         private final MethodInfoImpl methodInfo;
+        private final Set<MethodModifier> methodModifiers = new HashSet<>();
 
         public Builder(MethodInfoImpl methodInfo) {
             this.methodInfo = methodInfo;
@@ -129,6 +138,11 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         @Override
         public List<TypeParameter> typeParameters() {
             return typeParameters;
+        }
+
+        @Override
+        public Set<MethodModifier> modifiers() {
+            return methodModifiers;
         }
 
         @Override
@@ -175,7 +189,8 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
         public void commit() {
             if (!fullyQualifiedName.isSet()) commitParameters();
             MethodInspection mi = new MethodInspectionImpl(this, returnType, List.copyOf(typeParameters),
-                    List.copyOf(parameters), operatorType, methodBody, fullyQualifiedName.get(), Set.copyOf(overrides));
+                    List.copyOf(parameters), Set.copyOf(methodModifiers),
+                    operatorType, methodBody, fullyQualifiedName.get(), Set.copyOf(overrides));
             methodInfo.commit(mi);
         }
 
@@ -187,7 +202,8 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
 
         @Override
         public Builder addMethodModifier(MethodModifier methodModifier) {
-            return null;
+            methodModifiers.add(methodModifier);
+            return this;
         }
 
         @Override

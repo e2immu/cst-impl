@@ -35,4 +35,43 @@ public enum MethodModifierEnum implements MethodModifier {
         this.keyword = keyword;
     }
 
+    @Override
+    public boolean isPublic() {
+        return this == PUBLIC;
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return this == PRIVATE;
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this == PROTECTED;
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return this == ABSTRACT;
+    }
+
+    @Override
+    public boolean isFinal() {
+        return this == FINAL;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return this == DEFAULT;
+    }
+
+    @Override
+    public boolean isSynchronized() {
+        return this == SYNCHRONIZED;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return this == STATIC;
+    }
 }
