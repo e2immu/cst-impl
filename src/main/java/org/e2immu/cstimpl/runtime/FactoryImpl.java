@@ -17,10 +17,7 @@ import org.e2immu.cstimpl.element.SourceImpl;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.*;
-import org.e2immu.cstimpl.statement.BlockImpl;
-import org.e2immu.cstimpl.statement.ExpressionAsStatementImpl;
-import org.e2immu.cstimpl.statement.LocalVariableCreationImpl;
-import org.e2immu.cstimpl.statement.ReturnStatementImpl;
+import org.e2immu.cstimpl.statement.*;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.type.TypeParameterImpl;
@@ -713,5 +710,10 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public MethodInfo.MethodType newMethodTypeConstructor() {
         return MethodInfoImpl.MethodTypeEnum.CONSTRUCTOR;
+    }
+
+    @Override
+    public ForEachStatement.Builder newForEachBuilder() {
+        return new ForEachStatementImpl.Builder();
     }
 }
