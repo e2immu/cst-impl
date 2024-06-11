@@ -1,5 +1,6 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.type.ParameterizedType;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public interface TypeInspection extends Inspection {
+
+    List<FieldInfo> fields();
 
     enum MethodsEnum implements TypeInfo.Methods {
 

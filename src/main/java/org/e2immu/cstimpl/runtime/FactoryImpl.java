@@ -17,6 +17,7 @@ import org.e2immu.cstimpl.element.SingleLineComment;
 import org.e2immu.cstimpl.element.SourceImpl;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
+import org.e2immu.cstimpl.info.FieldModifierEnum;
 import org.e2immu.cstimpl.info.MethodInfoImpl;
 import org.e2immu.cstimpl.info.MethodModifierEnum;
 import org.e2immu.cstimpl.info.TypeNatureEnum;
@@ -537,5 +538,40 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public EnclosedExpression newEnclosedExpression(Expression inner) {
         return new EnclosedExpressionImpl(inner);
+    }
+
+    @Override
+    public FieldModifier newFieldModifierFinal() {
+        return FieldModifierEnum.FINAL;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierPublic() {
+        return FieldModifierEnum.PUBLIC;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierStatic() {
+        return FieldModifierEnum.STATIC;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierTransient() {
+        return FieldModifierEnum.TRANSIENT;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierPrivate() {
+        return FieldModifierEnum.PRIVATE;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierProtected() {
+        return FieldModifierEnum.PROTECTED;
+    }
+
+    @Override
+    public FieldModifier newFieldModifierVolatile() {
+        return FieldModifierEnum.VOLATILE;
     }
 }

@@ -122,6 +122,12 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
         return Stream.concat(type.typesReferenced(), initializer == null ? Stream.of() : initializer.typesReferenced());
     }
 
+    @Override
+    public FieldInfo.Builder builder() {
+        assert inspection.isVariable();
+        return (FieldInfo.Builder) inspection.get();
+    }
+
     public void commit(FieldInspectionImpl fieldInspection) {
         inspection.setFinal(fieldInspection);
     }

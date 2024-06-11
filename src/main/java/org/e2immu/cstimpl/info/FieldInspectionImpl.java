@@ -31,8 +31,7 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         return fieldModifiers;
     }
 
-    @SuppressWarnings("unchecked")
-    public static class Builder<B extends Builder<?>> extends InspectionImpl.Builder<B> implements FieldInfo.Builder<B>, FieldInspection {
+    public static class Builder extends InspectionImpl.Builder<FieldInfo.Builder> implements FieldInfo.Builder, FieldInspection {
         private final FieldInfoImpl fieldInfo;
         private final Set<FieldModifier> fieldModifiers = new HashSet<>();
         private Expression initializer;
@@ -42,15 +41,15 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         }
 
         @Override
-        public B addFieldModifier(FieldModifier fieldModifier) {
+        public Builder addFieldModifier(FieldModifier fieldModifier) {
             fieldModifiers.add(fieldModifier);
-            return (B) this;
+            return this;
         }
 
         @Override
-        public B setInitializer(Expression initializer) {
+        public Builder setInitializer(Expression initializer) {
             this.initializer = initializer;
-            return (B) this;
+            return this;
         }
 
         @Override

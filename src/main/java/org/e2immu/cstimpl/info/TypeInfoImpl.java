@@ -18,6 +18,7 @@ import org.e2immu.support.Either;
 import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -62,23 +63,38 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     }
 
     @Override
-    public MethodInfo findUniqueMethod(String methodName, int n) {
-        throw new UnsupportedOperationException();
+    public MethodInfo findUniqueMethod(String methodName, int numberOfParameters) {
+        List<MethodInfo> list = methods().stream()
+                .filter(mi -> methodName.equals(mi.name()) && mi.parameters().size() == numberOfParameters)
+                .toList();
+        if (list.size() != 1) throw new UnsupportedOperationException();
+        return list.get(0);
     }
 
     @Override
-    public MethodInfo findConstructor(int i) {
-        throw new UnsupportedOperationException();
+    public MethodInfo findConstructor(int numberOfParameters) {
+        List<MethodInfo> list = constructors().stream()
+                .filter(constructor -> constructor.parameters().size() == numberOfParameters)
+                .toList();
+        if (list.size() != 1) throw new UnsupportedOperationException();
+        return list.get(0);
     }
 
     @Override
     public FieldInfo getFieldByName(String name, boolean complain) {
-        throw new UnsupportedOperationException();
+        Optional<FieldInfo> optional = fields().stream().filter(fieldInfo -> name.equals(fieldInfo.name())).findFirst();
+        return complain ? optional.orElseThrow() : optional.orElse(null);
     }
 
     @Override
-    public MethodInfo findUniqueMethod(String tryCatch, TypeInfo typeInfoOfFirstParameter) {
-        throw new UnsupportedOperationException();
+    public MethodInfo findUniqueMethod(String methodName, TypeInfo typeInfoOfFirstParameter) {
+        List<MethodInfo> list = methods().stream()
+                .filter(mi -> methodName.equals(mi.name())
+                              && !mi.parameters().isEmpty()
+                              && typeInfoOfFirstParameter.equals(mi.parameters().get(0).parameterizedType().typeInfo()))
+                .toList();
+        if (list.size() != 1) throw new UnsupportedOperationException();
+        return list.get(0);
     }
 
     @Override
@@ -103,7 +119,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public List<FieldInfo> fields() {
-        return List.of();
+        return inspection.get().fields();
     }
 
     @Override
@@ -144,12 +160,12 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public boolean isStatic() {
-        return true;
+        return typeNature().isStatic();
     }
 
     @Override
     public boolean isInterface() {
-        return false;
+        return typeNature().isInterface();
     }
 
     @Override

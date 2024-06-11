@@ -1,12 +1,6 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.element.Comment;
-import org.e2immu.cstapi.element.Source;
-import org.e2immu.cstapi.expression.AnnotationExpression;
-import org.e2immu.cstapi.info.Access;
-import org.e2immu.cstapi.info.MethodInfo;
-import org.e2immu.cstapi.info.TypeInfo;
-import org.e2immu.cstapi.info.TypeModifier;
+import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeNature;
 
@@ -20,6 +14,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
     private final Set<TypeModifier> typeModifiers;
     private final List<MethodInfo> methods;
     private final List<MethodInfo> constructors;
+    private final List<FieldInfo> fields;
     private final ParameterizedType parentClass;
     private final TypeNature typeNature;
     private final MethodInfo singleAbstractMethod;
@@ -30,6 +25,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
                               Set<TypeModifier> typeModifiers,
                               List<MethodInfo> methods,
                               List<MethodInfo> constructors,
+                              List<FieldInfo> fields,
                               ParameterizedType parentClass,
                               TypeNature typeNature,
                               MethodInfo singleAbstractMethod,
@@ -44,6 +40,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         this.singleAbstractMethod = singleAbstractMethod;
         this.interfacesImplemented = interfacesImplemented;
         this.subTypes = subTypes;
+        this.fields = fields;
     }
 
     @Override
@@ -81,10 +78,16 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         return subTypes;
     }
 
+    @Override
+    public List<FieldInfo> fields() {
+        return fields;
+    }
+
     public static class Builder extends InspectionImpl.Builder<TypeInfo.Builder> implements TypeInspection, TypeInfo.Builder {
         private final Set<TypeModifier> typeModifiers = new HashSet<>();
         private final List<MethodInfo> methods = new ArrayList<>();
         private final List<MethodInfo> constructors = new ArrayList<>();
+        private final List<FieldInfo> fields = new ArrayList<>();
         private final List<ParameterizedType> interfacesImplemented = new ArrayList<>();
         private final List<TypeInfo> subTypes = new ArrayList<>();
         private ParameterizedType parentClass;
@@ -115,6 +118,17 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         }
 
         @Override
+        public TypeInfo.Builder addField(FieldInfo field) {
+            fields.add(field);
+            return this;
+        }
+
+        @Override
+        public List<FieldInfo> fields() {
+            return fields;
+        }
+
+        @Override
         public TypeInfo.Builder setTypeNature(TypeNature typeNature) {
             this.typeNature = typeNature;
             return this;
@@ -135,7 +149,7 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         @Override
         public void commit() {
             TypeInspection ti = new TypeInspectionImpl(this, Set.copyOf(typeModifiers), List.copyOf(methods),
-                    List.copyOf(constructors), parentClass, typeNature, singleAbstractMethod,
+                    List.copyOf(constructors), List.copyOf(fields), parentClass, typeNature, singleAbstractMethod,
                     List.copyOf(interfacesImplemented), List.copyOf(subTypes));
             typeInfo.commit(ti);
         }

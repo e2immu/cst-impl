@@ -35,4 +35,24 @@ public enum FieldModifierEnum implements FieldModifier {
         this.keyword = keyword;
     }
 
+
+    @Override
+    public boolean isStatic() {
+        return this == STATIC;
+    }
+
+    @Override
+    public boolean isFinal() {
+        return this == FINAL;
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return this == VOLATILE;
+    }
+
+    @Override
+    public boolean isTransient() {
+        return this == TRANSIENT;
+    }
 }
