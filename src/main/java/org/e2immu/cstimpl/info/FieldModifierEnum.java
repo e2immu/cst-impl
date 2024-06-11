@@ -55,4 +55,19 @@ public enum FieldModifierEnum implements FieldModifier {
     public boolean isTransient() {
         return this == TRANSIENT;
     }
+
+    @Override
+    public boolean isPrivate() {
+        return this == PRIVATE;
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this == PROTECTED;
+    }
+
+    @Override
+    public boolean isPublic() {
+        return this == PUBLIC;
+    }
 }

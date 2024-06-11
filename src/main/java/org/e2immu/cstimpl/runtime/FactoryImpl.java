@@ -2,7 +2,6 @@ package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.CompilationUnit;
-import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.*;
@@ -17,10 +16,7 @@ import org.e2immu.cstimpl.element.SingleLineComment;
 import org.e2immu.cstimpl.element.SourceImpl;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
-import org.e2immu.cstimpl.info.FieldModifierEnum;
-import org.e2immu.cstimpl.info.MethodInfoImpl;
-import org.e2immu.cstimpl.info.MethodModifierEnum;
-import org.e2immu.cstimpl.info.TypeNatureEnum;
+import org.e2immu.cstimpl.info.*;
 import org.e2immu.cstimpl.statement.BlockImpl;
 import org.e2immu.cstimpl.statement.ExpressionAsStatementImpl;
 import org.e2immu.cstimpl.statement.LocalVariableCreationImpl;
@@ -292,8 +288,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public CharConstant newCharConstant(char c) {
-        return null;
+    public CharConstant newChar(char c) {
+        return new CharConstantImpl(this, c);
     }
 
     @Override
@@ -361,7 +357,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
             if (typeInfo.isByte()) return newByte((byte) 0);
             if (typeInfo.isFloat()) return newFloat(0);
             if (typeInfo.isDouble()) return newDouble(0);
-            if (typeInfo.isChar()) return newCharConstant('\0');
+            if (typeInfo.isChar()) return newChar('\0');
         }
         return nullConstant();
     }
@@ -423,7 +419,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public DoubleConstant newDouble(double d) {
-        return null;
+        return new DoubleConstantImpl(this, d);
     }
 
     @Override
@@ -573,5 +569,95 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public FieldModifier newFieldModifierVolatile() {
         return FieldModifierEnum.VOLATILE;
+    }
+
+    @Override
+    public Access newAccessPackage() {
+        return InspectionImpl.AccessEnum.PACKAGE;
+    }
+
+    @Override
+    public Access newAccessPrivate() {
+        return InspectionImpl.AccessEnum.PRIVATE;
+    }
+
+    @Override
+    public Access newAccessProtected() {
+        return InspectionImpl.AccessEnum.PROTECTED;
+    }
+
+    @Override
+    public Access newAccessPublic() {
+        return InspectionImpl.AccessEnum.PUBLIC;
+    }
+
+    @Override
+    public FieldInfo newFieldInfo(String name, boolean isStatic, ParameterizedType parameterizedType, TypeInfo owner) {
+        return new FieldInfoImpl(name, isStatic, parameterizedType, owner);
+    }
+
+    @Override
+    public TypeNature newTypeNatureAnnotation() {
+        return TypeNatureEnum.ANNOTATION;
+    }
+
+    @Override
+    public TypeNature newTypeNatureClass() {
+        return TypeNatureEnum.CLASS;
+    }
+
+    @Override
+    public TypeNature newTypeNatureEnum() {
+        return TypeNatureEnum.ENUM;
+    }
+
+    @Override
+    public TypeNature newTypeNatureInterface() {
+        return TypeNatureEnum.INTERFACE;
+    }
+
+    @Override
+    public TypeNature newTypeNatureRecord() {
+        return TypeNatureEnum.RECORD;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierAbstract() {
+        return TypeModifierEnum.ABSTRACT;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierFinal() {
+        return TypeModifierEnum.FINAL;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierNonSealed() {
+        return TypeModifierEnum.NON_SEALED;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierPrivate() {
+        return TypeModifierEnum.PRIVATE;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierProtected() {
+        return TypeModifierEnum.PROTECTED;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierPublic() {
+        return TypeModifierEnum.PUBLIC;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierSealed() {
+        return TypeModifierEnum.SEALED;
+    }
+
+    @Override
+    public TypeModifier newTypeModifierStatic() {
+        return TypeModifierEnum.STATIC;
     }
 }

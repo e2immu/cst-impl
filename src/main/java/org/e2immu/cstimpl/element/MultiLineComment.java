@@ -17,7 +17,7 @@ public class MultiLineComment implements Comment {
     private static String strip(String s) {
         String leading = SymbolEnum.LEFT_BLOCK_COMMENT.symbol();
         String s1 = s.startsWith(leading) ? s.substring(leading.length()) : s;
-        String trailing = SymbolEnum.LEFT_BLOCK_COMMENT.symbol();
+        String trailing = SymbolEnum.RIGHT_BLOCK_COMMENT.symbol();
         return s1.endsWith(trailing) ? s1.substring(0, s1.length() - trailing.length()) : s1;
     }
 

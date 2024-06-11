@@ -33,7 +33,8 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     private final EventuallyFinal<TypeInspection> inspection = new EventuallyFinal<>();
 
     public TypeInfoImpl(CompilationUnit compilationUnit, String simpleName) {
-        fullyQualifiedName = compilationUnit.packageName() + "." + simpleName;
+        String packageName = compilationUnit.packageName();
+        fullyQualifiedName = packageName == null ? simpleName : packageName + "." + simpleName;
         this.simpleName = simpleName;
         compilationUnitOrEnclosingType = Either.left(compilationUnit);
         inspection.setVariable(new TypeInspectionImpl.Builder(this));

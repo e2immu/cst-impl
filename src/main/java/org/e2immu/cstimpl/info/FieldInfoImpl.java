@@ -1,10 +1,13 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
+import org.e2immu.cstapi.info.FieldModifier;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -14,6 +17,8 @@ import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
 import org.e2immu.support.EventuallyFinal;
 
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -123,6 +128,16 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     }
 
     @Override
+    public List<Comment> comments() {
+        return inspection.get().comments();
+    }
+
+    @Override
+    public Source source() {
+        return inspection.get().source();
+    }
+
+    @Override
     public FieldInfo.Builder builder() {
         assert inspection.isVariable();
         return (FieldInfo.Builder) inspection.get();
@@ -130,5 +145,15 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
 
     public void commit(FieldInspectionImpl fieldInspection) {
         inspection.setFinal(fieldInspection);
+    }
+
+    @Override
+    public Set<FieldModifier> modifiers() {
+        return inspection.get().fieldModifiers();
+    }
+
+    @Override
+    public Expression initializer() {
+        return inspection.get().initializer();
     }
 }

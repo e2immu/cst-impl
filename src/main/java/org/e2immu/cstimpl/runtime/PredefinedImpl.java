@@ -18,7 +18,7 @@ import java.util.*;
 
 public class PredefinedImpl implements Predefined {
     private static final CompilationUnit JAVA_PRIMITIVE = new CompilationUnitImpl.Builder().build();
-    private static final CompilationUnit JAVA_LANG =new CompilationUnitImpl.Builder().build();
+    private static final CompilationUnit JAVA_LANG =new CompilationUnitImpl.Builder().setPackageName("java.lang").build();
 
     private final TypeInfo intTypeInfo = new TypeInfoImpl(JAVA_PRIMITIVE, "int");
     private final ParameterizedType intParameterizedType = intTypeInfo.asSimpleParameterizedType();

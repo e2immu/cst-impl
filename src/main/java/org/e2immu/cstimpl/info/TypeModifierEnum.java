@@ -38,4 +38,43 @@ public enum TypeModifierEnum implements TypeModifier {
         this.keyword = keyword;
     }
 
+    @Override
+    public boolean isPublic() {
+        return this == PUBLIC;
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return this == PRIVATE;
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this == PROTECTED;
+    }
+
+    @Override
+    public boolean isFinal() {
+        return this == FINAL;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return this == STATIC;
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return this == ABSTRACT;
+    }
+
+    @Override
+    public boolean isNonSealed() {
+        return this == NON_SEALED;
+    }
+
+    @Override
+    public boolean isSealed() {
+        return this == SEALED;
+    }
 }

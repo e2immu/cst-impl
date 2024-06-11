@@ -31,22 +31,27 @@ public class SourceImpl implements Source {
         } else throw new UnsupportedOperationException();
     }
 
+    @Override
     public Info info() {
         return info;
     }
 
+    @Override
     public int beginLine() {
         return beginLine;
     }
 
+    @Override
     public int beginPos() {
         return beginPos;
     }
 
+    @Override
     public int endLine() {
         return endLine;
     }
 
+    @Override
     public int endPos() {
         return endPos;
     }
