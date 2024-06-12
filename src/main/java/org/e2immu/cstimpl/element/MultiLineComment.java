@@ -28,7 +28,7 @@ public class MultiLineComment implements Comment {
                 : GuideImpl.defaultGuideGenerator();
         OutputBuilder joinedText = Arrays.stream(comment.split("\n"))
                 .filter(line -> !line.isBlank())
-                .map(line -> new OutputBuilderImpl().add(new TextEnum(line)))
+                .map(line -> new OutputBuilderImpl().add(new TextImpl(line)))
                 .collect(OutputBuilderImpl.joining(SpaceEnum.ONE_IS_NICE_EASY_SPLIT,
                         SymbolEnum.LEFT_BLOCK_COMMENT,
                         SymbolEnum.RIGHT_BLOCK_COMMENT,

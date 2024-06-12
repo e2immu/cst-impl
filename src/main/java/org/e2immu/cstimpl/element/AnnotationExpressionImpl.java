@@ -6,7 +6,7 @@ import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.output.TypeNameImpl;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class AnnotationExpressionImpl implements AnnotationExpression {
             outputBuilder.add(SymbolEnum.LEFT_PARENTHESIS)
                     .add(keyValuePairs.stream()
                             .map(kv ->
-                                    new OutputBuilderImpl().addIf(kv.keyIsDefault(), new TextEnum(kv.key()))
+                                    new OutputBuilderImpl().addIf(kv.keyIsDefault(), new TextImpl(kv.key()))
                                             .addIf(kv.keyIsDefault(), SymbolEnum.assignment("="))
                                             .add(kv.value().print(qualification)))
                             .collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)))

@@ -8,7 +8,10 @@ import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
-import org.e2immu.cstapi.statement.*;
+import org.e2immu.cstapi.statement.Block;
+import org.e2immu.cstapi.statement.DoStatement;
+import org.e2immu.cstapi.statement.Statement;
+import org.e2immu.cstapi.statement.WhileStatement;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -19,39 +22,39 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class WhileStatementImpl extends StatementImpl implements WhileStatement {
+public class DoStatementImpl extends StatementImpl implements DoStatement {
     private final Expression expression;
     private final Block block;
 
-    public WhileStatementImpl(List<Comment> comments,
-                              Source source,
-                              List<AnnotationExpression> annotations,
-                              String label,
-                              Expression expression, Block block) {
+    public DoStatementImpl(List<Comment> comments,
+                           Source source,
+                           List<AnnotationExpression> annotations,
+                           String label,
+                           Expression expression, Block block) {
         super(comments, source, annotations, 0, label);
         this.expression = expression;
         this.block = block;
     }
 
-    public static class Builder extends StatementImpl.Builder<WhileStatement.Builder> implements WhileStatement.Builder {
+    public static class Builder extends StatementImpl.Builder<DoStatement.Builder> implements DoStatement.Builder {
         private Expression expression;
         private Block block;
 
         @Override
-        public WhileStatement.Builder setExpression(Expression expression) {
+        public Builder setExpression(Expression expression) {
             this.expression = expression;
             return this;
         }
 
         @Override
-        public WhileStatement.Builder setBlock(Block block) {
+        public Builder setBlock(Block block) {
             this.block = block;
             return this;
         }
 
         @Override
-        public WhileStatement build() {
-            return new WhileStatementImpl(comments, source, annotations, label, expression, block);
+        public DoStatement build() {
+            return new DoStatementImpl(comments, source, annotations, label, expression, block);
         }
     }
 
@@ -68,16 +71,16 @@ public class WhileStatementImpl extends StatementImpl implements WhileStatement 
     @Override
     public void visit(Predicate<Element> predicate) {
         if (predicate.test(this)) {
-            expression.visit(predicate);
             block.visit(predicate);
+            expression.visit(predicate);
         }
     }
 
     @Override
     public void visit(Visitor visitor) {
         if (visitor.beforeStatement(this)) {
-            expression.visit(visitor);
             block.visit(visitor);
+            expression.visit(visitor);
         }
         visitor.afterStatement(this);
     }
@@ -85,21 +88,22 @@ public class WhileStatementImpl extends StatementImpl implements WhileStatement 
     @Override
     public OutputBuilder print(Qualification qualification) {
         return outputBuilder(qualification)
+                .add(KeywordImpl.DO)
+                .add(block.print(qualification))
                 .add(KeywordImpl.WHILE)
                 .add(SymbolEnum.LEFT_PARENTHESIS)
-                .add(expression().print(qualification))
-                .add(SymbolEnum.RIGHT_PARENTHESIS)
-                .add(block.print(qualification));
+                .add(expression.print(qualification))
+                .add(SymbolEnum.RIGHT_PARENTHESIS);
     }
 
     @Override
     public Stream<Variable> variables(DescendMode descendMode) {
-        return Stream.concat(expression.variables(descendMode), block.variables(descendMode));
+        return Stream.concat(block.variables(descendMode), expression.variables(descendMode));
     }
 
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
-        return Stream.concat(expression.typesReferenced(), block.typesReferenced());
+        return Stream.concat(block.typesReferenced(), expression.typesReferenced());
     }
 
     @Override
@@ -110,8 +114,8 @@ public class WhileStatementImpl extends StatementImpl implements WhileStatement 
         Expression tex = expression.translate(translationMap);
         List<Statement> translatedBlock = block.translate(translationMap);
         if (tex == expression && !haveDirectTranslation(translatedBlock, block)) return List.of(this);
-        WhileStatement newWhile = new WhileStatementImpl(comments(), source(), annotations(), label(), tex,
+        DoStatement newDo = new DoStatementImpl(comments(), source(), annotations(), label(), tex,
                 ensureBlock(translatedBlock));
-        return List.of(newWhile);
+        return List.of(newDo);
     }
 }

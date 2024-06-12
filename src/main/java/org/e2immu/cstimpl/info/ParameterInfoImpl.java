@@ -13,7 +13,7 @@ import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.EventuallyFinal;
 
@@ -111,7 +111,7 @@ public class ParameterInfoImpl implements ParameterInfo {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(new TextEnum(simpleName()));
+        return new OutputBuilderImpl().add(new TextImpl(simpleName()));
     }
 
     @Override

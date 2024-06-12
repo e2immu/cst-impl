@@ -17,7 +17,7 @@ import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.util.IntUtil;
 
 import java.util.function.Predicate;
@@ -163,7 +163,7 @@ public class GreaterThanZeroImpl extends ExpressionImpl implements GreaterThanZe
                                 .add(lt).add(sum.lhs().print(qualification));
                     }
                     // -1 + a >= 0 will be written as a >= 1
-                    Text negNumber = new TextEnum(DoubleConstantImpl.formatNumber(-ln.doubleValue(), ln.getClass()));
+                    Text negNumber = new TextImpl(DoubleConstantImpl.formatNumber(-ln.doubleValue(), ln.getClass()));
                     return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), sum.rhs()))
                             .add(gt).add(negNumber);
                 } else if (sum.rhs() instanceof Negation neg) {
@@ -186,10 +186,10 @@ public class GreaterThanZeroImpl extends ExpressionImpl implements GreaterThanZe
             }
         } else if (expression instanceof Negation neg) {
             return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), neg.expression()))
-                    .add(lt).add(new TextEnum("0"));
+                    .add(lt).add(new TextImpl("0"));
         }
         return new OutputBuilderImpl().add(outputInParenthesis(qualification, precedence(), expression))
-                .add(gt).add(new TextEnum("0"));
+                .add(gt).add(new TextImpl("0"));
     }
 
     @Override

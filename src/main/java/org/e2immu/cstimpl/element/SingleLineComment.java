@@ -6,7 +6,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SpaceEnum;
 import org.e2immu.cstimpl.output.SymbolEnum;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 
 public class SingleLineComment implements Comment {
     private final String comment;
@@ -23,6 +23,6 @@ public class SingleLineComment implements Comment {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(SymbolEnum.SINGLE_LINE_COMMENT).add(new TextEnum(comment)).add(SpaceEnum.NEWLINE);
+        return new OutputBuilderImpl().add(SymbolEnum.SINGLE_LINE_COMMENT).add(new TextImpl(comment)).add(SpaceEnum.NEWLINE);
     }
 }

@@ -1,7 +1,10 @@
 package org.e2immu.cstimpl.statement;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -13,6 +16,8 @@ import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.*;
 import org.e2immu.cstimpl.type.DiamondEnum;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -40,12 +45,19 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
     }
 
     public LocalVariableCreationImpl(LocalVariable localVariable) {
-        this(localVariable, List.of(), Set.of());
+        this.localVariable = localVariable;
+        this.modifiers = Set.of();
+        this.otherLocalVariables = List.of();
     }
 
-    public LocalVariableCreationImpl(LocalVariable localVariable,
+    public LocalVariableCreationImpl(List<Comment> comments,
+                                     Source source,
+                                     List<AnnotationExpression> annotations,
+                                     String label,
+                                     LocalVariable localVariable,
                                      List<LocalVariable> otherLocalVariables,
                                      Set<Modifier> modifiers) {
+        super(comments, source, annotations, 0, label);
         assert localVariable.assignmentExpression() != null;
         this.localVariable = localVariable;
         assert otherLocalVariables.stream()
@@ -53,6 +65,37 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
                                 && lv.parameterizedType().equals(localVariable.parameterizedType()));
         this.otherLocalVariables = otherLocalVariables;
         this.modifiers = modifiers;
+    }
+
+    public static class Builder extends StatementImpl.Builder<LocalVariableCreation.Builder>
+            implements LocalVariableCreation.Builder {
+        private final Set<Modifier> modifiers = new HashSet<>();
+        private LocalVariable localVariable;
+        private final List<LocalVariable> otherLocalVariables = new ArrayList<>();
+
+        @Override
+        public LocalVariableCreation.Builder addModifier(Modifier modifier) {
+            modifiers.add(modifier);
+            return this;
+        }
+
+        @Override
+        public LocalVariableCreation.Builder setLocalVariable(LocalVariable localVariable) {
+            this.localVariable = localVariable;
+            return this;
+        }
+
+        @Override
+        public LocalVariableCreation.Builder addOtherLocalVariable(LocalVariable localVariable) {
+            otherLocalVariables.add(localVariable);
+            return this;
+        }
+
+        @Override
+        public LocalVariableCreation build() {
+            return new LocalVariableCreationImpl(comments, source, annotations, label, localVariable,
+                    List.copyOf(otherLocalVariables), Set.copyOf(modifiers));
+        }
     }
 
     @Override
@@ -123,12 +166,12 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
 
         // declarations
         outputBuilder.add(SpaceEnum.ONE);
-        OutputBuilder first = new OutputBuilderImpl().add(new TextEnum(localVariable.simpleName()));
+        OutputBuilder first = new OutputBuilderImpl().add(new TextImpl(localVariable.simpleName()));
         if (!localVariable.assignmentExpression().isEmpty()) {
             first.add(SymbolEnum.assignment("=")).add(localVariable.assignmentExpression().print(qualification));
         }
         Stream<OutputBuilder> rest = otherLocalVariables.stream().map(d -> {
-            OutputBuilder ob = new OutputBuilderImpl().add(new TextEnum(d.simpleName()));
+            OutputBuilder ob = new OutputBuilderImpl().add(new TextImpl(d.simpleName()));
             if (!d.assignmentExpression().isEmpty()) {
                 ob.add(SymbolEnum.assignment("="))
                         .add(d.assignmentExpression().print(qualification));

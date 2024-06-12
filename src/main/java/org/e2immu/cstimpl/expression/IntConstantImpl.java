@@ -9,7 +9,7 @@ import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 
 public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements Numeric, IntConstant {
 
@@ -40,7 +40,7 @@ public class IntConstantImpl extends ConstantExpressionImpl<Integer> implements 
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(new TextEnum(Integer.toString(value)));
+        return new OutputBuilderImpl().add(new TextImpl(Integer.toString(value)));
     }
 
     @Override

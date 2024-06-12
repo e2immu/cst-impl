@@ -135,13 +135,18 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
+    public ExpressionAsStatement.Builder newExpressionAsStatementBuilder() {
+        return new ExpressionAsStatementImpl.Builder();
+    }
+
+    @Override
     public ThrowStatement newThrowStatement(Expression expression) {
         return null;
     }
 
     @Override
-    public AssertStatement newAssertStatement(Expression check, Expression message) {
-        return null;
+    public AssertStatement.Builder newAssertStatementBuilder() {
+        return new AssertStatementImpl.Builder();
     }
 
     @Override
@@ -152,11 +157,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public ReturnStatement.Builder newReturnStatementBuilder() {
         return new ReturnStatementImpl.Builder();
-    }
-
-    @Override
-    public WhileStatement newWhileStatement(Expression loopCondition, Block block) {
-        return null;
     }
 
     @Override
@@ -711,6 +711,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public WhileStatement.Builder newWhileStatementBuilder() {
         return new WhileStatementImpl.Builder();
+    }
+
+    @Override
+    public DoStatement.Builder newDoStatementBuilder() {
+        return new DoStatementImpl.Builder();
     }
 
     @Override

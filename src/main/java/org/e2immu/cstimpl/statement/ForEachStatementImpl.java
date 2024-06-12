@@ -4,6 +4,7 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -27,12 +28,13 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
     private final Expression expression;
     private final Block block;
 
-    public ForEachStatementImpl(Source source,
-                                List<Comment> comments,
+    public ForEachStatementImpl(List<Comment> comments,
+                                Source source,
+                                List<AnnotationExpression> annotations,
                                 String label,
                                 LocalVariableCreation initializer,
                                 Expression expression, Block block) {
-        super(comments, source, List.of(), 0, label);
+        super(comments, source, annotations, 0, label);
         this.initializer = initializer;
         this.expression = expression;
         this.block = block;
@@ -63,7 +65,7 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
 
         @Override
         public ForEachStatement build() {
-            return new ForEachStatementImpl(source, comments, label, initializer, expression, block);
+            return new ForEachStatementImpl(comments, source, annotations, label, initializer, expression, block);
         }
     }
 
@@ -110,7 +112,7 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
                 .add(initializer.isVar() ? new OutputBuilderImpl().add(KeywordImpl.VAR)
                         : lv.parameterizedType().print(qualification, false, DiamondEnum.SHOW_ALL))
                 .add(SpaceEnum.ONE)
-                .add(new TextEnum(lv.simpleName()))
+                .add(new TextImpl(lv.simpleName()))
                 .add(SymbolEnum.COLON)
                 .add(expression.print(qualification))
                 .add(SymbolEnum.RIGHT_PARENTHESIS)
@@ -140,7 +142,7 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
         if (translatedLvc == initializer && expression == translated && translatedBlock.get(0) == block) {
             return List.of(this);
         }
-        return List.of(new ForEachStatementImpl(source(), comments(), label(), translatedLvc, translated,
+        return List.of(new ForEachStatementImpl(comments(), source(), annotations(), label(), translatedLvc, translated,
                 ensureBlock(translatedBlock)));
     }
 }

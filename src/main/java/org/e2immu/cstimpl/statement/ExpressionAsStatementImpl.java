@@ -72,7 +72,8 @@ public class ExpressionAsStatementImpl extends StatementImpl implements Expressi
         visitor.afterStatement(this);
     }
 
-    public static class Builder extends StatementImpl.Builder implements ExpressionAsStatement.Builder {
+    public static class Builder extends StatementImpl.Builder<ExpressionAsStatement.Builder>
+            implements ExpressionAsStatement.Builder {
         private Expression expression;
 
         @Override

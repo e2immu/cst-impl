@@ -69,11 +69,11 @@ public class ParameterizedTypePrinter {
         Wildcard w = parameterizedType.wildcard();
         if (w != null) {
             if (w.isUnbound()) {
-                outputBuilder.add(new TextEnum("?"));
+                outputBuilder.add(new TextImpl("?"));
             } else if (w.isExtends()) {
-                outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
+                outputBuilder.add(new TextImpl("?")).add(SpaceEnum.ONE).add(KeywordImpl.EXTENDS).add(SpaceEnum.ONE);
             } else if (w.isSuper()) {
-                outputBuilder.add(new TextEnum("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
+                outputBuilder.add(new TextImpl("?")).add(SpaceEnum.ONE).add(KeywordImpl.SUPER).add(SpaceEnum.ONE);
             }
         }
         TypeParameter tp = parameterizedType.typeParameter();
@@ -100,9 +100,9 @@ public class ParameterizedTypePrinter {
                 if (parameterizedType.arrays() == 0) {
                     throw new UnsupportedOperationException("Varargs parameterized types must have arrays>0!");
                 }
-                outputBuilder.add(new TextEnum(("[]".repeat(parameterizedType.arrays() - 1) + "...")));
+                outputBuilder.add(new TextImpl(("[]".repeat(parameterizedType.arrays() - 1) + "...")));
             } else if (parameterizedType.arrays() > 0) {
-                outputBuilder.add(new TextEnum("[]".repeat(parameterizedType.arrays())));
+                outputBuilder.add(new TextImpl("[]".repeat(parameterizedType.arrays())));
             }
         }
         return outputBuilder;
@@ -154,7 +154,7 @@ public class ParameterizedTypePrinter {
                                             Set<TypeParameter> visitedTypeParameters) {
         OutputBuilder outputBuilder = new OutputBuilderImpl();
         if (forceSimple) {
-            outputBuilder.add(new TextEnum(typeInfo.simpleName()));
+            outputBuilder.add(new TextImpl(typeInfo.simpleName()));
         } else {
             outputBuilder.add(TypeNameImpl.typeName(typeInfo, qualification.qualifierRequired(typeInfo)));
         }

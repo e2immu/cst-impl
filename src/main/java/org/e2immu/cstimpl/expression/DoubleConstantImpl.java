@@ -7,7 +7,7 @@ import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
-import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.util.IntUtil;
 
 public class DoubleConstantImpl extends ConstantExpressionImpl<Double> implements Numeric, DoubleConstant {
@@ -39,7 +39,7 @@ public class DoubleConstantImpl extends ConstantExpressionImpl<Double> implement
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return new OutputBuilderImpl().add(new TextEnum(Double.toString(value)));
+        return new OutputBuilderImpl().add(new TextImpl(Double.toString(value)));
     }
 
     @Override
