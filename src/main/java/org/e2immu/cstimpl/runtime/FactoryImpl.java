@@ -50,6 +50,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
+    public Assignment.Builder newAssignmentBuilder() {
+        return new AssignmentImpl.Builder();
+    }
+
+    @Override
     public Equals newEquals(Expression lhs, Expression rhs) {
         MethodInfo operator = lhs.isNumeric() && rhs.isNumeric() ? equalsOperatorInt()
                 : equalsOperatorObject();
@@ -168,11 +173,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Block emptyBlock() {
         return new BlockImpl();
-    }
-
-    @Override
-    public Assignment newAssignment(Expression target, Expression value, MethodInfo assignmentOperator, Boolean prefixPrimitiveOperator, boolean complainAboutAssignmentOutsideType, boolean allowStaticallyAssigned, Expression evaluationOfValue) {
-        return null;
     }
 
     @Override

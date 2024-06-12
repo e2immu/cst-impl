@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.expression;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Assignment;
 import org.e2immu.cstapi.expression.Expression;
@@ -12,12 +14,13 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
-import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -31,12 +34,14 @@ public class AssignmentImpl extends ExpressionImpl implements Assignment {
     private final Boolean prefixPrimitiveOperator;
 
     public AssignmentImpl(Expression target, Expression value) {
-        this(target, value, null, false, null, null);
+        this(List.of(), null, target, value, null, false,
+                null, null);
     }
 
-    public AssignmentImpl(Expression target, Expression value, MethodInfo assignmentOperator,
+    public AssignmentImpl(List<Comment> comments, Source source,
+                          Expression target, Expression value, MethodInfo assignmentOperator,
                           boolean assignmentOperatorIsPlus, MethodInfo binaryOperator, Boolean prefixPrimitiveOperator) {
-        super(1 + target.complexity() + value.complexity());
+        super(comments, source, 1 + target.complexity() + value.complexity());
         this.target = target;
         this.value = value;
         this.variableTarget = target instanceof VariableExpression ve ? ve.variable() : null;
@@ -44,6 +49,57 @@ public class AssignmentImpl extends ExpressionImpl implements Assignment {
         this.assignmentOperatorIsPlus = assignmentOperatorIsPlus;
         this.binaryOperator = binaryOperator;
         this.prefixPrimitiveOperator = prefixPrimitiveOperator;
+    }
+
+    public static class Builder extends ElementImpl.Builder<Assignment.Builder> implements Assignment.Builder {
+        private Expression target;
+        private Expression value;
+        private MethodInfo assignmentOperator;
+        private boolean assignmentOperatorIsPlus;
+        private MethodInfo binaryOperator;
+        private Boolean prefixPrimitiveOperator;
+
+        @Override
+        public Builder setTarget(Expression target) {
+            this.target = target;
+            return this;
+        }
+
+        @Override
+        public Builder setValue(Expression value) {
+            this.value = value;
+            return this;
+        }
+
+        @Override
+        public Builder setAssignmentOperator(MethodInfo assignmentOperator) {
+            this.assignmentOperator = assignmentOperator;
+            return this;
+        }
+
+        @Override
+        public Builder setPrefixPrimitiveOperator(Boolean prefixPrimitiveOperator) {
+            this.prefixPrimitiveOperator = prefixPrimitiveOperator;
+            return this;
+        }
+
+        @Override
+        public Builder setBinaryOperator(MethodInfo binaryOperator) {
+            this.binaryOperator = binaryOperator;
+            return this;
+        }
+
+        @Override
+        public Builder setAssignmentOperatorIsPlus(boolean assignmentOperatorIsPlus) {
+            this.assignmentOperatorIsPlus = assignmentOperatorIsPlus;
+            return this;
+        }
+
+        @Override
+        public Assignment build() {
+            return new AssignmentImpl(comments, source, target, value, assignmentOperator, assignmentOperatorIsPlus,
+                    binaryOperator, prefixPrimitiveOperator);
+        }
     }
 
     @Override
