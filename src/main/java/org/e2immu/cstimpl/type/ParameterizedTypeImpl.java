@@ -537,4 +537,14 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         }
         return new ParameterizedTypeImpl(stablePt.typeInfo(), recursivelyMappedParameters);
     }
+
+    @Override
+    public boolean isMathematicallyInteger() {
+        return arrays == 0 && typeInfo != null && (
+                typeInfo.isByte() || typeInfo.isBoxedByte() ||
+                typeInfo.isShort() || typeInfo.isBoxedShort() ||
+                typeInfo.isInt() || typeInfo.isInteger() ||
+                typeInfo.isLong() || typeInfo.isBoxedLong() ||
+                typeInfo.isChar() || typeInfo.isCharacter());
+    }
 }

@@ -20,6 +20,7 @@ public class EvalImpl implements Eval {
     private final EvalOr evalOr;
     private final EvalDivide evalDivide;
     private final EvalInlineConditional evalInlineConditional;
+    private final EvalInequality evalInequality;
 
     public EvalImpl(Runtime runtime) {
         evalProduct = new EvalProduct(runtime);
@@ -30,6 +31,7 @@ public class EvalImpl implements Eval {
         evalOr = new EvalOr(runtime);
         evalDivide = new EvalDivide(runtime);
         evalInlineConditional = new EvalInlineConditional(runtime);
+        evalInequality = new EvalInequality(runtime);
     }
 
     @Override
@@ -69,12 +71,17 @@ public class EvalImpl implements Eval {
 
     @Override
     public Expression greater(Expression lhs, Expression rhs, boolean allowEquals) {
-        throw new UnsupportedOperationException();
+        return evalInequality.greater(lhs, rhs, allowEquals);
+    }
+
+    @Override
+    public Expression less(Expression lhs, Expression rhs, boolean allowEquals) {
+        return evalInequality.less(lhs, rhs, allowEquals);
     }
 
     @Override
     public Expression greaterThanZero(Expression expression) {
-        throw new UnsupportedOperationException();
+        return evalInequality.greaterThanZero(expression);
     }
 
     @Override

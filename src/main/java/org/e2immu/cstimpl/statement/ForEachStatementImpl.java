@@ -10,8 +10,13 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.statement.ForEachStatement;
 import org.e2immu.cstapi.statement.LocalVariableCreation;
+import org.e2immu.cstapi.statement.Statement;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.variable.DescendMode;
+import org.e2immu.cstapi.variable.LocalVariable;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.output.*;
+import org.e2immu.cstimpl.type.DiamondEnum;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -27,7 +32,7 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
                                 String label,
                                 LocalVariableCreation initializer,
                                 Expression expression, Block block) {
-        super(comments, source, List.of(), 0, null);
+        super(comments, source, List.of(), 0, label);
         this.initializer = initializer;
         this.expression = expression;
         this.block = block;
@@ -79,26 +84,63 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
 
     @Override
     public void visit(Predicate<Element> predicate) {
-
+        if (predicate.test(this)) {
+            initializer.visit(predicate);
+            expression.visit(predicate);
+            block.visit(predicate);
+        }
     }
 
     @Override
     public void visit(Visitor visitor) {
-
+        if (visitor.beforeStatement(this)) {
+            initializer.visit(visitor);
+            expression.visit(visitor);
+            block.visit(visitor);
+        }
+        visitor.afterStatement(this);
     }
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        OutputBuilder outputBuilder = outputBuilder(qualification);
+        LocalVariable lv = initializer.localVariable();
+        return outputBuilder.add(KeywordImpl.FOR)
+                .add(SymbolEnum.LEFT_PARENTHESIS)
+                .add(initializer.isVar() ? new OutputBuilderImpl().add(KeywordImpl.VAR)
+                        : lv.parameterizedType().print(qualification, false, DiamondEnum.SHOW_ALL))
+                .add(SpaceEnum.ONE)
+                .add(new TextEnum(lv.simpleName()))
+                .add(SymbolEnum.COLON)
+                .add(expression.print(qualification))
+                .add(SymbolEnum.RIGHT_PARENTHESIS)
+                .add(block.print(qualification));
     }
 
     @Override
     public Stream<Variable> variables(DescendMode descendMode) {
-        return Stream.empty();
+        return Stream.concat(expression.variables(descendMode), block.variables(descendMode));
     }
 
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
-        return Stream.empty();
+        return Stream.concat(initializer.typesReferenced(),
+                Stream.concat(expression.typesReferenced(), block.typesReferenced()));
+    }
+
+    @Override
+    public List<Statement> translate(TranslationMap translationMap) {
+        List<Statement> direct = translationMap.translateStatement(this);
+        if (haveDirectTranslation(direct, this)) return direct;
+
+        // translations in order of appearance
+        LocalVariableCreation translatedLvc = (LocalVariableCreation) initializer.translate(translationMap).get(0);
+        Expression translated = expression.translate(translationMap);
+        List<Statement> translatedBlock = block.translate(translationMap);
+        if (translatedLvc == initializer && expression == translated && translatedBlock.get(0) == block) {
+            return List.of(this);
+        }
+        return List.of(new ForEachStatementImpl(source(), comments(), label(), translatedLvc, translated,
+                ensureBlock(translatedBlock)));
     }
 }

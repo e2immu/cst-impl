@@ -61,6 +61,11 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
     }
 
     @Override
+    public boolean isVar() {
+        return modifiers.stream().anyMatch(Modifier::isWithoutTypeSpecification);
+    }
+
+    @Override
     public LocalVariable localVariable() {
         return localVariable;
     }

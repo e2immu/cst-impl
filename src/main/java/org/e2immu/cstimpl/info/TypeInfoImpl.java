@@ -254,6 +254,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "void".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isBoxedFloat() {
         return "java.lang.Float".equals(this.fullyQualifiedName);
     }
@@ -263,6 +264,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "float".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isBoxedDouble() {
         return "java.lang.Double".equals(this.fullyQualifiedName);
     }
@@ -272,6 +274,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "double".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isBoxedByte() {
         return "java.lang.Byte".equals(this.fullyQualifiedName);
     }
@@ -281,6 +284,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "byte".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isBoxedShort() {
         return "java.lang.Short".equals(this.fullyQualifiedName);
     }
@@ -314,6 +318,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "char".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isInteger() {
         return "java.lang.Integer".equals(this.fullyQualifiedName);
     }
@@ -328,6 +333,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         return "boolean".equals(this.fullyQualifiedName);
     }
 
+    @Override
     public boolean isCharacter() {
         return "java.lang.Character".equals(this.fullyQualifiedName);
     }

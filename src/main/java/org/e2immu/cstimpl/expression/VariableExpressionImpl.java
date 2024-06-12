@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.expression;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
@@ -10,10 +12,13 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -23,11 +28,11 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
     private final Suffix suffix;
 
     public VariableExpressionImpl(Variable variable) {
-        this(variable, null);
+        this(null, List.of(), variable, null);
     }
 
-    public VariableExpressionImpl(Variable variable, Suffix suffix) {
-        super(variable.complexity());
+    public VariableExpressionImpl(Source source, List<Comment> comments, Variable variable, Suffix suffix) {
+        super(source, comments, variable.complexity());
         this.variable = variable;
         this.suffix = suffix;
     }
@@ -42,9 +47,44 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
         return variable;
     }
 
+    public static class Builder extends ElementImpl.Builder<VariableExpression.Builder> implements VariableExpression.Builder {
+        private Variable variable;
+        private Suffix suffix;
+
+        @Override
+        public VariableExpression.Builder setVariable(Variable variable) {
+            this.variable = variable;
+            return this;
+        }
+
+        @Override
+        public VariableExpression.Builder setSuffix(Suffix suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        @Override
+        public VariableExpression build() {
+            return new VariableExpressionImpl(source, comments, variable, suffix);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VariableExpressionImpl that = (VariableExpressionImpl) o;
+        return Objects.equals(variable, that.variable) && Objects.equals(suffix, that.suffix);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(variable, suffix);
+    }
+
     @Override
     public VariableExpression withSuffix(Suffix suffix) {
-        return new VariableExpressionImpl(variable, suffix);
+        return new VariableExpressionImpl(source(), comments(), variable, suffix);
     }
 
     @Override

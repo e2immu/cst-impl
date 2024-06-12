@@ -1,21 +1,27 @@
 package org.e2immu.cstimpl.element;
 
+import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
-import org.e2immu.cstapi.info.Info;
 
+/*
+we must be a bit memory-conscious: no unnecessary fields because there may be millions of elements
+ */
 public class SourceImpl implements Source {
-    private final Info info;
-    private final int beginLine;
-    private final int beginPos;
-    private final int endLine;
-    private final int endPos;
+    private final Element parent;
+    private final String index;
+    private final short beginLine;
+    private final short beginPos;
+    private final short endLine;
+    private final short endPos;
 
-    public SourceImpl(Info info, int beginLine, int beginPos, int endLine, int endPos) {
-        this.info = info;
-        this.beginLine = beginLine;
-        this.beginPos = beginPos;
-        this.endLine = endLine;
-        this.endPos = endPos;
+    public SourceImpl(Element parent, String index, int beginLine, int beginPos, int endLine, int endPos) {
+        this.parent = parent;
+        // we internalize, because there are many repeats here ("0", "1", ...)
+        this.index = index.intern();
+        this.beginLine = (short) beginLine;
+        this.beginPos = (short) beginPos;
+        this.endLine = (short) endLine;
+        this.endPos = (short) endPos;
     }
 
     @Override
@@ -32,8 +38,8 @@ public class SourceImpl implements Source {
     }
 
     @Override
-    public Info info() {
-        return info;
+    public Element parent() {
+        return parent;
     }
 
     @Override
@@ -54,5 +60,10 @@ public class SourceImpl implements Source {
     @Override
     public int endPos() {
         return endPos;
+    }
+
+    @Override
+    public String index() {
+        return index;
     }
 }

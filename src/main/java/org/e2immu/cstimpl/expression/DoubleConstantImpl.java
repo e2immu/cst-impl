@@ -1,9 +1,6 @@
 package org.e2immu.cstimpl.expression;
 
-import org.e2immu.cstapi.expression.DoubleConstant;
-import org.e2immu.cstapi.expression.Expression;
-import org.e2immu.cstapi.expression.IntConstant;
-import org.e2immu.cstapi.expression.Numeric;
+import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
@@ -11,6 +8,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.TextEnum;
+import org.e2immu.cstimpl.util.IntUtil;
 
 public class DoubleConstantImpl extends ConstantExpressionImpl<Double> implements Numeric, DoubleConstant {
 
@@ -78,4 +76,15 @@ public class DoubleConstantImpl extends ConstantExpressionImpl<Double> implement
     public Expression negate() {
         return new DoubleConstantImpl(parameterizedType, -value);
     }
+
+    public static String formatNumber(double d, Class<? extends Numeric> clazz) {
+        if (IntUtil.isMathematicalInteger(d)) {
+            return Long.toString((long) d);
+        }
+        if (clazz.equals(FloatConstant.class)) {
+            return d + "f";
+        }
+        return Double.toString(d);
+    }
+
 }

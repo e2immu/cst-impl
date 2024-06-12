@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.CompilationUnit;
+import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.*;
@@ -523,8 +524,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Source newParserSource(Info info, int beginLine, int beginPos, int endLine, int endPos) {
-        return new SourceImpl(info, beginLine, beginPos, endLine, endPos);
+    public Source newParserSource(Element parent, String index, int beginLine, int beginPos, int endLine, int endPos) {
+        return new SourceImpl(parent, index, beginLine, beginPos, endLine, endPos);
     }
 
     @Override
@@ -716,4 +717,15 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public ForEachStatement.Builder newForEachBuilder() {
         return new ForEachStatementImpl.Builder();
     }
+
+    @Override
+    public WhileStatement.Builder newWhileStatementBuilder() {
+        return new WhileStatementImpl.Builder();
+    }
+
+    @Override
+    public VariableExpression.Builder newVariableExpressionBuilder() {
+        return new VariableExpressionImpl.Builder();
+    }
 }
+

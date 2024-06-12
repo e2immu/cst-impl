@@ -34,6 +34,11 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     }
 
     @Override
+    public Expression less(Expression lhs, Expression rhs, boolean allowEquals) {
+        return eval.less(lhs, rhs, allowEquals);
+    }
+
+    @Override
     public Expression sum(Expression lhs, Expression rhs) {
         return eval.sum(lhs, rhs);
     }

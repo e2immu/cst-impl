@@ -6,6 +6,7 @@ import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.statement.Statement;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
@@ -92,5 +93,16 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
             this.label = label;
             return (B) this;
         }
+    }
+
+    protected boolean haveDirectTranslation(List<Statement> resultOfTranslation, Statement statement) {
+        return resultOfTranslation.size() != 1 || resultOfTranslation.get(0) != statement;
+    }
+
+    protected Block ensureBlock(List<Statement> resultOfTranslation) {
+        if (resultOfTranslation.size() == 1 && resultOfTranslation.get(0) instanceof Block block) {
+            return block;
+        }
+        return new BlockImpl.Builder().addStatements(resultOfTranslation).build();
     }
 }
