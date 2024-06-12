@@ -11,11 +11,14 @@ import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
+import java.util.List;
+
 
 public class SumImpl extends BinaryOperatorImpl implements Sum {
 
     public SumImpl(Runtime runtime, Expression lhs, Expression rhs) {
-        super(runtime.plusOperatorInt(), runtime.precedenceAdditive(), lhs, rhs);
+        super(List.of(), null, runtime.plusOperatorInt(), runtime.precedenceAdditive(), lhs, rhs,
+                runtime.widestType(lhs.parameterizedType(), rhs.parameterizedType()));
     }
 
     @Override

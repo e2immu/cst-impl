@@ -32,7 +32,7 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
     }
 
     public VariableExpressionImpl(Source source, List<Comment> comments, Variable variable, Suffix suffix) {
-        super(source, comments, variable.complexity());
+        super(comments, source, variable.complexity());
         this.variable = variable;
         this.suffix = suffix;
     }

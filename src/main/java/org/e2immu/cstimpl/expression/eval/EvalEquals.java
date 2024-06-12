@@ -54,14 +54,14 @@ public class EvalEquals {
             }
             Negation neg;
             if ((neg = termsOfProducts[0].asInstanceOf(Negation.class)) != null) {
-                return new EqualsImpl(runtime, runtime.equalsOperatorInt(), runtime.intZero(), neg.expression());
+                return new EqualsImpl(runtime, runtime.intZero(), neg.expression());
             }
             // 0 == 3*x --> 0 == x
             Product p;
             if ((p = termsOfProducts[0].asInstanceOf(Product.class)) != null && p.lhs().numericValue() != null) {
-                return new EqualsImpl(runtime, runtime.equalsOperatorInt(), runtime.intZero(), p.rhs());
+                return new EqualsImpl(runtime, runtime.intZero(), p.rhs());
             }
-            return new EqualsImpl(runtime, runtime.equalsOperatorInt(), runtime.intZero(), termsOfProducts[0]);
+            return new EqualsImpl(runtime, runtime.intZero(), termsOfProducts[0]);
         }
         Expression newLeft;
         Expression newRight;
@@ -95,7 +95,7 @@ public class EvalEquals {
         }
 
         // recurse
-        return new EqualsImpl(runtime, runtime.equalsOperatorInt(), newLeft, newRight);
+        return new EqualsImpl(runtime, newLeft, newRight);
     }
 
     private Expression wrapSum(Expression[] termsOfProducts,

@@ -16,10 +16,7 @@ import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.*;
 import org.e2immu.cstimpl.type.DiamondEnum;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -65,6 +62,20 @@ public class LocalVariableCreationImpl extends StatementImpl implements LocalVar
                                 && lv.parameterizedType().equals(localVariable.parameterizedType()));
         this.otherLocalVariables = otherLocalVariables;
         this.modifiers = modifiers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LocalVariableCreationImpl that)) return false;
+        return Objects.equals(localVariable, that.localVariable)
+               && Objects.equals(otherLocalVariables, that.otherLocalVariables)
+               && Objects.equals(modifiers, that.modifiers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(localVariable, otherLocalVariables, modifiers);
     }
 
     public static class Builder extends StatementImpl.Builder<LocalVariableCreation.Builder>

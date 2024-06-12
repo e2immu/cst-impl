@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.expression;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.BinaryOperator;
 import org.e2immu.cstapi.expression.Expression;
@@ -9,10 +11,12 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
@@ -31,13 +35,60 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
     protected final Precedence precedence;
     protected final Expression lhs;
     protected final Expression rhs;
+    protected final ParameterizedType parameterizedType;
 
-    public BinaryOperatorImpl(MethodInfo operator, Precedence precedence, Expression lhs, Expression rhs) {
-        super(1 + lhs.complexity() + rhs.complexity());
+    public BinaryOperatorImpl(List<Comment> comments, Source source,
+                              MethodInfo operator, Precedence precedence, Expression lhs, Expression rhs,
+                              ParameterizedType parameterizedType) {
+        super(comments, source, 1 + lhs.complexity() + rhs.complexity());
         this.lhs = Objects.requireNonNull(lhs);
         this.rhs = Objects.requireNonNull(rhs);
         this.operator = Objects.requireNonNull(operator);
         this.precedence = Objects.requireNonNull(precedence);
+        this.parameterizedType = Objects.requireNonNull(parameterizedType);
+    }
+
+    public static class Builder extends ElementImpl.Builder<BinaryOperator.Builder> implements BinaryOperator.Builder {
+        protected MethodInfo operator;
+        protected Precedence precedence;
+        protected Expression lhs;
+        protected Expression rhs;
+        protected ParameterizedType parameterizedType;
+
+        @Override
+        public Builder setParameterizedType(ParameterizedType parameterizedType) {
+            this.parameterizedType = parameterizedType;
+            return this;
+        }
+
+        @Override
+        public BinaryOperator.Builder setLhs(Expression lhs) {
+            this.lhs = lhs;
+            return this;
+        }
+
+        @Override
+        public BinaryOperator.Builder setRhs(Expression rhs) {
+            this.rhs = rhs;
+            return this;
+        }
+
+        @Override
+        public BinaryOperator.Builder setOperator(MethodInfo operator) {
+            this.operator = operator;
+            return this;
+        }
+
+        @Override
+        public BinaryOperator.Builder setPrecedence(Precedence precedence) {
+            this.precedence = precedence;
+            return this;
+        }
+
+        @Override
+        public BinaryOperator build() {
+            return new BinaryOperatorImpl(comments, source, operator, precedence, lhs, rhs, parameterizedType);
+        }
     }
 
     @Override
@@ -70,7 +121,7 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
 
     @Override
     public ParameterizedType parameterizedType() {
-        return null;
+        return parameterizedType;
     }
 
     @Override
@@ -178,6 +229,7 @@ public class BinaryOperatorImpl extends ExpressionImpl implements BinaryOperator
         Expression translatedLhs = lhs.translate(translationMap);
         Expression translatedRhs = rhs.translate(translationMap);
         if (translatedRhs == this.rhs && translatedLhs == this.lhs) return this;
-        return new BinaryOperatorImpl(operator, precedence, translatedLhs, translatedRhs);
+        return new BinaryOperatorImpl(comments(), source(), operator, precedence, translatedLhs, translatedRhs,
+                parameterizedType);
     }
 }

@@ -17,6 +17,7 @@ import org.e2immu.cstimpl.output.SpaceEnum;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -35,6 +36,18 @@ public class ExpressionAsStatementImpl extends StatementImpl implements Expressi
                                      Expression expression) {
         super(comments, source, annotations, expression.complexity(), label);
         this.expression = expression;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExpressionAsStatementImpl that)) return false;
+        return Objects.equals(expression, that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(expression);
     }
 
     @Override

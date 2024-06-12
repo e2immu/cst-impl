@@ -3,7 +3,6 @@ package org.e2immu.cstimpl.expression;
 import org.e2immu.annotation.NotNull;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Source;
-import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
@@ -30,7 +29,7 @@ public abstract class ExpressionImpl extends ElementImpl implements Expression {
         this(null, null, complexity);
     }
 
-    protected ExpressionImpl(Source source, List<Comment> comments, int complexity) {
+    protected ExpressionImpl(List<Comment> comments, Source source, int complexity) {
         this.complexity = complexity;
         this.source = source;
         this.comments = comments;

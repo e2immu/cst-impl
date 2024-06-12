@@ -16,6 +16,7 @@ import org.e2immu.cstimpl.output.KeywordImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -53,6 +54,18 @@ public class WhileStatementImpl extends StatementImpl implements WhileStatement 
         public WhileStatement build() {
             return new WhileStatementImpl(comments, source, annotations, label, expression, block);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WhileStatementImpl that)) return false;
+        return Objects.equals(expression, that.expression) && Objects.equals(block, that.block);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expression, block);
     }
 
     @Override

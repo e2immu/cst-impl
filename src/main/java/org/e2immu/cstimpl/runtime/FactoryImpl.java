@@ -52,7 +52,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public Equals newEquals(Expression lhs, Expression rhs) {
         MethodInfo operator = lhs.isNumeric() && rhs.isNumeric() ? equalsOperatorInt()
                 : equalsOperatorObject();
-        return new EqualsImpl(operator, PrecedenceEnum.EQUALITY, lhs, rhs);
+        return new EqualsImpl(List.of(), null, operator, PrecedenceEnum.EQUALITY, lhs, rhs, booleanParameterizedType());
     }
 
     @Override
@@ -61,8 +61,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public BinaryOperator newBinaryOperator(Expression lhs, MethodInfo operator, Expression rhs, Precedence precedence) {
-        return new BinaryOperatorImpl(operator, precedence, lhs, rhs);
+    public BinaryOperator.Builder newBinaryOperatorBuilder() {
+        return new BinaryOperatorImpl.Builder();
     }
 
     @Override
@@ -125,8 +125,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public IfElseStatement newIfElseStatement(Expression condition, Block ifBlock, Block elseBlock) {
-        return null;
+    public IfElseStatement.Builder newIfElseBuilder() {
+        return new IfElseStatementImpl.Builder();
     }
 
     @Override
@@ -140,8 +140,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ThrowStatement newThrowStatement(Expression expression) {
-        return null;
+    public ThrowStatement.Builder newThrowBuilder() {
+        return new ThrowStatementImpl.Builder();
     }
 
     @Override
@@ -155,7 +155,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ReturnStatement.Builder newReturnStatementBuilder() {
+    public ReturnStatement.Builder newReturnBuilder() {
         return new ReturnStatementImpl.Builder();
     }
 
@@ -709,7 +709,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public WhileStatement.Builder newWhileStatementBuilder() {
+    public WhileStatement.Builder newWhileBuilder() {
         return new WhileStatementImpl.Builder();
     }
 
