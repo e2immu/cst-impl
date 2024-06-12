@@ -44,11 +44,6 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public TypeNature typeNatureCLASS() {
-        return TypeNatureEnum.CLASS;
-    }
-
-    @Override
     public Assignment newAssignment(Expression target, Expression value) {
         return new AssignmentImpl(target, value);
     }
@@ -240,38 +235,33 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ParameterizedType WILDCARD_PARAMETERIZED_TYPE() {
+    public ParameterizedType parameterizedTypeWildcard() {
         return null;
     }
 
     @Override
-    public ParameterizedType parameterizedTypeRETURN_TYPE_OF_CONSTRUCTOR() {
+    public ParameterizedType parameterizedTypeReturnTypeOfConstructor() {
         return null;
     }
 
     @Override
-    public Diamond diamondYES() {
+    public Diamond diamondYes() {
         return DiamondEnum.YES;
     }
 
     @Override
-    public Diamond diamondNO() {
+    public Diamond diamondShowAll() {
+        return DiamondEnum.SHOW_ALL;
+    }
+
+    @Override
+    public Diamond diamondNo() {
         return DiamondEnum.NO;
     }
 
     @Override
     public Expression constructorCallWithArrayInitializer(MethodInfo constructor, ParameterizedType returnType, List<Object> of, ArrayInitializer initializer) {
         return null;
-    }
-
-    @Override
-    public MethodModifier methodModifierSTATIC() {
-        return MethodModifierEnum.STATIC;
-    }
-
-    @Override
-    public MethodModifier methodModifierPUBLIC() {
-        return MethodModifierEnum.PUBLIC;
     }
 
     @Override
@@ -310,22 +300,22 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public BooleanConstant newBooleanConstant(boolean value) {
+    public BooleanConstant newBoolean(boolean value) {
         return new BooleanConstantImpl(this, value);
     }
 
     @Override
-    public IntConstant zero() {
+    public IntConstant intZero() {
         return zero;
     }
 
     @Override
-    public IntConstant one() {
+    public IntConstant intOne() {
         return one;
     }
 
     @Override
-    public IntConstant minusOne() {
+    public IntConstant intMinusOne() {
         return minusOne;
     }
 
@@ -340,19 +330,19 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Precedence precedenceUNARY() {
+    public Precedence precedenceUnary() {
         return PrecedenceEnum.UNARY;
     }
 
     @Override
-    public Precedence precedenceEQUALITY() {
+    public Precedence precedenceEquality() {
         return PrecedenceEnum.EQUALITY;
     }
 
     @Override
     public Expression nullValue(TypeInfo typeInfo) {
         if (typeInfo != null) {
-            if (typeInfo.isBoolean()) return newBooleanConstant(false);
+            if (typeInfo.isBoolean()) return newBoolean(false);
             if (typeInfo.isInt()) return zero;
             if (typeInfo.isLong()) return newLong(0L);
             if (typeInfo.isShort()) return newShort((short) 0);
@@ -365,32 +355,32 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Precedence precedenceGREATERTHAN() {
+    public Precedence precedenceGreaterThan() {
         return PrecedenceEnum.EQUALITY;
     }
 
     @Override
-    public Precedence precedenceAND() {
+    public Precedence precedenceAnd() {
         return PrecedenceEnum.AND;
     }
 
     @Override
-    public Precedence precedenceOR() {
+    public Precedence precedenceOr() {
         return PrecedenceEnum.OR;
     }
 
     @Override
-    public Precedence precedenceASSIGNMENT() {
+    public Precedence precedenceAssignment() {
         return PrecedenceEnum.ASSIGNMENT;
     }
 
     @Override
-    public Precedence precedenceMULTIPLICATIVE() {
+    public Precedence precedenceMultiplicative() {
         return PrecedenceEnum.MULTIPLICATIVE;
     }
 
     @Override
-    public Precedence precedenceADDITIVE() {
+    public Precedence precedenceAdditive() {
         return PrecedenceEnum.ADDITIVE;
     }
 
@@ -534,7 +524,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Wildcard wildcardEXTENDS() {
+    public Wildcard wildcardExtends() {
         return WildcardEnum.EXTENDS;
     }
 
@@ -544,57 +534,57 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public FieldModifier newFieldModifierFinal() {
+    public FieldModifier fieldModifierFinal() {
         return FieldModifierEnum.FINAL;
     }
 
     @Override
-    public FieldModifier newFieldModifierPublic() {
+    public FieldModifier fieldModifierPublic() {
         return FieldModifierEnum.PUBLIC;
     }
 
     @Override
-    public FieldModifier newFieldModifierStatic() {
+    public FieldModifier fieldModifierStatic() {
         return FieldModifierEnum.STATIC;
     }
 
     @Override
-    public FieldModifier newFieldModifierTransient() {
+    public FieldModifier fieldModifierTransient() {
         return FieldModifierEnum.TRANSIENT;
     }
 
     @Override
-    public FieldModifier newFieldModifierPrivate() {
+    public FieldModifier fieldModifierPrivate() {
         return FieldModifierEnum.PRIVATE;
     }
 
     @Override
-    public FieldModifier newFieldModifierProtected() {
+    public FieldModifier fieldModifierProtected() {
         return FieldModifierEnum.PROTECTED;
     }
 
     @Override
-    public FieldModifier newFieldModifierVolatile() {
+    public FieldModifier fieldModifierVolatile() {
         return FieldModifierEnum.VOLATILE;
     }
 
     @Override
-    public Access newAccessPackage() {
+    public Access accessPackage() {
         return InspectionImpl.AccessEnum.PACKAGE;
     }
 
     @Override
-    public Access newAccessPrivate() {
+    public Access accessPrivate() {
         return InspectionImpl.AccessEnum.PRIVATE;
     }
 
     @Override
-    public Access newAccessProtected() {
+    public Access accessProtected() {
         return InspectionImpl.AccessEnum.PROTECTED;
     }
 
     @Override
-    public Access newAccessPublic() {
+    public Access accessPublic() {
         return InspectionImpl.AccessEnum.PUBLIC;
     }
 
@@ -604,107 +594,107 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public TypeNature newTypeNatureAnnotation() {
+    public TypeNature typeNatureAnnotation() {
         return TypeNatureEnum.ANNOTATION;
     }
 
     @Override
-    public TypeNature newTypeNatureClass() {
+    public TypeNature typeNatureClass() {
         return TypeNatureEnum.CLASS;
     }
 
     @Override
-    public TypeNature newTypeNatureEnum() {
+    public TypeNature typeNatureEnum() {
         return TypeNatureEnum.ENUM;
     }
 
     @Override
-    public TypeNature newTypeNatureInterface() {
+    public TypeNature typeNatureInterface() {
         return TypeNatureEnum.INTERFACE;
     }
 
     @Override
-    public TypeNature newTypeNatureRecord() {
+    public TypeNature typeNatureRecord() {
         return TypeNatureEnum.RECORD;
     }
 
     @Override
-    public TypeModifier newTypeModifierAbstract() {
+    public TypeModifier typeModifierAbstract() {
         return TypeModifierEnum.ABSTRACT;
     }
 
     @Override
-    public TypeModifier newTypeModifierFinal() {
+    public TypeModifier typeModifierFinal() {
         return TypeModifierEnum.FINAL;
     }
 
     @Override
-    public TypeModifier newTypeModifierNonSealed() {
+    public TypeModifier typeModifierNonSealed() {
         return TypeModifierEnum.NON_SEALED;
     }
 
     @Override
-    public TypeModifier newTypeModifierPrivate() {
+    public TypeModifier typeModifierPrivate() {
         return TypeModifierEnum.PRIVATE;
     }
 
     @Override
-    public TypeModifier newTypeModifierProtected() {
+    public TypeModifier typeModifierProtected() {
         return TypeModifierEnum.PROTECTED;
     }
 
     @Override
-    public TypeModifier newTypeModifierPublic() {
+    public TypeModifier typeModifierPublic() {
         return TypeModifierEnum.PUBLIC;
     }
 
     @Override
-    public TypeModifier newTypeModifierSealed() {
+    public TypeModifier typeModifierSealed() {
         return TypeModifierEnum.SEALED;
     }
 
     @Override
-    public TypeModifier newTypeModifierStatic() {
+    public TypeModifier typeModifierStatic() {
         return TypeModifierEnum.STATIC;
     }
 
     @Override
-    public MethodModifier newMethodModifierAbstract() {
+    public MethodModifier methodModifierAbstract() {
         return MethodModifierEnum.ABSTRACT;
     }
 
     @Override
-    public MethodModifier newMethodModifierDefault() {
+    public MethodModifier methodModifierDefault() {
         return MethodModifierEnum.DEFAULT;
     }
 
     @Override
-    public MethodModifier newMethodModifierFinal() {
+    public MethodModifier methodModifierFinal() {
         return MethodModifierEnum.FINAL;
     }
 
     @Override
-    public MethodModifier newMethodModifierPrivate() {
+    public MethodModifier methodModifierPrivate() {
         return MethodModifierEnum.PRIVATE;
     }
 
     @Override
-    public MethodModifier newMethodModifierProtected() {
+    public MethodModifier methodModifierProtected() {
         return MethodModifierEnum.PROTECTED;
     }
 
     @Override
-    public MethodModifier newMethodModifierPublic() {
+    public MethodModifier methodModifierPublic() {
         return MethodModifierEnum.PUBLIC;
     }
 
     @Override
-    public MethodModifier newMethodModifierStatic() {
+    public MethodModifier methodModifierStatic() {
         return MethodModifierEnum.STATIC;
     }
 
     @Override
-    public MethodModifier newMethodModifierSynchronized() {
+    public MethodModifier methodModifierSynchronized() {
         return MethodModifierEnum.SYNCHRONIZED;
     }
 

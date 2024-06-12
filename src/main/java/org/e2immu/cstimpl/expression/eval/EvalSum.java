@@ -33,7 +33,7 @@ public class EvalSum {
 
         if (l instanceof Negation nl && nl.expression().equals(r) ||
             r instanceof Negation nr && nr.expression().equals(l)) {
-            return runtime.zero();
+            return runtime.intZero();
         }
 
         // similar code in Equals (common terms)
@@ -42,7 +42,7 @@ public class EvalSum {
                 expandTerms(r, false)).toArray(Expression[]::new);
         Arrays.sort(terms);
         Expression[] termsOfProducts = makeProducts(terms);
-        if (termsOfProducts.length == 0) return runtime.zero();
+        if (termsOfProducts.length == 0) return runtime.intZero();
         if (termsOfProducts.length == 1) return termsOfProducts[0];
         Expression newL, newR;
         if (termsOfProducts.length == 2) {
@@ -84,7 +84,7 @@ public class EvalSum {
                 Factor f2 = getFactor(e);
                 if (f1.term.equals(f2.term)) {
                     if (f1.factor == -f2.factor) {
-                        result.set(latestIndex, runtime.zero());
+                        result.set(latestIndex, runtime.intZero());
                     } else {
                         Expression f = runtime.intOrDouble(f1.factor + f2.factor);
                         Expression product = runtime.product(f, f1.term);

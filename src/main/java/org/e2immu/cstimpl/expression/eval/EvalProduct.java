@@ -19,7 +19,7 @@ public class EvalProduct {
         Double rn = r.numericValue();
 
         if (ln != null && ln == 0 || rn != null && rn == 0) {
-            return runtime.zero();
+            return runtime.intZero();
         }
 
         if (ln != null && ln == 1) return r;

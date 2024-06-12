@@ -9,7 +9,7 @@ import org.e2immu.cstapi.translate.TranslationMap;
 
 public class EqualsImpl extends BinaryOperatorImpl implements Equals {
     public EqualsImpl(Runtime runtime, MethodInfo equalityOperator, Expression lhs, Expression rhs) {
-        super(equalityOperator, runtime.precedenceEQUALITY(), lhs, rhs);
+        super(equalityOperator, runtime.precedenceEquality(), lhs, rhs);
     }
 
     public EqualsImpl(MethodInfo equalityOperator, Precedence precedence, Expression lhs, Expression rhs) {

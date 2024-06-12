@@ -462,7 +462,7 @@ public class EvalAnd {
                     newConcat.remove(newConcat.size() - 1);
                     GreaterThanZero gt;
                     if (ge.expression().parameterizedType().equals(runtime.intParameterizedType())) {
-                        Expression oneLess = runtime.sum(ge.expression(), runtime.minusOne());
+                        Expression oneLess = runtime.sum(ge.expression(), runtime.intMinusOne());
                         gt = runtime.newGreaterThanZero(oneLess, true);
                     } else {
                         gt = runtime.newGreaterThanZero(ge.expression(), false);
@@ -532,7 +532,7 @@ public class EvalAnd {
                     if (ge1.expression() instanceof SumImpl sum) {
                         result = sum.isZero(runtime);
                     } else {
-                        result = runtime.equals(ge1.expression(), runtime.zero());
+                        result = runtime.equals(ge1.expression(), runtime.intZero());
                     }
                     newConcat.set(newConcat.size() - 1, result);
                     return Action.SKIP;

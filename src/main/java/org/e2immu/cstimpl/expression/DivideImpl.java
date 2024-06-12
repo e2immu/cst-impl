@@ -7,7 +7,7 @@ import org.e2immu.cstapi.runtime.Runtime;
 public class DivideImpl extends BinaryOperatorImpl implements Product {
 
     public DivideImpl(Runtime runtime, Expression lhs, Expression rhs) {
-        super(runtime.divideOperatorInt(), runtime.precedenceMULTIPLICATIVE(), lhs, rhs);
+        super(runtime.divideOperatorInt(), runtime.precedenceMultiplicative(), lhs, rhs);
     }
 
 }

@@ -10,11 +10,11 @@ public class TestSum extends CommonTest {
 
     @Test
     public void test1() {
-        Expression s = r.sum(r.one(), i);
+        Expression s = r.sum(r.intOne(), i);
         assertEquals("1+i", s.toString());
         Expression s2 = r.sum(r.newInt(2), s);
         assertEquals("3+i", s2.toString());
-        Expression s3 = r.sum(i, r.one());
+        Expression s3 = r.sum(i, r.intOne());
         assertEquals(s, s3);
         assertEquals("1+i", s3.toString());
     }
@@ -30,7 +30,7 @@ public class TestSum extends CommonTest {
 
     @Test
     public void test2() {
-        Expression s = r.sum(r.one(), r.sum(i, r.newInt(3)));
+        Expression s = r.sum(r.intOne(), r.sum(i, r.newInt(3)));
         assertEquals("4+i", s.toString());
         Expression s2 = r.sum(r.sum(r.newInt(3), r.newInt(2)), r.sum(s, r.newInt(-9)));
         assertEquals("i", s2.toString());
@@ -40,7 +40,7 @@ public class TestSum extends CommonTest {
 
     @Test
     public void test3() {
-        Expression s = r.sum(r.sum(r.minusOne(), r.product(j, r.newInt(-3))), r.product(r.newInt(2), i));
+        Expression s = r.sum(r.sum(r.intMinusOne(), r.product(j, r.newInt(-3))), r.product(r.newInt(2), i));
         assertEquals("-1+2*i+-3*j", s.toString());
     }
 }

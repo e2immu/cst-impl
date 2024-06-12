@@ -17,7 +17,7 @@ public class SourceImpl implements Source {
     public SourceImpl(Element parent, String index, int beginLine, int beginPos, int endLine, int endPos) {
         this.parent = parent;
         // we internalize, because there are many repeats here ("0", "1", ...)
-        this.index = index.intern();
+        this.index = index == null ? null : index.intern();
         this.beginLine = (short) beginLine;
         this.beginPos = (short) beginPos;
         this.endLine = (short) endLine;
