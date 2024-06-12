@@ -469,6 +469,16 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
+    public TryStatement.Builder newTryBuilder() {
+        return new TryStatementImpl.Builder();
+    }
+
+    @Override
+    public TryStatement.CatchClause.Builder newCatchClauseBuilder() {
+        return new TryStatementImpl.CatchClauseImpl.Builder();
+    }
+
+    @Override
     public Lambda newLambda(ParameterizedType abstractFunctionalType, ParameterizedType implementation, ParameterizedType concreteReturnType, List<Lambda.OutputVariant> outputVariants) {
         return null;
     }
@@ -714,13 +724,23 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public DoStatement.Builder newDoStatementBuilder() {
+    public YieldStatement.Builder newYieldBuilder() {
+        return new YieldStatementImpl.Builder();
+    }
+
+    @Override
+    public DoStatement.Builder newDoBuilder() {
         return new DoStatementImpl.Builder();
     }
 
     @Override
     public VariableExpression.Builder newVariableExpressionBuilder() {
         return new VariableExpressionImpl.Builder();
+    }
+
+    @Override
+    public SynchronizedStatement.Builder newSynchronizedBuilder() {
+        return new SynchronizedStatementImpl.Builder();
     }
 }
 

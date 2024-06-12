@@ -92,7 +92,9 @@ public class DoStatementImpl extends StatementImpl implements DoStatement {
     @Override
     public void visit(Visitor visitor) {
         if (visitor.beforeStatement(this)) {
+            visitor.startSubBlock(0);
             block.visit(visitor);
+            visitor.endSubBlock(0);
             expression.visit(visitor);
         }
         visitor.afterStatement(this);

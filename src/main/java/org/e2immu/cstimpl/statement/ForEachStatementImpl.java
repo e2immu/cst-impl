@@ -112,7 +112,9 @@ public class ForEachStatementImpl extends StatementImpl implements ForEachStatem
         if (visitor.beforeStatement(this)) {
             initializer.visit(visitor);
             expression.visit(visitor);
+            visitor.startSubBlock(0);
             block.visit(visitor);
+            visitor.endSubBlock(0);
         }
         visitor.afterStatement(this);
     }

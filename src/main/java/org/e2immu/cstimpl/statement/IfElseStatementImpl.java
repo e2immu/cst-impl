@@ -96,7 +96,7 @@ public class IfElseStatementImpl extends StatementImpl implements IfElseStatemen
         if (predicate.test(this)) {
             expression.visit(predicate);
             block.visit(predicate);
-            elseBlock.visit(predicate);
+            if (!elseBlock.isEmpty()) elseBlock.visit(predicate);
         }
     }
 
@@ -104,8 +104,14 @@ public class IfElseStatementImpl extends StatementImpl implements IfElseStatemen
     public void visit(Visitor visitor) {
         if (visitor.beforeStatement(this)) {
             expression.visit(visitor);
+            visitor.startSubBlock(0);
             block.visit(visitor);
-            elseBlock.visit(visitor);
+            visitor.endSubBlock(0);
+            if (!elseBlock.isEmpty()) {
+                visitor.startSubBlock(1);
+                elseBlock.visit(visitor);
+                visitor.endSubBlock(1);
+            }
         }
         visitor.afterStatement(this);
     }
