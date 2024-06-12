@@ -121,7 +121,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 
     @Override
     public String fullyQualifiedName() {
-        return "";
+        return printForMethodFQN(false, DiamondEnum.SHOW_ALL);
     }
 
     public OutputBuilder print(Qualification qualification, boolean varArgs, Diamond diamond) {

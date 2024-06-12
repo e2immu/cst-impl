@@ -24,6 +24,7 @@ import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.type.TypeParameterImpl;
 import org.e2immu.cstimpl.type.WildcardEnum;
 import org.e2immu.cstimpl.util.IntUtil;
+import org.e2immu.cstimpl.variable.DependentVariableImpl;
 import org.e2immu.cstimpl.variable.FieldReferenceImpl;
 import org.e2immu.cstimpl.variable.LocalVariableImpl;
 import org.e2immu.cstimpl.variable.ThisImpl;
@@ -290,8 +291,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public DependentVariable newDependentVariable(Expression array, Expression index, String statementIndex, TypeInfo owningType) {
-        return null;
+    public DependentVariable newDependentVariable(Expression array, Expression index) {
+        return  DependentVariableImpl.create(this, array, index);
     }
 
     @Override

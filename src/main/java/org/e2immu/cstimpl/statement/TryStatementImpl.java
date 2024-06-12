@@ -5,12 +5,12 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
-import org.e2immu.cstapi.expression.CatchParameter;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.statement.LocalVariableCreation;
 import org.e2immu.cstapi.statement.TryStatement;
+import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.ElementImpl;
@@ -44,16 +44,19 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
     }
 
     public static class CatchClauseImpl implements CatchClause {
-        private final CatchParameter catchParameter;
+        private final List<ParameterizedType> exceptionTypes;
+        private final String variableName;
         private final Block block;
 
-        public CatchClauseImpl(CatchParameter catchParameter, Block block) {
-            this.catchParameter = catchParameter;
+        public CatchClauseImpl(List<ParameterizedType> exceptionTypes, String variableName, Block block) {
+            this.variableName = variableName;
+            this.exceptionTypes = exceptionTypes;
             this.block = block;
         }
 
         public static class Builder implements CatchClause.Builder {
-            private CatchParameter catchParameter;
+            private final List<ParameterizedType> exceptionTypes = new ArrayList<>();
+            private String variableName;
             private Block block;
 
             @Override
@@ -63,20 +66,31 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
             }
 
             @Override
-            public Builder setCatchParameter(CatchParameter catchParameter) {
-                this.catchParameter = catchParameter;
+            public CatchClause.Builder addType(ParameterizedType type) {
+                exceptionTypes.add(type);
+                return this;
+            }
+
+            @Override
+            public Builder setVariableName(String variableName) {
+                this.variableName = variableName;
                 return this;
             }
 
             @Override
             public CatchClause build() {
-                return new CatchClauseImpl(catchParameter, block);
+                return new CatchClauseImpl(exceptionTypes, variableName, block);
             }
         }
 
         @Override
-        public CatchParameter catchParameter() {
-            return catchParameter;
+        public String variableName() {
+            return variableName;
+        }
+
+        @Override
+        public List<ParameterizedType> exceptionTypes() {
+            return exceptionTypes;
         }
 
         @Override
@@ -86,12 +100,14 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 
         @Override
         public int complexity() {
-            return catchParameter.complexity() + block.complexity();
+            return exceptionTypes.size() + block.complexity();
         }
 
         @Override
         public Stream<Element.TypeReference> typesReferenced() {
-            return Stream.concat(catchParameter.typesReferenced(), block.typesReferenced());
+            return Stream.concat(exceptionTypes.stream()
+                            .map(et -> new ElementImpl.TypeReference(et.typeInfo(), true)),
+                    block.typesReferenced());
         }
 
         @Override
@@ -101,13 +117,11 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 
         @Override
         public void visit(Predicate<Element> predicate) {
-            catchParameter.visit(predicate);
             block.visit(predicate);
         }
 
         @Override
         public void visit(Visitor visitor) {
-            catchParameter.visit(visitor);
             block.visit(visitor);
         }
     }
@@ -175,6 +189,11 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
     @Override
     public List<LocalVariableCreation> resources() {
         return resources;
+    }
+
+    @Override
+    public Block block() {
+        return block;
     }
 
     @Override
