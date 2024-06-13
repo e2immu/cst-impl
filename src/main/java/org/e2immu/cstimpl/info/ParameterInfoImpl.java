@@ -12,6 +12,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
@@ -136,7 +137,12 @@ public class ParameterInfoImpl implements ParameterInfo {
 
     @Override
     public boolean isModified() {
-        return analysed(PropertyImpl.MODIFIED_PARAMETER).isTrue();
+        return analysedOrDefault(PropertyImpl.MODIFIED_PARAMETER, ValueImpl.BoolImpl.TRUE).isTrue();
+    }
+
+    @Override
+    public boolean isIgnoreModifications() {
+        return analysedOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     public void commit(ParameterInspection pi) {

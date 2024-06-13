@@ -1,5 +1,6 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.analysis.Property;
 import org.e2immu.cstapi.element.*;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
@@ -10,6 +11,8 @@ import org.e2immu.cstapi.type.TypeNature;
 import org.e2immu.cstapi.type.TypeParameter;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.cstimpl.type.ParameterizedTypeImpl;
 import org.e2immu.support.Either;
 import org.e2immu.support.EventuallyFinal;
@@ -422,5 +425,10 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     @Override
     public boolean isAbstract() {
         return inspection.get().isAbstract();
+    }
+
+    @Override
+    public boolean isAtLeastImmutableHC() {
+        return analysedOrDefault(PropertyImpl.IMMUTABLE_TYPE, ValueImpl.ImmutableImpl.MUTABLE).isAtLeastImmutableHC();
     }
 }

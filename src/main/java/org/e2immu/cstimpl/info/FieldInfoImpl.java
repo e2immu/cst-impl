@@ -15,6 +15,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
@@ -83,7 +84,8 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
 
     @Override
     public boolean isPropertyNotNull() {
-        return analysed(PropertyImpl.FIELD_NOT_NULL).isTrue();
+        if(type.isPrimitiveExcludingVoid()) return true;
+        return analysedOrDefault(PropertyImpl.NOT_NULL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
@@ -93,7 +95,8 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
 
     @Override
     public boolean isPropertyFinal() {
-        return analysed(PropertyImpl.FIELD_FINAL).isTrue();
+        if (isFinal()) return true;
+        return analysedOrDefault(PropertyImpl.FINAL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override

@@ -20,23 +20,23 @@ public abstract class InfoImpl implements Element {
     private final SetOnce<List<Comment>> comments = new SetOnce<>();
     private final SetOnce<Source> source = new SetOnce<>();
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Value analysed(Property property) {
-        return analysis.getOrDefaultNull(property);
-    }
-
-    @Override
-    public Value analysedOrDefault(Property property, Value defaultValue) {
+    public <V extends Value> V analysedOrDefault(Property property, V defaultValue) {
         assert defaultValue != null;
-        return analysis.getOrDefault(property, defaultValue);
+        return (V) analysis.getOrDefault(property, defaultValue);
     }
 
     public void putPropertyValue(Property property, Value value) {
+        assert property.classOfValue().equals(value.getClass());
         analysis.put(property, value);
     }
 
     public void putPropertyValues(Map<Property, Value> propertyValueMap) {
-        propertyValueMap.forEach(analysis::put);
+        propertyValueMap.forEach((p, v) -> {
+            assert p.classOfValue().equals(v.getClass());
+            analysis.put(p, v);
+        });
     }
 
     @Override

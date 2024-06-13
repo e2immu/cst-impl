@@ -6,14 +6,12 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.AnnotationExpression;
-import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeParameter;
-import org.e2immu.cstapi.util.ParSeq;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
@@ -84,12 +82,13 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isPropertyNotNull() {
-        return analysed(PropertyImpl.METHOD_NOT_NULL).isTrue();
+        if (returnType().isPrimitiveExcludingVoid()) return true;
+        return analysedOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isPropertyNullable() {
-        return analysed(PropertyImpl.METHOD_NOT_NULL).isFalse();
+        return analysedOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isFalse();
     }
 
     public void commit(MethodInspection methodInspection) {
@@ -105,12 +104,6 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     public TypeInfo primaryType() {
         return typeInfo.primaryType();
     }
-
-    @Override
-    public boolean methodAnalysisIsSet() {
-        return false;
-    }
-
 
     @Override
     public boolean isVoid() {
@@ -265,27 +258,37 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isModifying() {
-        return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.FALSE).isTrue();
+        return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isFluent() {
-        return analysedOrDefault(PropertyImpl.FLUENT, ValueImpl.FALSE).isTrue();
+        return analysedOrDefault(PropertyImpl.FLUENT_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return analysedOrDefault(PropertyImpl.IDENTITY_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public Value.CommutableData commutableData() {
-        return null; // FIXME
+        return analysedOrDefault(PropertyImpl.COMMUTABLE_METHODS, ValueImpl.CommutableDataImpl.BLANK);
     }
 
     @Override
-    public ParSeq<ParameterInfo> getParallelGroups() {
-        return null; // FIXME
+    public Value.ParameterParSeq getParallelGroups() {
+        return analysedOrDefault(PropertyImpl.PARALLEL_PARAMETER_GROUPS, ValueImpl.ParameterParSeqImpl.EMPTY);
     }
 
     @Override
-    public List<Expression> sortAccordingToParallelGroupsAndNaturalOrder(List<Expression> parameterExpressions) {
-        return List.of(); // FIXME
+    public Value.FieldValue getSetField() {
+        return analysedOrDefault(PropertyImpl.GET_SET_FIELD, null);
+    }
+
+    @Override
+    public Value.GetSetEquivalent getSetEquivalents() {
+        return analysedOrDefault(PropertyImpl.GET_SET_EQUIVALENT, null);
     }
 
     @Override
@@ -306,5 +309,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public List<TypeParameter> typeParameters() {
         return inspection.get().typeParameters();
+    }
+
+    @Override
+    public boolean isStaticSideEffects() {
+        return analysedOrDefault(PropertyImpl.STATIC_SIDE_EFFECTS_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 }
