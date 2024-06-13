@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 
 import org.e2immu.annotation.Fluent;
+import org.e2immu.cstapi.info.Info;
 import org.e2immu.cstapi.info.ParameterInfo;
 
 public class ParameterInspectionImpl extends InspectionImpl implements ParameterInspection {
@@ -19,7 +20,8 @@ public class ParameterInspectionImpl extends InspectionImpl implements Parameter
         return varArgs;
     }
 
-    public static class Builder extends InspectionImpl.Builder implements ParameterInspection, ParameterInfo.Builder {
+    public static class Builder extends InspectionImpl.Builder <ParameterInfo.Builder>
+            implements ParameterInspection, ParameterInfo.Builder {
         private boolean varArgs;
         private final ParameterInfoImpl parameterInfo;
 
@@ -30,6 +32,16 @@ public class ParameterInspectionImpl extends InspectionImpl implements Parameter
         @Override
         public boolean isVarArgs() {
             return varArgs;
+        }
+
+        @Override
+        public boolean hasBeenCommitted() {
+            return parameterInfo.hasBeenCommitted();
+        }
+
+        @Override
+        public Builder computeAccess() {
+            throw new UnsupportedOperationException("there are no access modifiers for parameters");
         }
 
         @Override

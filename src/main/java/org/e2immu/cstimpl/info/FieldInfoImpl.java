@@ -42,6 +42,10 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
         inspection.setVariable(new FieldInspectionImpl.Builder(this));
     }
 
+    public boolean hasBeenCommitted() {
+        return inspection.isFinal();
+    }
+
     @Override
     public String name() {
         return name;

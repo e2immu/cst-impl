@@ -49,6 +49,10 @@ public class ParameterInfoImpl implements ParameterInfo {
         throw new UnsupportedOperationException();
     }
 
+    public boolean hasBeenCommitted() {
+        return inspection.isFinal();
+    }
+
     @Override
     public int index() {
         return index;

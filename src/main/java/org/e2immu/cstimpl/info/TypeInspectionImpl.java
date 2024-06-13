@@ -183,6 +183,12 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         }
 
         @Override
+        public TypeInfo.Builder addTypeParameter(TypeParameter typeParameter) {
+            typeParameters.add(typeParameter);
+            return this;
+        }
+
+        @Override
         public void commit() {
             TypeInspection ti = new TypeInspectionImpl(this, Set.copyOf(typeModifiers), List.copyOf(methods),
                     List.copyOf(constructors), List.copyOf(fields), parentClass, typeNature, singleAbstractMethod,
@@ -228,6 +234,33 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
         @Override
         public boolean isAbstract() {
             return TypeInspectionImpl.isAbstract(typeNature, typeModifiers);
+        }
+
+        @Override
+        public Builder computeAccess() {
+            Access fromModifiers = accessFromModifiers();
+            if (typeInfo.compilationUnitOrEnclosingType().isLeft()) {
+                setAccess(fromModifiers);
+            } else {
+                Access fromEnclosing = typeInfo.compilationUnitOrEnclosingType().getRight().access();
+                Access combined = fromEnclosing.combine(fromModifiers);
+                setAccess(combined);
+            }
+            return this;
+        }
+
+        private Access accessFromModifiers() {
+            for (TypeModifier typeModifier : typeModifiers) {
+                if (typeModifier.isPublic()) return AccessEnum.PUBLIC;
+                if (typeModifier.isPrivate()) return AccessEnum.PRIVATE;
+                if (typeModifier.isProtected()) return AccessEnum.PROTECTED;
+            }
+            return AccessEnum.PACKAGE;
+        }
+
+        @Override
+        public boolean hasBeenCommitted() {
+            return typeInfo.hasBeenCommitted();
         }
     }
 

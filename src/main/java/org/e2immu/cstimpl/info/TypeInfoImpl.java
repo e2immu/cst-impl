@@ -47,6 +47,10 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
+    public boolean hasBeenCommitted() {
+        return inspection.isFinal();
+    }
+
     @Override
     public String packageName() {
         if (compilationUnitOrEnclosingType.isLeft()) return compilationUnitOrEnclosingType.getLeft().packageName();

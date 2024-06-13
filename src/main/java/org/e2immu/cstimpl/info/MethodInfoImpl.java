@@ -69,6 +69,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
         throw new UnsupportedOperationException();
     }
 
+    public boolean hasBeenCommitted() {
+        return inspection.isFinal();
+    }
+
     @Override
     public String toString() {
         return fullyQualifiedName();

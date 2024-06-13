@@ -1,6 +1,7 @@
 package org.e2immu.cstimpl.info;
 
 import org.e2immu.annotation.Fluent;
+import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.MethodModifier;
 import org.e2immu.cstapi.info.ParameterInfo;
@@ -183,6 +184,38 @@ public class MethodInspectionImpl extends InspectionImpl implements MethodInspec
                         owner, methodInfo.name(), parameters.size());
                 throw re;
             }
+        }
+
+        @Override
+        public boolean hasBeenCommitted() {
+            return methodInfo.hasBeenCommitted();
+        }
+
+        @Override
+        public Builder computeAccess() {
+            if (methodInfo.isCompactConstructor()) {
+                setAccess(AccessEnum.PUBLIC);
+            } else if (methodModifiers.stream().anyMatch(MethodModifier::isPrivate)) {
+                setAccess(AccessEnum.PRIVATE);
+            } else {
+                boolean isInterface = methodInfo.typeInfo().isInterface();
+                if (isInterface && (methodInfo.isAbstract() || methodInfo.isDefault() || methodInfo.isStatic())) {
+                    setAccess(AccessEnum.PUBLIC);
+                } else {
+                    Access fromModifier = accessFromMethodModifier();
+                    setAccess(fromModifier);
+                }
+            }
+            return this;
+        }
+
+        private Access accessFromMethodModifier() {
+            for (MethodModifier methodModifier : methodModifiers) {
+                if (methodModifier.isPrivate()) return AccessEnum.PRIVATE;
+                if (methodModifier.isPublic()) return AccessEnum.PUBLIC;
+                if (methodModifier.isProtected()) return AccessEnum.PROTECTED;
+            }
+            return AccessEnum.PACKAGE;
         }
 
         @Override

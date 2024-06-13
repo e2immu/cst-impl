@@ -99,7 +99,7 @@ public abstract class InspectionImpl implements Inspection {
     }
 
     @SuppressWarnings("unchecked")
-    public static class Builder<B extends Info.Builder<?>> implements Inspection, Info.Builder<B> {
+    public static abstract class Builder<B extends Info.Builder<?>> implements Inspection, Info.Builder<B> {
         private Access access;
         private List<Comment> comments;
         private Source source;

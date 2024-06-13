@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.FieldModifier;
 
@@ -41,6 +42,24 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         }
 
         @Override
+        public Builder computeAccess() {
+            Access fromType = fieldInfo.owner().access();
+            Access fromModifier = accessFromFieldModifier();
+            Access combined = fromModifier.combine(fromType);
+            setAccess(combined);
+            return this;
+        }
+
+        private Access accessFromFieldModifier() {
+            for (FieldModifier fieldModifier : fieldModifiers) {
+                if (fieldModifier.isProtected()) return AccessEnum.PROTECTED;
+                if (fieldModifier.isPrivate()) return AccessEnum.PRIVATE;
+                if (fieldModifier.isPublic()) return AccessEnum.PUBLIC;
+            }
+            return AccessEnum.PACKAGE;
+        }
+
+        @Override
         public Builder addFieldModifier(FieldModifier fieldModifier) {
             fieldModifiers.add(fieldModifier);
             return this;
@@ -65,6 +84,11 @@ public class FieldInspectionImpl extends InspectionImpl implements FieldInspecti
         @Override
         public Set<FieldModifier> fieldModifiers() {
             return fieldModifiers;
+        }
+
+        @Override
+        public boolean hasBeenCommitted() {
+            return fieldInfo.hasBeenCommitted();
         }
     }
 }

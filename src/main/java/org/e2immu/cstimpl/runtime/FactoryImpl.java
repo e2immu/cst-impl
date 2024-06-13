@@ -11,16 +11,14 @@ import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.*;
-import org.e2immu.cstimpl.element.CompilationUnitImpl;
-import org.e2immu.cstimpl.element.MultiLineComment;
-import org.e2immu.cstimpl.element.SingleLineComment;
-import org.e2immu.cstimpl.element.SourceImpl;
+import org.e2immu.cstimpl.element.*;
 import org.e2immu.cstimpl.expression.*;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.*;
 import org.e2immu.cstimpl.statement.*;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
+import org.e2immu.cstimpl.type.ParameterizedTypeImpl;
 import org.e2immu.cstimpl.type.TypeParameterImpl;
 import org.e2immu.cstimpl.type.WildcardEnum;
 import org.e2immu.cstimpl.util.IntUtil;
@@ -202,17 +200,22 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public ParameterizedType newParameterizedType(TypeInfo typeInfo, List<ParameterizedType> newParameters) {
-        return null;
+        return new ParameterizedTypeImpl(typeInfo, null, newParameters, 0, null);
     }
 
     @Override
     public ParameterizedType newParameterizedType(TypeInfo typeInfo, int arrays) {
-        return null;
+        return new ParameterizedTypeImpl(typeInfo, null, List.of(), arrays, null);
     }
 
     @Override
-    public ParameterizedType newParameterizedType(TypeParameter typeParameter, int index, Wildcard wildCard) {
-        return null;
+    public ParameterizedType newParameterizedType(TypeParameter typeParameter, int arrays, Wildcard wildCard) {
+        return new ParameterizedTypeImpl(null, typeParameter, List.of(), arrays, wildCard);
+    }
+
+    @Override
+    public ParameterizedType newParameterizedType(TypeInfo typeInfo, int arrays, Wildcard wildCard, List<ParameterizedType> parameters) {
+        return new ParameterizedTypeImpl(typeInfo, null, parameters, arrays, wildCard);
     }
 
     @Override
@@ -292,7 +295,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public DependentVariable newDependentVariable(Expression array, Expression index) {
-        return  DependentVariableImpl.create(this, array, index);
+        return DependentVariableImpl.create(this, array, index);
     }
 
     @Override
@@ -537,6 +540,26 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Wildcard wildcardExtends() {
         return WildcardEnum.EXTENDS;
+    }
+
+    @Override
+    public Wildcard wildcardSuper() {
+        return WildcardEnum.SUPER;
+    }
+
+    @Override
+    public AnnotationExpression.Builder newAnnotationExpressionBuilder() {
+        return new AnnotationExpressionImpl.Builder();
+    }
+
+    @Override
+    public MethodInfo.MethodType newMethodTypeAbstractMethod() {
+        return MethodInfoImpl.MethodTypeEnum.ABSTRACT_METHOD;
+    }
+
+    @Override
+    public MethodInfo.MethodType newMethodTypeDefaultMethod() {
+        return MethodInfoImpl.MethodTypeEnum.DEFAULT_METHOD;
     }
 
     @Override
