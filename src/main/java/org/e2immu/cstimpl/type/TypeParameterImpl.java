@@ -86,6 +86,11 @@ public class TypeParameterImpl implements TypeParameter {
     }
 
     @Override
+    public ParameterizedType asSimpleParameterizedType() {
+        return new ParameterizedTypeImpl(this, 0);
+    }
+
+    @Override
     public OutputBuilder print(Qualification qualification, Set<TypeParameter> visitedTypeParameters) {
         OutputBuilder outputBuilder = new OutputBuilderImpl().add(new TextImpl(name));
         if (typeBounds.isSet() && !typeBounds.get().isEmpty()

@@ -247,6 +247,6 @@ public class ConstructorCallImpl extends ExpressionImpl implements ConstructorCa
 
     @Override
     public Diamond diamond() {
-        return null;
+        return diamond;
     }
 }

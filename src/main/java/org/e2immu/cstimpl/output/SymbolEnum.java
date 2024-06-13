@@ -15,6 +15,7 @@
 package org.e2immu.cstimpl.output;
 
 import org.e2immu.cstapi.output.FormattingOptions;
+import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.element.Space;
 import org.e2immu.cstapi.output.element.Symbol;
 import org.e2immu.cstimpl.util.StringUtil;
@@ -74,6 +75,8 @@ public record SymbolEnum(String symbol, Space left, Space right, String constant
     public static final Symbol RIGHT_BACKTICK = new SymbolEnum("`", NONE, ONE_IS_NICE_EASY_R, "RIGHT_BACKTICK");
 
     public static final SymbolEnum SINGLE_LINE_COMMENT = new SymbolEnum("//", NONE, NONE, "SINGLE_LINE_COMMENT");
+
+    public static final SymbolEnum DIAMOND = new SymbolEnum("<>", NONE, NONE, "DIAMOND");
 
     public static Symbol plusPlusPrefix(String s) {
         return new SymbolEnum(s, ONE_IS_NICE_EASY_SPLIT, NONE, null);

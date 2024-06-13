@@ -83,6 +83,9 @@ public class ParameterizedTypePrinter {
             if (parameterizedType.parameters().isEmpty()) {
                 outputBuilder.add(TypeNameImpl.typeName(parameterizedType.typeInfo(),
                         qualification.qualifierRequired(parameterizedType.typeInfo())));
+                if (diamond.isYes()) {
+                    outputBuilder.add(SymbolEnum.DIAMOND);
+                }
             } else {
                 OutputBuilder sub;
                 if (parameterizedType.typeInfo().isPrimaryType() || parameterizedType.typeInfo().isStatic()) { // shortcut
