@@ -162,7 +162,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     @Override
     public ParameterizedType asParameterizedType(Runtime runtime) {
         List<ParameterizedType> typeParameters = typeParameters()
-                .stream().map(TypeParameter::toParameterizedType)
+                .stream().map(tp -> tp.asParameterizedType(runtime))
                 .collect(Collectors.toList());
         return new ParameterizedTypeImpl(this, typeParameters);
     }

@@ -230,12 +230,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public ParameterizedType parameterizedTypeWildcard() {
-        return null;
+        return ParameterizedTypeImpl.WILDCARD_PARAMETERIZED_TYPE;
     }
 
     @Override
     public ParameterizedType parameterizedTypeReturnTypeOfConstructor() {
-        return null;
+        return ParameterizedTypeImpl.RETURN_TYPE_OF_CONSTRUCTOR;
     }
 
     @Override

@@ -552,4 +552,14 @@ public class ParameterizedTypeImpl implements ParameterizedType {
                 typeInfo.isLong() || typeInfo.isBoxedLong() ||
                 typeInfo.isChar() || typeInfo.isCharacter());
     }
+
+    @Override
+    public ParameterizedType withWildcard(Wildcard wildcard) {
+        return new ParameterizedTypeImpl(typeInfo, typeParameter, parameters, arrays, wildcard);
+    }
+
+    @Override
+    public ParameterizedType withParameters(List<ParameterizedType> parameters) {
+        return new ParameterizedTypeImpl(typeInfo, typeParameter, parameters, arrays, wildcard);
+    }
 }
