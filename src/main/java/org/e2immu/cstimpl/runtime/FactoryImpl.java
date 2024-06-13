@@ -124,8 +124,8 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public ConstructorCall newConstructorCall(Expression scope, MethodInfo constructor, ParameterizedType pt, Diamond diamond, List<Expression> parameterExpressions, TypeInfo anonymousClass, ArrayInitializer arrayInitializer) {
-        return null;
+    public ConstructorCall.Builder newConstructorCallBuilder() {
+        return new ConstructorCallImpl.Builder();
     }
 
     @Override

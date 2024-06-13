@@ -435,4 +435,9 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     public boolean isAtLeastImmutableHC() {
         return analysedOrDefault(PropertyImpl.IMMUTABLE_TYPE, ValueImpl.ImmutableImpl.MUTABLE).isAtLeastImmutableHC();
     }
+
+    @Override
+    public OutputBuilder print(Qualification qualification, boolean doTypeDeclaration) {
+        return print(qualification); // TODO
+    }
 }

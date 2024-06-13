@@ -266,7 +266,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 
     @Override
     public String detailedString() {
-        return "";
+        return printForMethodFQN(false, DiamondEnum.SHOW_ALL);
     }
 
     @Override
