@@ -219,23 +219,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, TypeInfo owner) {
-        return new TypeParameterImpl(tpCnt, typeParameterName, Either.left(owner), List.of());
+    public TypeParameter newTypeParameter(int index, String simpleName, TypeInfo owner) {
+        return new TypeParameterImpl(index, simpleName, Either.left(owner));
     }
 
     @Override
-    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, MethodInfo owner) {
-        return new TypeParameterImpl(tpCnt, typeParameterName, Either.right(owner), List.of());
-    }
-
-    @Override
-    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, List<ParameterizedType> typeBounds, TypeInfo owner) {
-        return new TypeParameterImpl(tpCnt, typeParameterName, Either.left(owner), typeBounds);
-    }
-
-    @Override
-    public TypeParameter newTypeParameter(String typeParameterName, int tpCnt, List<ParameterizedType> typeBounds, MethodInfo owner) {
-        return new TypeParameterImpl(tpCnt, typeParameterName, Either.right(owner), typeBounds);
+    public TypeParameter newTypeParameter(int index, String simpleName, MethodInfo owner) {
+        return new TypeParameterImpl(index, simpleName, Either.right(owner));
     }
 
     @Override
