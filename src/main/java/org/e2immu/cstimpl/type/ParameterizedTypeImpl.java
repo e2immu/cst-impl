@@ -242,6 +242,11 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
 
     @Override
+    public boolean isReturnTypeOfConstructor() {
+        return this == RETURN_TYPE_OF_CONSTRUCTOR;
+    }
+
+    @Override
     public boolean isNumeric() {
         return arrays == 0 && typeInfo != null && typeInfo.isNumeric();
     }

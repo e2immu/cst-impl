@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.runtime;
 
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.info.ComputeMethodOverrides;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Configuration;
 import org.e2immu.cstapi.runtime.Eval;
@@ -9,6 +10,7 @@ import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.E2ImmuAnnotationsImpl;
 import org.e2immu.cstimpl.expression.ExpressionImpl;
+import org.e2immu.cstimpl.info.ComputeMethodOverridesImpl;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -194,5 +196,10 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     @Override
     public String e2aHcParameters() {
         return E2ImmuAnnotationsImpl.HC_PARAMETERS;
+    }
+
+    @Override
+    public ComputeMethodOverrides computeMethodOverrides() {
+        return new ComputeMethodOverridesImpl(this);
     }
 }

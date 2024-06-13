@@ -5,10 +5,7 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.type.TypeNature;
 import org.e2immu.cstapi.type.TypeParameter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class TypeInspectionImpl extends InspectionImpl implements TypeInspection {
@@ -117,6 +114,12 @@ public class TypeInspectionImpl extends InspectionImpl implements TypeInspection
 
         public Builder(TypeInfoImpl typeInfo) {
             this.typeInfo = typeInfo;
+        }
+
+        @Override
+        public Builder setSingleAbstractMethod(MethodInfo singleAbstractMethod) {
+            this.singleAbstractMethod = singleAbstractMethod;
+            return this;
         }
 
         @Override

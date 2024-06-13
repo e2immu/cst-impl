@@ -105,6 +105,13 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public boolean isOverloadOfJLOMethod() {
+        if ("equals".equals(name) && parameters().size() == 1) return true;
+        if ("hashCode".equals(name) && parameters().isEmpty()) return true;
+        return "toString".equals(name()) && parameters().isEmpty();
+    }
+
+    @Override
     public TypeInfo primaryType() {
         return typeInfo.primaryType();
     }
