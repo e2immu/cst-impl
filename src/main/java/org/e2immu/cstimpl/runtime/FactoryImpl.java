@@ -488,8 +488,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodInfo newMethod(TypeInfo owner) {
+    public MethodInfo newConstructor(TypeInfo owner) {
         return new MethodInfoImpl(owner);
+    }
+
+    @Override
+    public MethodInfo newConstructor(TypeInfo owner, MethodInfo.MethodType methodType) {
+        return new MethodInfoImpl(owner, methodType);
     }
 
     @Override
@@ -498,12 +503,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodInfo.MethodType newMethodTypeMethod() {
+    public MethodInfo.MethodType methodTypeMethod() {
         return MethodInfoImpl.MethodTypeEnum.METHOD;
     }
 
     @Override
-    public MethodInfo.MethodType newMethodTypeStaticMethod() {
+    public MethodInfo.MethodType methodTypeStaticMethod() {
         return MethodInfoImpl.MethodTypeEnum.STATIC_METHOD;
     }
 
@@ -543,12 +548,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodInfo.MethodType newMethodTypeAbstractMethod() {
+    public MethodInfo.MethodType methodTypeAbstractMethod() {
         return MethodInfoImpl.MethodTypeEnum.ABSTRACT_METHOD;
     }
 
     @Override
-    public MethodInfo.MethodType newMethodTypeDefaultMethod() {
+    public MethodInfo.MethodType methodTypeDefaultMethod() {
         return MethodInfoImpl.MethodTypeEnum.DEFAULT_METHOD;
     }
 
@@ -723,7 +728,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public MethodInfo.MethodType newMethodTypeConstructor() {
+    public MethodInfo.MethodType methodTypeConstructor() {
         return MethodInfoImpl.MethodTypeEnum.CONSTRUCTOR;
     }
 
@@ -755,6 +760,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public SynchronizedStatement.Builder newSynchronizedBuilder() {
         return new SynchronizedStatementImpl.Builder();
+    }
+
+    @Override
+    public MethodInfo.MethodType methodTypeSyntheticConstructor() {
+        return MethodInfoImpl.MethodTypeEnum.SYNTHETIC_CONSTRUCTOR;
     }
 }
 

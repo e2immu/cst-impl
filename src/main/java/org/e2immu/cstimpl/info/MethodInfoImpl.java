@@ -55,6 +55,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
         this(MethodTypeEnum.CONSTRUCTOR, "<init>", typeInfo);
     }
 
+    public MethodInfoImpl(TypeInfo typeInfo, MethodType methodType) {
+        this(methodType, "<init>", typeInfo);
+    }
+
     public MethodInfoImpl(MethodInfo.MethodType methodType,
                           String name,
                           TypeInfo typeInfo) {

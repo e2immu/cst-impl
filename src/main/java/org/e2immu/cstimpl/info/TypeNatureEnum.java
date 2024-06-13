@@ -34,6 +34,11 @@ public enum TypeNatureEnum implements TypeNature {
     }
 
     @Override
+    public boolean isEnum() {
+        return this == ENUM;
+    }
+
+    @Override
     public boolean isStatic() {
         return this != CLASS;
     }
