@@ -2,6 +2,7 @@ package org.e2immu.cstimpl.info;
 
 import org.e2immu.cstapi.analysis.Property;
 import org.e2immu.cstapi.element.*;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
@@ -59,6 +60,11 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
     public String packageName() {
         if (compilationUnitOrEnclosingType.isLeft()) return compilationUnitOrEnclosingType.getLeft().packageName();
         return compilationUnitOrEnclosingType.getRight().packageName();
+    }
+
+    @Override
+    public List<AnnotationExpression> annotations() {
+        return inspection.get().annotations();
     }
 
     @Override

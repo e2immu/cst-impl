@@ -5,6 +5,7 @@ import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.TypeInfo;
+import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.output.QualificationImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
@@ -30,7 +31,9 @@ public abstract class ElementImpl implements Element {
 
     @Override
     public String toString() {
-        return print(QualificationImpl.SIMPLE_NAMES).toString();
+        OutputBuilder print = print(QualificationImpl.SIMPLE_NAMES);
+        assert print != null;
+        return print.toString();
     }
 
     @SuppressWarnings("unchecked")

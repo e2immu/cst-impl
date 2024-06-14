@@ -8,6 +8,11 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.TextImpl;
+import org.e2immu.cstimpl.util.StringUtil;
+
+import java.util.Objects;
 
 public class StringConstantImpl extends ConstantExpressionImpl<String> implements StringConstant {
     private final ParameterizedType stringPt;
@@ -18,8 +23,8 @@ public class StringConstantImpl extends ConstantExpressionImpl<String> implement
     }
 
     protected StringConstantImpl(ParameterizedType stringPt, String constant) {
-        this.stringPt = stringPt;
-        this.constant = constant;
+        this.stringPt = Objects.requireNonNull(stringPt);
+        this.constant = Objects.requireNonNull(constant);
     }
 
     @Override
@@ -45,6 +50,6 @@ public class StringConstantImpl extends ConstantExpressionImpl<String> implement
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        return new OutputBuilderImpl().add(new TextImpl(StringUtil.quote(constant)));
     }
 }

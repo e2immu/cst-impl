@@ -4,6 +4,7 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
+import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.Access;
 import org.e2immu.cstapi.info.FieldInfo;
@@ -84,6 +85,11 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     @Override
     public boolean isVolatile() {
         return inspection.get().fieldModifiers().contains(FieldModifierEnum.VOLATILE);
+    }
+
+    @Override
+    public List<AnnotationExpression> annotations() {
+        return inspection.get().annotations();
     }
 
     @Override
