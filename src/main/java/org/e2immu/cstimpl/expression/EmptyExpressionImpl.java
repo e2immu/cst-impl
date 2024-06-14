@@ -15,6 +15,8 @@ import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.TextImpl;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -104,7 +106,7 @@ public class EmptyExpressionImpl extends ExpressionImpl implements EmptyExpressi
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        return new OutputBuilderImpl().add(new TextImpl(msg));
     }
 
     @Override
