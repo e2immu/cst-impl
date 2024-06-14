@@ -1,9 +1,12 @@
 package org.e2immu.cstimpl.expression.eval;
 
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.Product;
 import org.e2immu.cstapi.expression.Sum;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstimpl.expression.ProductImpl;
+
+import java.util.stream.Stream;
 
 public class EvalProduct {
 
@@ -40,5 +43,20 @@ public class EvalProduct {
             return runtime.sum(p1, p2);
         }
         return l.compareTo(r) < 0 ? new ProductImpl(runtime, l, r) : new ProductImpl(runtime, r, l);
+    }
+
+    // methods used externally
+    // we have more than 2 factors, that's a product of products...
+    public Expression wrapInProduct(Expression[] expressions, int i) {
+        assert i >= 2;
+        if (i == 2) return eval(expressions[0], expressions[1]);
+        return eval(wrapInProduct(expressions, i - 1), expressions[i - 1]);
+    }
+
+    public Stream<Expression> expandFactors(Expression expression) {
+        if (expression instanceof Product product) {
+            return Stream.concat(expandFactors(product.lhs()), expandFactors(product.rhs()));
+        }
+        return Stream.of(expression);
     }
 }

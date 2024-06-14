@@ -8,6 +8,8 @@ import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.statement.Block;
 import org.e2immu.cstapi.statement.Statement;
+import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SpaceEnum;
@@ -104,5 +106,10 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
             return block;
         }
         return new BlockImpl.Builder().addStatements(resultOfTranslation).build();
+    }
+
+    @Override
+    public boolean alwaysEscapes() {
+        return analysedOrDefault(PropertyImpl.ALWAYS_ESCAPES, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 }

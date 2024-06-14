@@ -80,6 +80,16 @@ public class EvalImpl implements Eval {
     }
 
     @Override
+    public Expression wrapInProduct(Expression[] translated, int length) {
+        return evalProduct.wrapInProduct(translated, length);
+    }
+
+    @Override
+    public Expression wrapInSum(Expression[] translated, int length) {
+        return evalSum.wrapInSum(translated, length);
+    }
+
+    @Override
     public Expression greaterThanZero(Expression expression) {
         return evalInequality.greaterThanZero(expression);
     }
@@ -117,5 +127,10 @@ public class EvalImpl implements Eval {
     @Override
     public Stream<Expression> expandTerms(Expression expression, boolean negate) {
         return evalSum.expandTerms(expression, negate);
+    }
+
+    @Override
+    public Stream<Expression> expandFactors(Expression expression) {
+        return evalProduct.expandFactors(expression);
     }
 }

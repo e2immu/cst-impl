@@ -3,14 +3,17 @@ package org.e2immu.cstimpl.runtime;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.ComputeMethodOverrides;
+import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.runtime.Configuration;
 import org.e2immu.cstapi.runtime.Eval;
 import org.e2immu.cstapi.runtime.Runtime;
+import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.E2ImmuAnnotationsImpl;
 import org.e2immu.cstimpl.expression.ExpressionImpl;
 import org.e2immu.cstimpl.info.ComputeMethodOverridesImpl;
+import org.e2immu.cstimpl.info.MethodInfoImpl;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -41,6 +44,16 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     @Override
     public Expression less(Expression lhs, Expression rhs, boolean allowEquals) {
         return eval.less(lhs, rhs, allowEquals);
+    }
+
+    @Override
+    public Expression wrapInProduct(Expression[] translated, int length) {
+        return null;
+    }
+
+    @Override
+    public Expression wrapInSum(Expression[] translated, int length) {
+        return null;
     }
 
     @Override
@@ -105,12 +118,17 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
 
     @Override
     public int limitOnComplexity() {
-        return ExpressionImpl.SOFT_LIMIT_ON_COMPLEXITY;
+        return eval.limitOnComplexity();
     }
 
     @Override
     public Stream<Expression> expandTerms(Expression expression, boolean negate) {
         return eval.expandTerms(expression, negate);
+    }
+
+    @Override
+    public Stream<Expression> expandFactors(Expression expression) {
+        return eval.expandFactors(expression);
     }
 
     @Override

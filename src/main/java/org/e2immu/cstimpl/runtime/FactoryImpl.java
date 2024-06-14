@@ -783,5 +783,22 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     public TypeInfo newAnonymousType(TypeInfo enclosingType, int index) {
         return new TypeInfoImpl(enclosingType, index);
     }
+
+    @Override
+    public CommaExpression.Builder newCommaBuilder() {
+        return new CommaExpressionImpl.Builder();
+    }
+
+    @Override
+    public MethodInfo newArrayCreationConstructor(ParameterizedType type) {
+        MethodInfo mi = newMethod(type.typeInfo(), "<init>", methodTypeSyntheticConstructor());
+        mi.builder().setReturnType(type).addMethodModifier(methodModifierPublic()).computeAccess();
+        for (int i = 0; i < type.arrays(); i++) {
+            mi.builder().addParameter("dim" + i, intParameterizedType());
+        }
+        mi.builder().commitParameters();
+        mi.builder().commit();
+        return mi;
+    }
 }
 
