@@ -1,9 +1,6 @@
 package org.e2immu.cstimpl.runtime;
 
-import org.e2immu.cstapi.element.Comment;
-import org.e2immu.cstapi.element.CompilationUnit;
-import org.e2immu.cstapi.element.Element;
-import org.e2immu.cstapi.element.Source;
+import org.e2immu.cstapi.element.*;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.runtime.Factory;
@@ -765,6 +762,16 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public MethodInfo.MethodType methodTypeSyntheticConstructor() {
         return MethodInfoImpl.MethodTypeEnum.SYNTHETIC_CONSTRUCTOR;
+    }
+
+    @Override
+    public MethodReference.Builder newMethodReferenceBuilder() {
+        return new MethodReferenceImpl.Builder();
+    }
+
+    @Override
+    public ImportStatement newImportStatement(String importString) {
+        return new ImportStatementImpl(importString);
     }
 }
 

@@ -1,7 +1,6 @@
 package org.e2immu.cstimpl.element;
 
 import org.e2immu.cstapi.element.*;
-import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.variable.DescendMode;
@@ -17,18 +16,15 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
     private final URI uri;
     private final String packageName;
     private final List<ImportStatement> importStatements;
-    private final List<TypeInfo> types;
     private final List<Comment> comments;
 
     public CompilationUnitImpl(URI uri,
                                List<Comment> comments,
                                String packageName,
-                               List<ImportStatement> importStatements,
-                               List<TypeInfo> types) {
+                               List<ImportStatement> importStatements) {
         this.uri = uri;
         this.packageName = packageName;
         this.importStatements = importStatements;
-        this.types = types;
         this.comments = comments;
     }
 
@@ -45,11 +41,6 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
     @Override
     public List<ImportStatement> importStatements() {
         return importStatements;
-    }
-
-    @Override
-    public List<TypeInfo> types() {
-        return types;
     }
 
     @Override
@@ -70,14 +61,11 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
     @Override
     public void visit(Predicate<Element> predicate) {
         importStatements.forEach(predicate::test);
-        types.forEach(typeInfo -> {
-            if (predicate.test(typeInfo)) typeInfo.visit(predicate);
-        });
     }
 
     @Override
     public void visit(Visitor visitor) {
-        throw new UnsupportedOperationException();
+        importStatements.forEach(is -> is.visit(visitor));
     }
 
     @Override
@@ -87,19 +75,18 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
 
     @Override
     public Stream<Variable> variables(DescendMode descendMode) {
-        return types.stream().flatMap(ti -> ti.variables(descendMode));
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
-        return types.stream().flatMap(TypeInfo::typesReferenced);
+        throw new UnsupportedOperationException();
     }
 
     public static class Builder extends ElementImpl.Builder<CompilationUnit.Builder> implements CompilationUnit.Builder {
         private String packageName;
         private URI uri;
         private final List<ImportStatement> importStatements = new ArrayList<>();
-        private final List<TypeInfo> types = new ArrayList<>();
 
         @Override
         public CompilationUnit.Builder setURI(URI uri) {
@@ -114,12 +101,6 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
         }
 
         @Override
-        public CompilationUnit.Builder addType(TypeInfo typeInfo) {
-            this.types.add(typeInfo);
-            return this;
-        }
-
-        @Override
         public CompilationUnit.Builder setPackageName(String packageName) {
             this.packageName = packageName;
             return this;
@@ -127,8 +108,7 @@ public class CompilationUnitImpl extends ElementImpl implements CompilationUnit 
 
         @Override
         public CompilationUnit build() {
-            return new CompilationUnitImpl(uri, comments, packageName, List.copyOf(importStatements),
-                    List.copyOf(types));
+            return new CompilationUnitImpl(uri, comments, packageName, List.copyOf(importStatements));
         }
     }
 }
