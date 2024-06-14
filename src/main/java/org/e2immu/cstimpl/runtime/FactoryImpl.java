@@ -470,8 +470,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
-    public Lambda newLambda(ParameterizedType abstractFunctionalType, ParameterizedType implementation, ParameterizedType concreteReturnType, List<Lambda.OutputVariant> outputVariants) {
-        return null;
+    public Lambda.Builder newLambdaBuilder() {
+        return new LambdaImpl.Builder();
+    }
+
+    @Override
+    public Lambda.OutputVariant lambdaOutputVariantEmpty() {
+        return LambdaImpl.OutputVariantImpl.EMPTY;
     }
 
     @Override
@@ -772,6 +777,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public ImportStatement newImportStatement(String importString) {
         return new ImportStatementImpl(importString);
+    }
+
+    @Override
+    public TypeInfo newAnonymousType(TypeInfo enclosingType, int index) {
+        return new TypeInfoImpl(enclosingType, index);
     }
 }
 

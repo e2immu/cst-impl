@@ -47,6 +47,10 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
         inspection.setVariable(new TypeInspectionImpl.Builder(this));
     }
 
+    public TypeInfoImpl(TypeInfo enclosingType, int index) {
+        this(enclosingType, "$" + index);
+    }
+
     public boolean hasBeenCommitted() {
         return inspection.isFinal();
     }

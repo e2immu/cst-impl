@@ -119,6 +119,11 @@ public class RuntimeImpl extends FactoryImpl implements Runtime {
     }
 
     @Override
+    public TypeInfo syntheticFunctionalType(int inputParameters, boolean hasReturnValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Stream<AnnotationExpression> e2immuAnnotations() {
         return e2ImmuAnnotations.streamTypes();
     }
