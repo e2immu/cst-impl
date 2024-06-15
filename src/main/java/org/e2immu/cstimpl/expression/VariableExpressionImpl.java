@@ -16,6 +16,8 @@ import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.TextImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -139,5 +141,17 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
             return variable.fullyQualifiedName().compareTo(ve.variable().fullyQualifiedName());
         }
         throw new InternalCompareToException();
+    }
+
+    public record VariableFieldSuffix(int statementTime,
+                                      String latestAssignment) implements VariableExpression.VariableField {
+
+        @Override
+        public OutputBuilder print() {
+            OutputBuilder outputBuilder = new OutputBuilderImpl();
+            if (latestAssignment != null) outputBuilder.add(new TextImpl("$" + latestAssignment));
+            outputBuilder.add(new TextImpl("$" + statementTime));
+            return outputBuilder;
+        }
     }
 }

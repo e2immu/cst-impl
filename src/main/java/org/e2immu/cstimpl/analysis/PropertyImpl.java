@@ -15,6 +15,8 @@ public class PropertyImpl implements Property {
     public static final Property STATIC_SIDE_EFFECTS_METHOD = new PropertyImpl("sseMethod");
     public static final Property POST_CONDITIONS_METHOD = new PropertyImpl("postConditionsMethod");
     public static final Property PRECONDITION_METHOD = new PropertyImpl("preconditionMethod");
+    public static final Property INDICES_OF_ESCAPE_METHOD = new PropertyImpl("indicesOfEscapesNotInPrePostCondition");
+    public static final Property METHOD_ALLOWS_INTERRUPTS = new PropertyImpl("methodAllowsInterrupts");
 
     // commutation on methods
     public static final Property PARALLEL_PARAMETER_GROUPS = new PropertyImpl("parallelParameterGroups",

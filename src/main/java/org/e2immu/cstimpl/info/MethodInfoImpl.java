@@ -251,6 +251,11 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public boolean allowsInterrupts() {
+        return analysedOrDefault(PropertyImpl.METHOD_ALLOWS_INTERRUPTS, ValueImpl.BoolImpl.FALSE).isTrue();
+    }
+
+    @Override
     public boolean isPublic() {
         return inspection.get().isPublic();
     }
@@ -339,5 +344,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public boolean isStaticSideEffects() {
         return analysedOrDefault(PropertyImpl.STATIC_SIDE_EFFECTS_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+    }
+
+    @Override
+    public Value.IndicesOfEscapes indicesOfEscapesNotInPreOrPostConditions() {
+        return analysedOrDefault(PropertyImpl.INDICES_OF_ESCAPE_METHOD, ValueImpl.IndicesOfEscapesImpl.EMPTY);
     }
 }

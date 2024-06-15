@@ -50,6 +50,19 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
         private ParameterizedType concreteReturnType;
         private String modificationTimes;
 
+        public Builder() {
+
+        }
+
+        public Builder(MethodCall mc) {
+            object = mc.object();
+            methodInfo = mc.methodInfo();
+            parameterExpressions = mc.parameterExpressions();
+            objectIsImplicit = mc.objectIsImplicit();
+            concreteReturnType = mc.concreteReturnType();
+            modificationTimes = mc.modificationTimes();
+        }
+
         @Override
         public MethodCall build() {
             assert parameterExpressions != null : "Must set parameter expressions!";

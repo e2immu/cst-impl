@@ -72,4 +72,8 @@ public class ValueImpl implements Value {
     public record PreconditionImpl(Expression expression) implements Precondition {
         public static final Precondition EMPTY = new PreconditionImpl(null);
     }
+
+    public record IndicesOfEscapesImpl(Set<String> indices) implements IndicesOfEscapes {
+        public static final IndicesOfEscapes EMPTY = new IndicesOfEscapesImpl(Set.of());
+    }
 }

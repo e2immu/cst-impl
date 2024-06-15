@@ -5,6 +5,7 @@ import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.OutputElement;
+import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
@@ -16,6 +17,7 @@ import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.*;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.QualificationImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.statement.*;
@@ -120,6 +122,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public MethodCall.Builder newMethodCallBuilder() {
         return new MethodCallImpl.Builder();
+    }
+
+    @Override
+    public MethodCall.Builder newMethodCallBuilder(MethodCall methodCall) {
+        return new MethodCallImpl.Builder(methodCall);
     }
 
     @Override
@@ -824,6 +831,16 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
+    public OutputElement symbolColon() {
+        return SymbolEnum.COLON;
+    }
+
+    @Override
+    public Qualification qualificationFullyQualifiedNames() {
+        return QualificationImpl.FULLY_QUALIFIED_NAMES;
+    }
+
+    @Override
     public OutputElement symbolLeftParenthesis() {
         return SymbolEnum.LEFT_PARENTHESIS;
     }
@@ -841,6 +858,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Collector<OutputBuilder, OutputBuilder, OutputBuilder> outputBuilderJoining(OutputElement outputElement) {
         return OutputBuilderImpl.joining(outputElement);
+    }
+
+    @Override
+    public VariableExpression.Suffix newVariableFieldSuffix(int statementTime, String latestAssignment) {
+        return new VariableExpressionImpl.VariableFieldSuffix(statementTime, latestAssignment);
     }
 }
 
