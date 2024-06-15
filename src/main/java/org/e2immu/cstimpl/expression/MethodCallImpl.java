@@ -128,6 +128,12 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
     }
 
     @Override
+    public MethodCall withParameterExpressions(List<Expression> parameterExpressions) {
+        return new MethodCallImpl(source(), comments(), object, objectIsImplicit, methodInfo, parameterExpressions,
+                concreteReturnType, modificationTimes);
+    }
+
+    @Override
     public ParameterizedType parameterizedType() {
         return concreteReturnType;
     }

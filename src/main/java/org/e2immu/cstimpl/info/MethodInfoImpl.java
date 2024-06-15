@@ -307,6 +307,16 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     }
 
     @Override
+    public Value.PostConditions postConditions() {
+        return analysedOrDefault(PropertyImpl.POST_CONDITIONS_METHOD, ValueImpl.PostConditionsImpl.EMPTY);
+    }
+
+    @Override
+    public Value.Precondition precondition() {
+        return analysedOrDefault(PropertyImpl.PRECONDITION_METHOD, ValueImpl.PreconditionImpl.EMPTY);
+    }
+
+    @Override
     public List<AnnotationExpression> annotations() {
         return inspection.get().annotations();
     }

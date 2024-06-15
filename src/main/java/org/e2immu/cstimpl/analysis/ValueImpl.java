@@ -1,11 +1,15 @@
 package org.e2immu.cstimpl.analysis;
 
 import org.e2immu.cstapi.analysis.Value;
+import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.util.ParSeq;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ValueImpl implements Value {
 
@@ -55,5 +59,17 @@ public class ValueImpl implements Value {
         public boolean isAtLeastImmutableHC() {
             return value > 10; // FIXME
         }
+    }
+
+    public record AssignedToFieldImpl(Set<FieldInfo> fields) implements AssignedToField {
+        public static final AssignedToField EMPTY = new AssignedToFieldImpl(Set.of());
+    }
+
+    public record PostConditionsImpl(Map<String, Expression> byIndex) implements PostConditions {
+        public static final PostConditions EMPTY = new PostConditionsImpl(Map.of());
+    }
+
+    public record PreconditionImpl(Expression expression) implements Precondition {
+        public static final Precondition EMPTY = new PreconditionImpl(null);
     }
 }

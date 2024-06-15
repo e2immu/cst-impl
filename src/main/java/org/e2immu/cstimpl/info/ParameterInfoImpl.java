@@ -1,5 +1,6 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
@@ -147,6 +148,11 @@ public class ParameterInfoImpl implements ParameterInfo {
     @Override
     public boolean isIgnoreModifications() {
         return analysedOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.FALSE).isTrue();
+    }
+
+    @Override
+    public Value.AssignedToField assignedToField() {
+        return analysedOrDefault(PropertyImpl.PARAMETER_ASSIGNED_TO_FIELD, ValueImpl.AssignedToFieldImpl.EMPTY);
     }
 
     public void commit(ParameterInspection pi) {

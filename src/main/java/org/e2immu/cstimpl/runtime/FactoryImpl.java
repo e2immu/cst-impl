@@ -3,6 +3,8 @@ package org.e2immu.cstimpl.runtime;
 import org.e2immu.cstapi.element.*;
 import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.*;
+import org.e2immu.cstapi.output.OutputBuilder;
+import org.e2immu.cstapi.output.OutputElement;
 import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.statement.*;
 import org.e2immu.cstapi.translate.TranslationMap;
@@ -10,8 +12,12 @@ import org.e2immu.cstapi.type.*;
 import org.e2immu.cstapi.variable.*;
 import org.e2immu.cstimpl.element.*;
 import org.e2immu.cstimpl.expression.*;
+import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.info.*;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.SymbolEnum;
+import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.statement.*;
 import org.e2immu.cstimpl.translate.TranslationMapImpl;
 import org.e2immu.cstimpl.type.DiamondEnum;
@@ -26,6 +32,7 @@ import org.e2immu.cstimpl.variable.ThisImpl;
 import org.e2immu.support.Either;
 
 import java.util.List;
+import java.util.stream.Collector;
 
 public class FactoryImpl extends PredefinedImpl implements Factory {
 
@@ -353,6 +360,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public Precedence precedenceAnd() {
         return PrecedenceEnum.AND;
+    }
+
+    @Override
+    public Precedence precedenceArrayAccess() {
+        return PrecedenceEnum.ARRAY_ACCESS;
     }
 
     @Override
@@ -799,6 +811,36 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
         mi.builder().commitParameters();
         mi.builder().commit();
         return mi;
+    }
+
+    @Override
+    public OutputBuilder newOutputBuilder() {
+        return new OutputBuilderImpl();
+    }
+
+    @Override
+    public OutputElement symbolComma() {
+        return SymbolEnum.COMMA;
+    }
+
+    @Override
+    public OutputElement symbolLeftParenthesis() {
+        return SymbolEnum.LEFT_PARENTHESIS;
+    }
+
+    @Override
+    public OutputElement symbolRightParenthesis() {
+        return SymbolEnum.RIGHT_PARENTHESIS;
+    }
+
+    @Override
+    public OutputElement newText(String text) {
+        return new TextImpl(text);
+    }
+
+    @Override
+    public Collector<OutputBuilder, OutputBuilder, OutputBuilder> outputBuilderJoining(OutputElement outputElement) {
+        return OutputBuilderImpl.joining(outputElement);
     }
 }
 

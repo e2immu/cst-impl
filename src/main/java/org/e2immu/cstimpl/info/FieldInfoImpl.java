@@ -110,6 +110,11 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     }
 
     @Override
+    public boolean isIgnoreModifications() {
+        return analysedOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
+    }
+
+    @Override
     public int complexity() {
         return 1 + inspection.get().initializer().complexity();
     }
