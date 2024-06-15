@@ -168,7 +168,7 @@ public class ParameterInfoImpl implements ParameterInfo {
         assert defaultValue != null;
         return (V) analysis.getOrDefault(property, defaultValue);
     }
-    
+
     @Override
     public void setAnalyzed(Property property, Value value) {
         assert property.classOfValue().isAssignableFrom(value.getClass());
