@@ -1,5 +1,6 @@
 package org.e2immu.cstimpl.info;
 
+import org.e2immu.cstapi.analysis.Property;
 import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
@@ -18,6 +19,7 @@ import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.EventuallyFinal;
+import org.e2immu.support.SetOnceMap;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,6 +31,7 @@ public class ParameterInfoImpl implements ParameterInfo {
     private final MethodInfo methodInfo;
     private final ParameterizedType parameterizedType;
     private final EventuallyFinal<ParameterInspection> inspection;
+    private final SetOnceMap<Property, Value> analysis = new SetOnceMap<>();
 
     public ParameterInfoImpl(MethodInfo methodInfo, int index, String name, ParameterizedType parameterizedType) {
         this.methodInfo = methodInfo;
@@ -157,5 +160,18 @@ public class ParameterInfoImpl implements ParameterInfo {
 
     public void commit(ParameterInspection pi) {
         inspection.setFinal(pi);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V extends Value> V analysedOrDefault(Property property, V defaultValue) {
+        assert defaultValue != null;
+        return (V) analysis.getOrDefault(property, defaultValue);
+    }
+    
+    @Override
+    public void setAnalyzed(Property property, Value value) {
+        assert property.classOfValue().isAssignableFrom(value.getClass());
+        analysis.put(property, value);
     }
 }

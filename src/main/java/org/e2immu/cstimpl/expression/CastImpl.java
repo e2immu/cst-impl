@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.expression;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.ArrayLength;
 import org.e2immu.cstapi.expression.Cast;
@@ -13,6 +15,7 @@ import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
@@ -21,6 +24,7 @@ import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.type.DiamondEnum;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -29,10 +33,32 @@ public class CastImpl extends ExpressionImpl implements Cast {
     private final Expression expression;
     private final ParameterizedType parameterizedType;
 
-    public CastImpl(ParameterizedType parameterizedType, Expression expression) {
-        super(1 + expression.complexity());
+    public CastImpl(List<Comment> comments, Source source, ParameterizedType parameterizedType, Expression expression) {
+        super(comments, source, 1 + expression.complexity());
         this.expression = expression;
         this.parameterizedType = parameterizedType;
+    }
+
+    public static class Builder extends ElementImpl.Builder<Cast.Builder> implements Cast.Builder {
+        private Expression expression;
+        private ParameterizedType parameterizedType;
+
+        @Override
+        public Cast.Builder setExpression(Expression expression) {
+            this.expression = expression;
+            return this;
+        }
+
+        @Override
+        public Cast.Builder setParameterizedType(ParameterizedType parameterizedType) {
+            this.parameterizedType = parameterizedType;
+            return this;
+        }
+
+        @Override
+        public Cast build() {
+            return new CastImpl(comments, source, parameterizedType, expression);
+        }
     }
 
     @Override
@@ -118,6 +144,6 @@ public class CastImpl extends ExpressionImpl implements Cast {
         Expression translatedExpression = expression.translate(translationMap);
         ParameterizedType translatedType = translationMap.translateType(this.parameterizedType);
         if (translatedExpression == this.expression && translatedType == this.parameterizedType) return this;
-        return new CastImpl(translatedType, translatedExpression);
+        return new CastImpl(comments(), source(), translatedType, translatedExpression);
     }
 }

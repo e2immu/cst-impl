@@ -87,7 +87,12 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public Cast newCast(Expression e, ParameterizedType parameterizedType) {
-        return new CastImpl(parameterizedType, e);
+        return new CastImpl(List.of(), null, parameterizedType, e);
+    }
+
+    @Override
+    public Cast.Builder newCastBuilder() {
+        return new CastImpl.Builder();
     }
 
     @Override

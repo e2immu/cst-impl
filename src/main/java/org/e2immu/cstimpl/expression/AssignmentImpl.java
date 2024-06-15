@@ -201,4 +201,10 @@ public class AssignmentImpl extends ExpressionImpl implements Assignment {
     public Stream<Element.TypeReference> typesReferenced() {
         return Stream.empty();
     }
+
+    @Override
+    public Assignment withValue(Expression value) {
+        return new AssignmentImpl(comments(), source(), target, value, assignmentOperator, assignmentOperatorIsPlus,
+                binaryOperator, prefixPrimitiveOperator);
+    }
 }

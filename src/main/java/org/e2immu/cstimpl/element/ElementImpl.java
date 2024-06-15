@@ -4,6 +4,7 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.expression.AnnotationExpression;
+import org.e2immu.cstapi.expression.MethodCall;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.variable.Variable;
@@ -41,6 +42,12 @@ public abstract class ElementImpl implements Element {
         protected final List<Comment> comments = new ArrayList<>();
         protected final List<AnnotationExpression> annotations = new ArrayList<>();
         protected Source source;
+
+        public Builder() {}
+        public Builder(Element e) {
+            addComments(e.comments());
+            setSource(e.source());
+        }
 
         @Override
         public B setSource(Source source) {

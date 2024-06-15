@@ -23,6 +23,10 @@ public class ValueImpl implements Value {
             this.value = value;
         }
 
+        public static Value from(boolean b) {
+            return b ? TRUE : FALSE;
+        }
+
         @Override
         public boolean isFalse() {
             return !value;

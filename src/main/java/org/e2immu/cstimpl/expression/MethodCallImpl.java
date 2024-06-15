@@ -65,6 +65,7 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
         }
 
         public Builder(MethodCall mc) {
+            super(mc);
             object = mc.object();
             methodInfo = mc.methodInfo();
             parameterExpressions = mc.parameterExpressions();

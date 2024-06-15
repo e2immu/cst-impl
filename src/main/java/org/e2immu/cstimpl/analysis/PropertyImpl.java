@@ -40,6 +40,9 @@ public class PropertyImpl implements Property {
     // statement
     public static final Property ALWAYS_ESCAPES = new PropertyImpl("statementAlwaysEscapes");
 
+    // any element
+    public static final Property SHALLOW_ANALYZER = new PropertyImpl("shallowAnalyzer");
+
 
     private final String key;
     private final Class<? extends Value> classOfValue;

@@ -27,16 +27,10 @@ public abstract class InfoImpl implements Element {
         return (V) analysis.getOrDefault(property, defaultValue);
     }
 
-    public void putPropertyValue(Property property, Value value) {
-        assert property.classOfValue().equals(value.getClass());
+    @Override
+    public void setAnalyzed(Property property, Value value) {
+        assert property.classOfValue().isAssignableFrom(value.getClass());
         analysis.put(property, value);
-    }
-
-    public void putPropertyValues(Map<Property, Value> propertyValueMap) {
-        propertyValueMap.forEach((p, v) -> {
-            assert p.classOfValue().equals(v.getClass());
-            analysis.put(p, v);
-        });
     }
 
     @Override
