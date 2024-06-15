@@ -7,6 +7,8 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.runtime.Predefined;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.TextImpl;
 
 public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> implements BooleanConstant {
     private final ParameterizedType booleanPt;
@@ -45,7 +47,7 @@ public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> impleme
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        return new OutputBuilderImpl().add(new TextImpl(Boolean.toString(constant)));
     }
 
     public BooleanConstant negate() {

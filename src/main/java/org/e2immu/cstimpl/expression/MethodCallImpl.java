@@ -4,20 +4,30 @@ import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
-import org.e2immu.cstapi.expression.Expression;
-import org.e2immu.cstapi.expression.MethodCall;
-import org.e2immu.cstapi.expression.Precedence;
+import org.e2immu.cstapi.expression.*;
 import org.e2immu.cstapi.info.MethodInfo;
+import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.output.element.Guide;
+import org.e2immu.cstapi.output.element.QualifiedName;
+import org.e2immu.cstapi.output.element.ThisName;
+import org.e2immu.cstapi.output.element.TypeName;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
+import org.e2immu.cstapi.variable.This;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.ElementImpl;
+import org.e2immu.cstimpl.expression.util.ExpressionComparator;
+import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
+import org.e2immu.cstimpl.output.*;
 
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static org.e2immu.cstimpl.output.QualifiedNameImpl.Required.NO_METHOD;
+import static org.e2immu.cstimpl.output.QualifiedNameImpl.Required.YES;
 
 public class MethodCallImpl extends ExpressionImpl implements MethodCall {
     private final Expression object;
@@ -153,12 +163,12 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
 
     @Override
     public Precedence precedence() {
-        return null;
+        return PrecedenceEnum.ARRAY_ACCESS;
     }
 
     @Override
     public int order() {
-        return 0;
+        return ExpressionComparator.ORDER_METHOD;
     }
 
     @Override
@@ -178,7 +188,83 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return null;
+        return print(qualification, null);
+    }
+
+    // will come directly here only from this method (chaining of method calls produces a guide)
+    public OutputBuilder print(Qualification qualification, GuideImpl.GuideGenerator guideGenerator) {
+        OutputBuilder outputBuilder = new OutputBuilderImpl();
+        boolean last = false;
+        boolean start = false;
+        GuideImpl.GuideGenerator gg = null;
+        if (objectIsImplicit && qualification.doNotQualifyImplicit()) {
+            outputBuilder.add(new TextImpl(methodInfo.name()));
+        } else {
+            VariableExpression ve;
+            MethodCall methodCall;
+            TypeExpression typeExpression;
+            if ((methodCall = object.asInstanceOf(MethodCall.class)) != null) {
+                // chaining!
+                if (guideGenerator == null) {
+                    gg = GuideImpl.defaultGuideGenerator();
+                    last = true;
+                } else {
+                    gg = guideGenerator;
+                }
+                outputBuilder.add(((MethodCallImpl) methodCall).print(qualification, gg)); // recursive call
+                outputBuilder.add(gg.mid());
+                outputBuilder.add(SymbolEnum.DOT);
+                outputBuilder.add(new TextImpl(methodInfo.name()));
+            } else if ((typeExpression = object.asInstanceOf(TypeExpression.class)) != null) {
+                /*
+                we may or may not need to write the type here.
+                (we check methodInspection is set, because of debugOutput)
+                 */
+                assert methodInfo.isStatic();
+                TypeInfo typeInfo = typeExpression.parameterizedType().typeInfo();
+                TypeName typeName = TypeNameImpl.typeName(typeInfo, qualification.qualifierRequired(typeInfo));
+                outputBuilder.add(new QualifiedNameImpl(methodInfo.name(), typeName,
+                        qualification.qualifierRequired(methodInfo) ? YES : NO_METHOD));
+                if (guideGenerator != null) start = true;
+            } else if ((ve = object.asInstanceOf(VariableExpression.class)) != null &&
+                       ve.variable() instanceof This thisVar) {
+                //     (we check methodInspection is set, because of debugOutput)
+                assert !methodInfo.isStatic() : "Have a static method with scope 'this'? "
+                                                + methodInfo.fullyQualifiedName() + "; this "
+                                                + thisVar.typeInfo().fullyQualifiedName();
+                TypeName typeName = TypeNameImpl.typeName(thisVar.typeInfo(),
+                        qualification.qualifierRequired(thisVar.typeInfo()));
+                ThisName thisName = new ThisNameImpl(thisVar.writeSuper(), typeName,
+                        qualification.qualifierRequired(thisVar));
+                outputBuilder.add(new QualifiedNameImpl(methodInfo.name(), thisName,
+                        qualification.qualifierRequired(methodInfo) ? YES : NO_METHOD));
+                if (guideGenerator != null) start = true;
+            } else {
+                // next level is NOT a gg; if gg != null we're at the start of the chain
+                outputBuilder.add(outputInParenthesis(qualification, precedence(), object));
+                if (guideGenerator != null) outputBuilder.add(guideGenerator.start());
+                outputBuilder.add(SymbolEnum.DOT);
+                outputBuilder.add(new TextImpl(methodInfo.name()));
+            }
+        }
+
+        if (parameterExpressions.isEmpty()) {
+            outputBuilder.add(SymbolEnum.OPEN_CLOSE_PARENTHESIS);
+        } else {
+            outputBuilder
+                    .add(SymbolEnum.LEFT_PARENTHESIS)
+                    .add(parameterExpressions.stream()
+                            .map(expression -> expression.print(qualification))
+                            .collect(OutputBuilderImpl.joining(SymbolEnum.COMMA)))
+                    .add(SymbolEnum.RIGHT_PARENTHESIS);
+        }
+        if (start) {
+            outputBuilder.add(guideGenerator.start());
+        }
+        if (last) {
+            outputBuilder.add(gg.end());
+        }
+        return outputBuilder;
     }
 
     @Override

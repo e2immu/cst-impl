@@ -303,12 +303,12 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public Value.FieldValue getSetField() {
-        return analysedOrDefault(PropertyImpl.GET_SET_FIELD, null);
+        return analysedOrDefault(PropertyImpl.GET_SET_FIELD, ValueImpl.FieldValueImpl.EMPTY);
     }
 
     @Override
     public Value.GetSetEquivalent getSetEquivalents() {
-        return analysedOrDefault(PropertyImpl.GET_SET_EQUIVALENT, null);
+        return analysedOrDefault(PropertyImpl.GET_SET_EQUIVALENT, ValueImpl.GetSetEquivalentImpl.EMPTY);
     }
 
     @Override

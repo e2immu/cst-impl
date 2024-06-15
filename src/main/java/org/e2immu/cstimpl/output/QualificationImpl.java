@@ -59,6 +59,17 @@ public class QualificationImpl implements Qualification {
     }
 
     @Override
+    public boolean qualifierRequired(MethodInfo methodInfo) {
+        if (unqualifiedMethods.contains(methodInfo)) return false;
+        return parent == null || parent.qualifierRequired(methodInfo);
+    }
+
+    @Override
+    public boolean doNotQualifyImplicit() {
+        return doNotQualifyImplicit;
+    }
+
+    @Override
     public boolean qualifierRequired(Variable variable) {
         if (variable instanceof FieldReference fieldReference) {
             if (unqualifiedFields.contains(fieldReference.fieldInfo())) return false;

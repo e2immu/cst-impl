@@ -3,6 +3,7 @@ package org.e2immu.cstimpl.analysis;
 import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.FieldInfo;
+import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.ParameterInfo;
 import org.e2immu.cstapi.util.ParSeq;
 
@@ -61,6 +62,10 @@ public class ValueImpl implements Value {
         }
     }
 
+    public record FieldValueImpl(FieldInfo field) implements FieldValue {
+        public static final FieldValue EMPTY = new FieldValueImpl(null);
+    }
+
     public record AssignedToFieldImpl(Set<FieldInfo> fields) implements AssignedToField {
         public static final AssignedToField EMPTY = new AssignedToFieldImpl(Set.of());
     }
@@ -75,5 +80,10 @@ public class ValueImpl implements Value {
 
     public record IndicesOfEscapesImpl(Set<String> indices) implements IndicesOfEscapes {
         public static final IndicesOfEscapes EMPTY = new IndicesOfEscapesImpl(Set.of());
+    }
+
+    public record GetSetEquivalentImpl(Set<ParameterInfo> parameters,
+                                       MethodInfo methodWithoutParameters) implements GetSetEquivalent {
+        public static final GetSetEquivalent EMPTY = new GetSetEquivalentImpl(Set.of(), null);
     }
 }
