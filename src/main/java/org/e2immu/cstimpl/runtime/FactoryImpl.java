@@ -276,7 +276,13 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public InlineConditional newInlineConditional(Expression condition, Expression ifTrue, Expression ifFalse) {
-        return new InlineConditionalImpl(condition, ifTrue, ifFalse);
+        return new InlineConditionalImpl(List.of(), null, condition, ifTrue, ifFalse,
+                commonType(ifTrue.parameterizedType(), ifFalse.parameterizedType()));
+    }
+
+    @Override
+    public InlineConditional.Builder newInlineConditionalBuilder() {
+        return new InlineConditionalImpl.Builder();
     }
 
     @Override
@@ -868,6 +874,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public VariableExpression.Suffix newVariableFieldSuffix(int statementTime, String latestAssignment) {
         return new VariableExpressionImpl.VariableFieldSuffix(statementTime, latestAssignment);
+    }
+
+    @Override
+    public ExplicitConstructorInvocation.Builder newExplicitConstructorInvocationBuilder() {
+        return new ExplicitConstructorInvocationImpl.Builder();
     }
 }
 

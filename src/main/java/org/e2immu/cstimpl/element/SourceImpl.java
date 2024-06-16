@@ -66,4 +66,9 @@ public class SourceImpl implements Source {
     public String index() {
         return index;
     }
+
+    @Override
+    public String toString() {
+        return beginLine + ":" + beginPos + "-" + endLine + ":" + endPos;
+    }
 }

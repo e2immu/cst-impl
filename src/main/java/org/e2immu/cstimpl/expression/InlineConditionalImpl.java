@@ -1,6 +1,8 @@
 package org.e2immu.cstimpl.expression;
 
+import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
+import org.e2immu.cstapi.element.Source;
 import org.e2immu.cstapi.element.Visitor;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.expression.InlineConditional;
@@ -8,15 +10,19 @@ import org.e2immu.cstapi.expression.Negation;
 import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.runtime.Factory;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
+import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -28,21 +34,44 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
     private final Expression ifFalse;
     private final ParameterizedType commonType;
 
-    public static InlineConditional create(Runtime runtime, Expression condition, Expression ifTrue, Expression ifFalse) {
-        ParameterizedType commonType = runtime.commonType(ifTrue.parameterizedType(), ifFalse.parameterizedType());
-        return new InlineConditionalImpl(condition, ifTrue, ifFalse, commonType);
-    }
 
-    public InlineConditionalImpl(Expression condition, Expression ifTrue, Expression ifFalse) {
-        this(condition, ifTrue, ifFalse, ifTrue.parameterizedType());
-    }
-
-    public InlineConditionalImpl(Expression condition, Expression ifTrue, Expression ifFalse, ParameterizedType commonType) {
-        super(10);
+    public InlineConditionalImpl(List<Comment> comments, Source source, Expression condition, Expression ifTrue,
+                                 Expression ifFalse, ParameterizedType commonType) {
+        super(comments, source, 1 + condition.complexity() + ifTrue.complexity() + ifFalse.complexity());
         this.condition = condition;
         this.ifTrue = ifTrue;
         this.ifFalse = ifFalse;
         this.commonType = commonType;
+    }
+
+    public static final class Builder extends ElementImpl.Builder<InlineConditional.Builder> implements InlineConditional.Builder {
+        private Expression condition;
+        private Expression ifTrue;
+        private Expression ifFalse;
+
+        @Override
+        public InlineConditional.Builder setIfTrue(Expression ifTrue) {
+            this.ifTrue = ifTrue;
+            return this;
+        }
+
+        @Override
+        public InlineConditional.Builder setIfFalse(Expression ifFalse) {
+            this.ifFalse = ifFalse;
+            return this;
+        }
+
+        @Override
+        public InlineConditional.Builder setCondition(Expression condition) {
+            this.condition = condition;
+            return this;
+        }
+
+        @Override
+        public InlineConditional build(Factory runtime) {
+            return new InlineConditionalImpl(comments, source, condition, ifTrue, ifFalse,
+                    runtime.commonType(ifTrue.parameterizedType(), ifFalse.parameterizedType()));
+        }
     }
 
     @Override
@@ -97,7 +126,7 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
 
     @Override
     public Precedence precedence() {
-        return null;
+        return PrecedenceEnum.TERNARY;
     }
 
     @Override
@@ -163,8 +192,8 @@ public class InlineConditionalImpl extends ExpressionImpl implements InlineCondi
         Expression tf = ifFalse.translate(translationMap);
         if (tc == condition && tt == ifTrue && tf == ifFalse) return this;
         InlineConditional result = tc instanceof Negation negation
-                ? new InlineConditionalImpl(negation.expression(), tf, tt)
-                : new InlineConditionalImpl(tc, tt, tf);
+                ? new InlineConditionalImpl(comments(), source(), negation.expression(), tf, tt, commonType)
+                : new InlineConditionalImpl(comments(), source(), tc, tt, tf, commonType);
         if (translationMap.translateAgain()) {
             return result.translate(translationMap);
         }
