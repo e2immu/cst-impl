@@ -480,6 +480,11 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     }
 
     @Override
+    public LocalVariableCreation.Builder newLocalVariableCreationBuilder() {
+        return new LocalVariableCreationImpl.Builder();
+    }
+
+    @Override
     public TranslationMap.Builder newTranslationMapBuilder() {
         return new TranslationMapImpl.Builder();
     }
@@ -879,6 +884,21 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
     @Override
     public ExplicitConstructorInvocation.Builder newExplicitConstructorInvocationBuilder() {
         return new ExplicitConstructorInvocationImpl.Builder();
+    }
+
+    @Override
+    public BreakStatement.Builder newBreakBuilder() {
+        return new BreakStatementImpl.Builder();
+    }
+
+    @Override
+    public ContinueStatement.Builder newContinueBuilder() {
+        return new ContinueStatementImpl.Builder();
+    }
+
+    @Override
+    public ForStatement.Builder newForBuilder() {
+        return new ForStatementImpl.Builder();
     }
 }
 

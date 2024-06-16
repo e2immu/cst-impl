@@ -350,4 +350,9 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     public Value.IndicesOfEscapes indicesOfEscapesNotInPreOrPostConditions() {
         return analysedOrDefault(PropertyImpl.INDICES_OF_ESCAPE_METHOD, ValueImpl.IndicesOfEscapesImpl.EMPTY);
     }
+
+    @Override
+    public boolean isSynchronized() {
+        return inspection.get().modifiers().stream().anyMatch(MethodModifier::isSynchronized);
+    }
 }
