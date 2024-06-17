@@ -57,7 +57,8 @@ public class PropertyImpl implements Property {
         this.classOfValue = classOfValue;
     }
 
-    public String getKey() {
+    @Override
+    public String key() {
         return key;
     }
 

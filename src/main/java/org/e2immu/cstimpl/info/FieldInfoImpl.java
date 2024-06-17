@@ -94,8 +94,8 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
 
     @Override
     public boolean isPropertyNotNull() {
-        if(type.isPrimitiveExcludingVoid()) return true;
-        return analysedOrDefault(PropertyImpl.NOT_NULL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
+        if (type.isPrimitiveExcludingVoid()) return true;
+        return analysis().getOrDefault(PropertyImpl.NOT_NULL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
@@ -106,12 +106,12 @@ public class FieldInfoImpl extends InfoImpl implements FieldInfo {
     @Override
     public boolean isPropertyFinal() {
         if (isFinal()) return true;
-        return analysedOrDefault(PropertyImpl.FINAL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.FINAL_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isIgnoreModifications() {
-        return analysedOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_FIELD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override

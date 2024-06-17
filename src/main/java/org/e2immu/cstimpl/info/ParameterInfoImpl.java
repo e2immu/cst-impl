@@ -1,6 +1,6 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.analysis.Property;
+import org.e2immu.cstapi.analysis.PropertyValueMap;
 import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Comment;
 import org.e2immu.cstapi.element.Element;
@@ -14,12 +14,12 @@ import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
+import org.e2immu.cstimpl.analysis.PropertyValueMapImpl;
 import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.variable.DescendModeEnum;
 import org.e2immu.support.EventuallyFinal;
-import org.e2immu.support.SetOnceMap;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -31,7 +31,7 @@ public class ParameterInfoImpl implements ParameterInfo {
     private final MethodInfo methodInfo;
     private final ParameterizedType parameterizedType;
     private final EventuallyFinal<ParameterInspection> inspection;
-    private final SetOnceMap<Property, Value> analysis = new SetOnceMap<>();
+    private final PropertyValueMap analysis = new PropertyValueMapImpl();
 
     public ParameterInfoImpl(MethodInfo methodInfo, int index, String name, ParameterizedType parameterizedType) {
         this.methodInfo = methodInfo;
@@ -144,34 +144,27 @@ public class ParameterInfoImpl implements ParameterInfo {
     }
 
     @Override
+    public PropertyValueMap analysis() {
+        return analysis;
+    }
+
+    @Override
     public boolean isModified() {
-        return analysedOrDefault(PropertyImpl.MODIFIED_PARAMETER, ValueImpl.BoolImpl.TRUE).isTrue();
+        return analysis.getOrDefault(PropertyImpl.MODIFIED_PARAMETER, ValueImpl.BoolImpl.TRUE).isTrue();
     }
 
     @Override
     public boolean isIgnoreModifications() {
-        return analysedOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis.getOrDefault(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public Value.AssignedToField assignedToField() {
-        return analysedOrDefault(PropertyImpl.PARAMETER_ASSIGNED_TO_FIELD, ValueImpl.AssignedToFieldImpl.EMPTY);
+        return analysis.getOrDefault(PropertyImpl.PARAMETER_ASSIGNED_TO_FIELD, ValueImpl.AssignedToFieldImpl.EMPTY);
     }
 
     public void commit(ParameterInspection pi) {
         inspection.setFinal(pi);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <V extends Value> V analysedOrDefault(Property property, V defaultValue) {
-        assert defaultValue != null;
-        return (V) analysis.getOrDefault(property, defaultValue);
-    }
-
-    @Override
-    public void setAnalyzed(Property property, Value value) {
-        assert property.classOfValue().isAssignableFrom(value.getClass());
-        analysis.put(property, value);
-    }
 }

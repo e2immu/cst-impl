@@ -2,15 +2,12 @@ package org.e2immu.cstimpl.shallowanalyzer;
 
 import org.e2immu.annotation.*;
 import org.e2immu.annotation.rare.IgnoreModifications;
-import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.*;
 import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstimpl.analysis.PropertyImpl;
 import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class ShallowAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShallowAnalyzer.class);
@@ -33,7 +30,7 @@ public class ShallowAnalyzer {
             LOGGER.error("Caught exception in shallow analyzer for type {}", typeInfo);
             throw t;
         } finally {
-            typeInfo.setAnalyzed(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
+            typeInfo.analysis().set(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
         }
     }
 
@@ -50,13 +47,13 @@ public class ShallowAnalyzer {
     public void analyze(MethodInfo methodInfo) {
         try {
             boolean isFluent = haveActiveAnnotation(Fluent.class, methodInfo);
-            methodInfo.setAnalyzed(PropertyImpl.FLUENT_METHOD, ValueImpl.BoolImpl.from(isFluent));
+            methodInfo.analysis().set(PropertyImpl.FLUENT_METHOD, ValueImpl.BoolImpl.from(isFluent));
             boolean isIdentity = haveActiveAnnotation(Identity.class, methodInfo);
-            methodInfo.setAnalyzed(PropertyImpl.IDENTITY_METHOD, ValueImpl.BoolImpl.from(isIdentity));
+            methodInfo.analysis().set(PropertyImpl.IDENTITY_METHOD, ValueImpl.BoolImpl.from(isIdentity));
             boolean isModified = haveActiveAnnotation(Modified.class, methodInfo);
-            methodInfo.setAnalyzed(PropertyImpl.MODIFIED_METHOD, ValueImpl.BoolImpl.from(isModified));
+            methodInfo.analysis().set(PropertyImpl.MODIFIED_METHOD, ValueImpl.BoolImpl.from(isModified));
             boolean isNotNull = haveActiveAnnotation(NotNull.class, methodInfo);
-            methodInfo.setAnalyzed(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.from(isNotNull));
+            methodInfo.analysis().set(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.from(isNotNull));
 
             for (ParameterInfo parameterInfo : methodInfo.parameters()) {
                 analyze(parameterInfo);
@@ -65,35 +62,35 @@ public class ShallowAnalyzer {
             LOGGER.error("Caught exception in shallow analyzer for method {}", methodInfo);
             throw t;
         } finally {
-            methodInfo.setAnalyzed(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
+            methodInfo.analysis().set(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
         }
     }
 
     public void analyze(FieldInfo fieldInfo) {
         try {
             boolean isFinal = fieldInfo.isFinal() || haveActiveAnnotation(Final.class, fieldInfo);
-            fieldInfo.setAnalyzed(PropertyImpl.FINAL_FIELD, ValueImpl.BoolImpl.from(isFinal));
+            fieldInfo.analysis().set(PropertyImpl.FINAL_FIELD, ValueImpl.BoolImpl.from(isFinal));
             boolean isIgnoreMods = haveActiveAnnotation(IgnoreModifications.class, fieldInfo);
-            fieldInfo.setAnalyzed(PropertyImpl.IGNORE_MODIFICATIONS_FIELD, ValueImpl.BoolImpl.from(isIgnoreMods));
+            fieldInfo.analysis().set(PropertyImpl.IGNORE_MODIFICATIONS_FIELD, ValueImpl.BoolImpl.from(isIgnoreMods));
         } catch (Throwable t) {
             LOGGER.error("Caught exception in shallow analyzer for field {}", fieldInfo);
             throw t;
         } finally {
-            fieldInfo.setAnalyzed(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
+            fieldInfo.analysis().set(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
         }
     }
 
     public void analyze(ParameterInfo parameterInfo) {
         try {
             boolean isIgnoreMods = haveActiveAnnotation(IgnoreModifications.class, parameterInfo);
-            parameterInfo.setAnalyzed(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.from(isIgnoreMods));
+            parameterInfo.analysis().set(PropertyImpl.IGNORE_MODIFICATIONS_PARAMETER, ValueImpl.BoolImpl.from(isIgnoreMods));
             boolean isModified = !isIgnoreMods && haveActiveAnnotation(Modified.class, parameterInfo);
-            parameterInfo.setAnalyzed(PropertyImpl.MODIFIED_PARAMETER, ValueImpl.BoolImpl.from(isModified));
+            parameterInfo.analysis().set(PropertyImpl.MODIFIED_PARAMETER, ValueImpl.BoolImpl.from(isModified));
         } catch (Throwable t) {
             LOGGER.error("Caught exception in shallow analyzer for parameter {}", parameterInfo);
             throw t;
         } finally {
-            parameterInfo.setAnalyzed(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
+            parameterInfo.analysis().set(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
         }
     }
 }

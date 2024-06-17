@@ -92,12 +92,12 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public boolean isPropertyNotNull() {
         if (returnType().isPrimitiveExcludingVoid()) return true;
-        return analysedOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isPropertyNullable() {
-        return analysedOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isFalse();
+        return analysis().getOrDefault(PropertyImpl.NOT_NULL_METHOD, ValueImpl.BoolImpl.FALSE).isFalse();
     }
 
     public void commit(MethodInspection methodInspection) {
@@ -253,7 +253,7 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean allowsInterrupts() {
-        return analysedOrDefault(PropertyImpl.METHOD_ALLOWS_INTERRUPTS, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.METHOD_ALLOWS_INTERRUPTS, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
@@ -279,47 +279,47 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isModifying() {
-        return analysedOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.MODIFIED_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isFluent() {
-        return analysedOrDefault(PropertyImpl.FLUENT_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.FLUENT_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public boolean isIdentity() {
-        return analysedOrDefault(PropertyImpl.IDENTITY_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.IDENTITY_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public Value.CommutableData commutableData() {
-        return analysedOrDefault(PropertyImpl.COMMUTABLE_METHODS, ValueImpl.CommutableDataImpl.BLANK);
+        return analysis().getOrDefault(PropertyImpl.COMMUTABLE_METHODS, ValueImpl.CommutableDataImpl.BLANK);
     }
 
     @Override
     public Value.ParameterParSeq getParallelGroups() {
-        return analysedOrDefault(PropertyImpl.PARALLEL_PARAMETER_GROUPS, ValueImpl.ParameterParSeqImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.PARALLEL_PARAMETER_GROUPS, ValueImpl.ParameterParSeqImpl.EMPTY);
     }
 
     @Override
     public Value.FieldValue getSetField() {
-        return analysedOrDefault(PropertyImpl.GET_SET_FIELD, ValueImpl.FieldValueImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.GET_SET_FIELD, ValueImpl.FieldValueImpl.EMPTY);
     }
 
     @Override
     public Value.GetSetEquivalent getSetEquivalents() {
-        return analysedOrDefault(PropertyImpl.GET_SET_EQUIVALENT, ValueImpl.GetSetEquivalentImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.GET_SET_EQUIVALENT, ValueImpl.GetSetEquivalentImpl.EMPTY);
     }
 
     @Override
     public Value.PostConditions postConditions() {
-        return analysedOrDefault(PropertyImpl.POST_CONDITIONS_METHOD, ValueImpl.PostConditionsImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.POST_CONDITIONS_METHOD, ValueImpl.PostConditionsImpl.EMPTY);
     }
 
     @Override
     public Value.Precondition precondition() {
-        return analysedOrDefault(PropertyImpl.PRECONDITION_METHOD, ValueImpl.PreconditionImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.PRECONDITION_METHOD, ValueImpl.PreconditionImpl.EMPTY);
     }
 
     @Override
@@ -344,12 +344,12 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public boolean isStaticSideEffects() {
-        return analysedOrDefault(PropertyImpl.STATIC_SIDE_EFFECTS_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.STATIC_SIDE_EFFECTS_METHOD, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 
     @Override
     public Value.IndicesOfEscapes indicesOfEscapesNotInPreOrPostConditions() {
-        return analysedOrDefault(PropertyImpl.INDICES_OF_ESCAPE_METHOD, ValueImpl.IndicesOfEscapesImpl.EMPTY);
+        return analysis().getOrDefault(PropertyImpl.INDICES_OF_ESCAPE_METHOD, ValueImpl.IndicesOfEscapesImpl.EMPTY);
     }
 
     @Override
@@ -359,6 +359,6 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
 
     @Override
     public Map<FieldInfo, Boolean> areOwnFieldsReadModified() {
-        return analysedOrDefault(PropertyImpl.OWN_FIELDS_READ_MODIFIED_IN_METHOD, ValueImpl.FieldBooleanMapImpl.EMPTY).map();
+        return analysis().getOrDefault(PropertyImpl.OWN_FIELDS_READ_MODIFIED_IN_METHOD, ValueImpl.FieldBooleanMapImpl.EMPTY).map();
     }
 }

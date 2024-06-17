@@ -1,6 +1,5 @@
 package org.e2immu.cstimpl.info;
 
-import org.e2immu.cstapi.analysis.Property;
 import org.e2immu.cstapi.element.*;
 import org.e2immu.cstapi.expression.AnnotationExpression;
 import org.e2immu.cstapi.info.*;
@@ -450,7 +449,7 @@ public class TypeInfoImpl extends InfoImpl implements TypeInfo {
 
     @Override
     public boolean isAtLeastImmutableHC() {
-        return analysedOrDefault(PropertyImpl.IMMUTABLE_TYPE, ValueImpl.ImmutableImpl.MUTABLE).isAtLeastImmutableHC();
+        return analysis().getOrDefault(PropertyImpl.IMMUTABLE_TYPE, ValueImpl.ImmutableImpl.MUTABLE).isAtLeastImmutableHC();
     }
 
     @Override

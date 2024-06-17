@@ -110,6 +110,6 @@ public abstract class StatementImpl extends ElementImpl implements Statement {
 
     @Override
     public boolean alwaysEscapes() {
-        return analysedOrDefault(PropertyImpl.ALWAYS_ESCAPES, ValueImpl.BoolImpl.FALSE).isTrue();
+        return analysis().getOrDefault(PropertyImpl.ALWAYS_ESCAPES, ValueImpl.BoolImpl.FALSE).isTrue();
     }
 }
