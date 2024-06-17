@@ -47,11 +47,6 @@ public class PropertyValueMapImpl implements PropertyValueMap {
     }
 
     @Override
-    public String decode(Codec codec, Property property, Codec.EncodedValue encodedValue) {
-        return "";
-    }
-
-    @Override
     public boolean haveAnalyzedValueFor(Property property) {
         return map.isSet(property);
     }

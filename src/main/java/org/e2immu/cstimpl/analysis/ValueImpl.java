@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 
 public abstract class ValueImpl implements Value {
 
-    private static Map<Class<? extends Value>, BiFunction<Codec, Codec.EncodedValue, Value>> decoderMap = new HashMap<>();
+    private static final Map<Class<? extends Value>, BiFunction<Codec, Codec.EncodedValue, Value>> decoderMap = new HashMap<>();
+
+    public static BiFunction<Codec, Codec.EncodedValue, Value> decoder(Class<? extends Value> clazz) {
+        return decoderMap.get(clazz);
+    }
 
     public static class BoolImpl implements Value.Bool {
         public static final Bool FALSE = new BoolImpl(false);

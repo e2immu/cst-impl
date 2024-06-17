@@ -5,7 +5,7 @@ import org.e2immu.cstapi.analysis.Value;
 
 public class PropertyImpl implements Property {
     // type
-    public static final Property IMMUTABLE_TYPE = new PropertyImpl("immutableType", Value.Immutable.class);
+    public static final Property IMMUTABLE_TYPE = new PropertyImpl("immutableType", ValueImpl.ImmutableImpl.MUTABLE);
 
     // method
     public static final Property MODIFIED_METHOD = new PropertyImpl("modifiedMethod");
@@ -13,25 +13,31 @@ public class PropertyImpl implements Property {
     public static final Property IDENTITY_METHOD = new PropertyImpl("identityMethod");
     public static final Property NOT_NULL_METHOD = new PropertyImpl("notNullMethod");
     public static final Property STATIC_SIDE_EFFECTS_METHOD = new PropertyImpl("sseMethod");
-    public static final Property POST_CONDITIONS_METHOD = new PropertyImpl("postConditionsMethod");
-    public static final Property PRECONDITION_METHOD = new PropertyImpl("preconditionMethod");
-    public static final Property INDICES_OF_ESCAPE_METHOD = new PropertyImpl("indicesOfEscapesNotInPrePostCondition");
+    public static final Property POST_CONDITIONS_METHOD = new PropertyImpl("postConditionsMethod",
+            ValueImpl.PostConditionsImpl.EMPTY);
+    public static final Property PRECONDITION_METHOD = new PropertyImpl("preconditionMethod",
+            ValueImpl.PreconditionImpl.EMPTY);
+    public static final Property INDICES_OF_ESCAPE_METHOD = new PropertyImpl("indicesOfEscapesNotInPrePostCondition",
+            ValueImpl.IndicesOfEscapesImpl.EMPTY);
     public static final Property METHOD_ALLOWS_INTERRUPTS = new PropertyImpl("methodAllowsInterrupts");
-    public static final Property OWN_FIELDS_READ_MODIFIED_IN_METHOD = new PropertyImpl("areOwnFieldsReadModified", Value.FieldBooleanMap.class);
+    public static final Property OWN_FIELDS_READ_MODIFIED_IN_METHOD = new PropertyImpl("areOwnFieldsReadModified",
+            ValueImpl.FieldBooleanMapImpl.EMPTY);
 
     // commutation on methods
     public static final Property PARALLEL_PARAMETER_GROUPS = new PropertyImpl("parallelParameterGroups",
-            Value.ParameterParSeq.class);
+            ValueImpl.ParameterParSeqImpl.EMPTY);
     public static final Property COMMUTABLE_METHODS = new PropertyImpl("commutableMethods",
-            Value.CommutableData.class);
-    public static final Property GET_SET_FIELD = new PropertyImpl("getSetField", Value.FieldValue.class);
+            ValueImpl.CommutableDataImpl.BLANK);
+    public static final Property GET_SET_FIELD = new PropertyImpl("getSetField",
+            ValueImpl.FieldValueImpl.EMPTY);
     public static final Property GET_SET_EQUIVALENT = new PropertyImpl("getSetEquivalent",
-            Value.GetSetEquivalent.class);
+            ValueImpl.GetSetEquivalentImpl.EMPTY);
 
     // parameter
     public static final Property MODIFIED_PARAMETER = new PropertyImpl("modifiedParameter");
     public static final Property IGNORE_MODIFICATIONS_PARAMETER = new PropertyImpl("ignoreModsParameter");
-    public static final Property PARAMETER_ASSIGNED_TO_FIELD = new PropertyImpl("parameterAssignedToField");
+    public static final Property PARAMETER_ASSIGNED_TO_FIELD = new PropertyImpl("parameterAssignedToField",
+            ValueImpl.AssignedToFieldImpl.EMPTY);
 
     // field
     public static final Property FINAL_FIELD = new PropertyImpl("finalField");
@@ -46,15 +52,20 @@ public class PropertyImpl implements Property {
 
 
     private final String key;
-    private final Class<? extends Value> classOfValue;
+    private final Value defaultValue;
 
     public PropertyImpl(String key) {
-        this(key, Value.Bool.class);
+        this(key, ValueImpl.BoolImpl.FALSE);
     }
 
-    public PropertyImpl(String key, Class<? extends Value> classOfValue) {
+    public PropertyImpl(String key, Value defaultValue) {
         this.key = key;
-        this.classOfValue = classOfValue;
+        this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public Value defaultValue() {
+        return defaultValue;
     }
 
     @Override
@@ -64,6 +75,6 @@ public class PropertyImpl implements Property {
 
     @Override
     public Class<? extends Value> classOfValue() {
-        return classOfValue;
+        return defaultValue.getClass();
     }
 }
