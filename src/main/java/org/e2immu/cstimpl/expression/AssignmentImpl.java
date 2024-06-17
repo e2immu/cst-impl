@@ -21,6 +21,7 @@ import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -100,6 +101,20 @@ public class AssignmentImpl extends ExpressionImpl implements Assignment {
             return new AssignmentImpl(comments, source, target, value, assignmentOperator, assignmentOperatorIsPlus,
                     binaryOperator, prefixPrimitiveOperator);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AssignmentImpl that)) return false;
+        return Objects.equals(target, that.target) && Objects.equals(value, that.value)
+               && Objects.equals(assignmentOperator, that.assignmentOperator)
+               && Objects.equals(prefixPrimitiveOperator, that.prefixPrimitiveOperator);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(target, value, assignmentOperator, prefixPrimitiveOperator);
     }
 
     @Override

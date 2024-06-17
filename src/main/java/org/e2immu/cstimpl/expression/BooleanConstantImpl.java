@@ -24,6 +24,17 @@ public class BooleanConstantImpl extends ConstantExpressionImpl<Boolean> impleme
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        return obj instanceof BooleanConstant bc && constant == bc.constant();
+    }
+
+    @Override
+    public int hashCode() {
+        return constant ? 1 : 0;
+    }
+
+    @Override
     public Boolean constant() {
         return constant;
     }

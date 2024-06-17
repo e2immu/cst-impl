@@ -17,6 +17,7 @@ import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.output.TextImpl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -34,6 +35,20 @@ public class ExplicitConstructorInvocationImpl extends StatementImpl implements 
         this.methodInfo = methodInfo;
         this.parameterExpressions = parameterExpressions;
         assert source == null || "0".equals(source.index());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExplicitConstructorInvocationImpl that)) return false;
+        return isSuper() == that.isSuper()
+               && Objects.equals(methodInfo, that.methodInfo)
+               && Objects.equals(parameterExpressions, that.parameterExpressions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isSuper(), methodInfo, parameterExpressions);
     }
 
     public static class Builder extends StatementImpl.Builder<ExplicitConstructorInvocation.Builder>

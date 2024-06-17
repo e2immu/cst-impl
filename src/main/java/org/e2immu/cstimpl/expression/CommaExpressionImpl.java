@@ -23,6 +23,7 @@ import org.e2immu.cstimpl.util.ListUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -55,6 +56,18 @@ public class CommaExpressionImpl extends ExpressionImpl implements CommaExpressi
         public CommaExpression build() {
             return new CommaExpressionImpl(comments, source, List.copyOf(expressions));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CommaExpressionImpl that)) return false;
+        return expressions.equals(that.expressions);
+    }
+
+    @Override
+    public int hashCode() {
+        return expressions.hashCode();
     }
 
     @Override

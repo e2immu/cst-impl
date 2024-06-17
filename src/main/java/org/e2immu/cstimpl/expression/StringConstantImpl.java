@@ -28,6 +28,18 @@ public class StringConstantImpl extends ConstantExpressionImpl<String> implement
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StringConstantImpl that)) return false;
+        return constant.equals(that.constant);
+    }
+
+    @Override
+    public int hashCode() {
+        return constant.hashCode();
+    }
+
+    @Override
     public String constant() {
         return constant;
     }

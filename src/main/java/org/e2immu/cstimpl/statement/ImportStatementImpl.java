@@ -11,6 +11,7 @@ import org.e2immu.cstimpl.output.SpaceEnum;
 import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.output.TextImpl;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -19,6 +20,18 @@ public class ImportStatementImpl extends StatementImpl implements ImportStatemen
 
     public ImportStatementImpl(String importString) {
         this.importString = importString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ImportStatementImpl that)) return false;
+        return Objects.equals(importString, that.importString);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(importString);
     }
 
     @Override

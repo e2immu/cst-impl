@@ -33,7 +33,7 @@ public abstract class ElementImpl implements Element {
     @Override
     public String toString() {
         OutputBuilder print = print(QualificationImpl.SIMPLE_NAMES);
-        assert print != null;
+        if(print == null) return "<print returns null>";
         return print.toString();
     }
 

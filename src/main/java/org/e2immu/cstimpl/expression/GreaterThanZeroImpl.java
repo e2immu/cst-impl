@@ -20,6 +20,7 @@ import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.output.TextImpl;
 import org.e2immu.cstimpl.util.IntUtil;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -37,6 +38,18 @@ public class GreaterThanZeroImpl extends ExpressionImpl implements GreaterThanZe
         this.expression = expression;
         this.allowEquals = allowEquals;
         this.booleanPt = booleanPt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GreaterThanZeroImpl that)) return false;
+        return allowEquals == that.allowEquals && Objects.equals(expression, that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expression, allowEquals);
     }
 
     @Override

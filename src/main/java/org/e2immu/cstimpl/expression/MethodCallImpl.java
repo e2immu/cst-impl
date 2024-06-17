@@ -23,6 +23,7 @@ import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -119,6 +120,23 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
             this.concreteReturnType = returnType;
             return this;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MethodCallImpl that)) return false;
+        return objectIsImplicit == that.objectIsImplicit
+               && Objects.equals(object, that.object)
+               && Objects.equals(methodInfo, that.methodInfo)
+               && Objects.equals(parameterExpressions, that.parameterExpressions)
+               // https://github.com/e2immu/e2immu/issues/56
+               && Objects.equals(modificationTimes, that.modificationTimes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(object, objectIsImplicit, methodInfo, parameterExpressions, modificationTimes);
     }
 
     @Override

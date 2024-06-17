@@ -19,6 +19,7 @@ import org.e2immu.cstimpl.output.KeywordImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.SymbolEnum;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -34,6 +35,18 @@ public class ArrayLengthImpl extends ExpressionImpl implements ArrayLength {
         super(1 + scope.complexity());
         this.scope = scope;
         this.intPt = intPt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArrayLengthImpl that)) return false;
+        return scope.equals(that.scope);
+    }
+
+    @Override
+    public int hashCode() {
+        return scope.hashCode();
     }
 
     @Override

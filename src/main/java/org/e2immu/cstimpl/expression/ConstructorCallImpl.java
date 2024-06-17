@@ -25,6 +25,7 @@ import org.e2immu.cstimpl.type.DiamondEnum;
 import org.e2immu.cstimpl.util.ListUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -108,6 +109,23 @@ public class ConstructorCallImpl extends ExpressionImpl implements ConstructorCa
             this.concreteReturnType = returnType;
             return this;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConstructorCallImpl that)) return false;
+        return Objects.equals(constructor, that.constructor)
+               && Objects.equals(diamond, that.diamond)
+               && Objects.equals(object, that.object)
+               && Objects.equals(parameterExpressions, that.parameterExpressions)
+               && Objects.equals(arrayInitializer, that.arrayInitializer)
+               && Objects.equals(anonymousClass, that.anonymousClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(constructor, diamond, object, parameterExpressions, arrayInitializer, anonymousClass);
     }
 
     @Override
