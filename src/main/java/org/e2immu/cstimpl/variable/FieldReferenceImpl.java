@@ -10,7 +10,6 @@ import org.e2immu.cstapi.info.FieldInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.output.element.TypeName;
-import org.e2immu.cstapi.runtime.Runtime;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.FieldReference;
@@ -193,6 +192,11 @@ public class FieldReferenceImpl extends VariableImpl implements FieldReference {
         if (scopeIsThis()) return true;
         if (scopeVariable instanceof FieldReference fr) return fr.scopeIsRecursivelyThis();
         return false;
+    }
+
+    @Override
+    public boolean isDefaultScope() {
+        return isDefaultScope;
     }
 
     @Override

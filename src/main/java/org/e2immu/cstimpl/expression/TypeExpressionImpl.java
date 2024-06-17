@@ -7,6 +7,7 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.expression.TypeExpression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.Diamond;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
@@ -95,5 +96,15 @@ public class TypeExpressionImpl extends ExpressionImpl implements TypeExpression
         if (expression instanceof TypeExpression te) {
             return parameterizedType.detailedString().compareTo(te.parameterizedType().detailedString());
         } else throw new InternalCompareToException();
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        ParameterizedType translatedType = translationMap.translateType(parameterizedType);
+        if (translatedType == parameterizedType) return this;
+        return new TypeExpressionImpl(translatedType, diamond);
     }
 }

@@ -9,15 +9,21 @@ import org.e2immu.cstapi.expression.Precedence;
 import org.e2immu.cstapi.expression.VariableExpression;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
+import org.e2immu.cstapi.variable.DependentVariable;
 import org.e2immu.cstapi.variable.DescendMode;
+import org.e2immu.cstapi.variable.FieldReference;
 import org.e2immu.cstapi.variable.Variable;
 import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.expression.util.ExpressionComparator;
 import org.e2immu.cstimpl.expression.util.InternalCompareToException;
 import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
+import org.e2immu.cstimpl.output.SymbolEnum;
 import org.e2immu.cstimpl.output.TextImpl;
+import org.e2immu.cstimpl.variable.DependentVariableImpl;
+import org.e2immu.cstimpl.variable.FieldReferenceImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -111,7 +117,20 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
 
     @Override
     public OutputBuilder print(Qualification qualification) {
-        return variable.print(qualification);
+        OutputBuilder outputBuilder = new OutputBuilderImpl();
+        // if (variable instanceof FieldReference fr && !fr.isStatic()) {
+        //    if (!fr.isDefaultScope()) {
+        // outputBuilder.add(outputInParenthesis(qualification, precedence(), scopeValue)).add(SymbolEnum.DOT);
+        //    }
+        //    outputBuilder.add(new TextImpl(fr.fieldInfo().name()));
+        //} else if (variable instanceof DependentVariable dv) { TODO NYI
+        //    outputBuilder.add(outputInParenthesis(qualification, precedence(), scopeValue))
+        //            .add(SymbolEnum.LEFT_BRACKET).add(indexValue.output(qualification)).add(Symbol.RIGHT_BRACKET);
+        //} else {
+        outputBuilder.add(variable.print(qualification));
+        // }
+        if(suffix != null) outputBuilder.add(suffix.print());
+        return outputBuilder;
     }
 
     @Override
@@ -153,5 +172,58 @@ public class VariableExpressionImpl extends ExpressionImpl implements VariableEx
             outputBuilder.add(new TextImpl("$" + statementTime));
             return outputBuilder;
         }
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        // see explanation in TranslationMapImpl for the order of translation.
+        Expression translated1 = translationMap.translateExpression(this);
+        if (translated1 != this) {
+            return translated1;
+        }
+        Expression translated2 = translationMap.translateVariableExpressionNullIfNotTranslated(variable);
+        if (translated2 != null) {
+            return translated2;
+        }
+        Variable translated3 = translationMap.translateVariable( variable);
+        if (translated3 != variable) {
+            return new VariableExpressionImpl(translated3);
+        }
+        if (translationMap.recurseIntoScopeVariables()) {
+            if (variable instanceof FieldReference fr) {
+                Expression translated = fr.scope().translate(translationMap);
+                if (translated != fr.scope()) {
+                    FieldReference newFr = new FieldReferenceImpl(fr.fieldInfo(), translated, null,
+                            fr.parameterizedType());
+                  //  if (translated.isDelayed()) {
+                  //      int statementTime = translated instanceof DelayedVariableExpression dve ? dve.statementTime : 0;
+                  //     return DelayedVariableExpression.forField(newFr, statementTime, translated.causesOfDelay());
+                  //  }
+                    return new VariableExpressionImpl(source(), comments(), newFr, suffix);
+                }
+               // if (!translated.equals(scopeValue)) {
+                    // change the scopeValue to the translated one (see e.g. Basics_21.copy(),
+                    // which translates using RemoveSuffixesTranslationMap)
+                //    return new VariableExpression(identifier, fr, suffix, translated, null);
+                //}
+            } else if (variable instanceof DependentVariable dv) {
+                Expression translatedScope = dv.arrayExpression().translate( translationMap);
+                Expression translatedIndex = dv.indexExpression().translate( translationMap);
+                if (translatedScope != dv.arrayExpression() || translatedIndex != dv.indexExpression()) {
+                    Variable arrayVariable = DependentVariableImpl.makeVariable(translatedScope,
+                            DependentVariableImpl.ARRAY_VARIABLE);
+                    assert arrayVariable != null;
+                    Variable indexVariable = DependentVariableImpl.makeVariable(translatedIndex,
+                            DependentVariableImpl.INDEX_VARIABLE);
+                    DependentVariable newDv = new DependentVariableImpl( translatedScope,
+                            arrayVariable, translatedIndex, indexVariable, dv.parameterizedType());
+                  //  if (newDv.causesOfDelay().isDelayed()) {
+                  //      return DelayedVariableExpression.forDependentVariable(newDv, newDv.causesOfDelay());
+                  //  }
+                    return new VariableExpressionImpl(source(), comments(), newDv, suffix);
+                }
+            }
+        }
+        return this;
     }
 }

@@ -9,6 +9,7 @@ import org.e2immu.cstapi.expression.UnaryOperator;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.Variable;
@@ -114,5 +115,15 @@ public class UnaryOperatorImpl extends ExpressionImpl implements UnaryOperator {
     @Override
     public boolean isNumeric() {
         return expression.isNumeric();
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        Expression translatedExpression = expression.translate(translationMap);
+        if (translatedExpression == expression) return this;
+        return new UnaryOperatorImpl(operator, translatedExpression, precedence);
     }
 }

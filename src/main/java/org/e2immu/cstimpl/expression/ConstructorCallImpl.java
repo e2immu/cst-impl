@@ -9,6 +9,7 @@ import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.info.TypeInfo;
 import org.e2immu.cstapi.output.OutputBuilder;
 import org.e2immu.cstapi.output.Qualification;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.Diamond;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
@@ -266,5 +267,34 @@ public class ConstructorCallImpl extends ExpressionImpl implements ConstructorCa
     @Override
     public Diamond diamond() {
         return diamond;
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression translated = translationMap.translateExpression(this);
+        if (translated != this) return translated;
+
+        Expression translatedObject = object == null ? null : translationMap.translateExpression(object);
+        ParameterizedType translatedType = translationMap.translateType(this.parameterizedType());
+        List<Expression> translatedParameterExpressions = parameterExpressions.isEmpty() ? parameterExpressions
+                : parameterExpressions.stream()
+                .map(e -> e.translate(translationMap))
+                .filter(e -> !e.isEmpty())
+                .collect(translationMap.toList(parameterExpressions));
+        ArrayInitializer translatedInitializer = arrayInitializer == null ? null :
+                (ArrayInitializer) arrayInitializer.translate(translationMap);
+        if (translatedObject == object
+            && translatedType == this.parameterizedType()
+            && translatedParameterExpressions == this.parameterExpressions
+            && translatedInitializer == arrayInitializer) {
+            return this;
+        }
+        return new ConstructorCallImpl(comments(), source(),
+                constructor,
+                translatedType,
+                diamond,
+                object,
+                translatedParameterExpressions,
+                translatedInitializer, anonymousClass);
     }
 }

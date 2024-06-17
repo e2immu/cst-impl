@@ -46,21 +46,21 @@ public class DependentVariableImpl extends VariableImpl implements DependentVari
     public static final String ARRAY_VARIABLE = "av-";
     public static final String INDEX_VARIABLE = "iv-";
 
-    public static DependentVariable create(Factory factory, Expression array, Expression index) {
-        Variable av = makeVariable(factory, array, ARRAY_VARIABLE);
-        Variable iv = makeVariable(factory, index, INDEX_VARIABLE);
+    public static DependentVariable create(Expression array, Expression index) {
+        Variable av = makeVariable(array, ARRAY_VARIABLE);
+        Variable iv = makeVariable(index, INDEX_VARIABLE);
         ParameterizedType pt = array.parameterizedType().copyWithOneFewerArrays();
         return new DependentVariableImpl(array, Objects.requireNonNull(av), index, iv, pt);
     }
 
-    public static Variable makeVariable(Factory factory, Expression expression, String variablePrefix) {
+    public static Variable makeVariable(Expression expression, String variablePrefix) {
         if (expression.isConstant()) return null;
         VariableExpression ve;
         if ((ve = expression.asInstanceOf(VariableExpression.class)) != null) {
             return ve.variable();
         }
         String name = variablePrefix + expression.source().compact();
-        return factory.newLocalVariable(name, expression.parameterizedType());
+        return new LocalVariableImpl(name, expression.parameterizedType(), null);
     }
 
 

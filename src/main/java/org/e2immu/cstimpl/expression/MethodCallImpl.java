@@ -13,6 +13,7 @@ import org.e2immu.cstapi.output.element.Guide;
 import org.e2immu.cstapi.output.element.QualifiedName;
 import org.e2immu.cstapi.output.element.ThisName;
 import org.e2immu.cstapi.output.element.TypeName;
+import org.e2immu.cstapi.translate.TranslationMap;
 import org.e2immu.cstapi.type.ParameterizedType;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.This;
@@ -23,6 +24,7 @@ import org.e2immu.cstimpl.expression.util.PrecedenceEnum;
 import org.e2immu.cstimpl.output.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -45,12 +47,12 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
         super(comments, source, object.complexity()
                                 + methodInfo.complexity()
                                 + parameterExpressions.stream().mapToInt(Expression::complexity).sum());
-        this.object = object;
+        this.object = Objects.requireNonNull(object);
         this.objectIsImplicit = objectIsImplicit;
-        this.parameterExpressions = parameterExpressions;
-        this.concreteReturnType = concreteReturnType;
-        this.methodInfo = methodInfo;
-        this.modificationTimes = modificationTimes;
+        this.parameterExpressions = Objects.requireNonNull(parameterExpressions);
+        this.concreteReturnType = Objects.requireNonNull(concreteReturnType);
+        this.methodInfo = Objects.requireNonNull(methodInfo);
+        this.modificationTimes = Objects.requireNonNull(modificationTimes);
     }
 
     public static class Builder extends ElementImpl.Builder<MethodCall.Builder> implements MethodCall.Builder {
@@ -59,7 +61,7 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
         private List<Expression> parameterExpressions;
         private boolean objectIsImplicit;
         private ParameterizedType concreteReturnType;
-        private String modificationTimes;
+        private String modificationTimes = "";
 
         public Builder() {
 
@@ -294,5 +296,34 @@ public class MethodCallImpl extends ExpressionImpl implements MethodCall {
     @Override
     public Stream<Element.TypeReference> typesReferenced() {
         return Stream.empty();
+    }
+
+    @Override
+    public Expression translate(TranslationMap translationMap) {
+        Expression asExpression = translationMap.translateExpression(this);
+        if (asExpression != this) return asExpression;
+
+        MethodInfo translatedMethod = translationMap.translateMethod(methodInfo);
+        Expression translatedObject = object.translate(translationMap);
+        ParameterizedType translatedReturnType = translationMap.translateType(concreteReturnType);
+        List<Expression> translatedParameters = parameterExpressions.isEmpty() ? parameterExpressions :
+                parameterExpressions.stream().map(e -> e.translate(translationMap))
+                        .filter(e -> !e.isEmpty()) // allows for removal of certain arguments
+                        .collect(translationMap.toList(parameterExpressions));
+        String newModificationTimes = Objects.requireNonNullElse(
+                translationMap.modificationTimes(this, translatedObject, translatedParameters),
+                modificationTimes);
+        if (translatedMethod == methodInfo && translatedObject == object
+            && translatedReturnType == concreteReturnType
+            && translatedParameters == parameterExpressions
+            && newModificationTimes.equals(modificationTimes)) {
+            return this;
+        }
+        MethodCall translatedMc = new MethodCallImpl(source(), comments(), translatedObject, objectIsImplicit,
+                translatedMethod, translatedParameters, translatedReturnType, newModificationTimes);
+        if (translationMap.translateAgain()) {
+            return translatedMc.translate(translationMap);
+        }
+        return translatedMc;
     }
 }

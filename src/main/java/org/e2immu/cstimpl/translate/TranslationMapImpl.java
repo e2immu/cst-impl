@@ -1,6 +1,7 @@
 package org.e2immu.cstimpl.translate;
 
 import org.e2immu.cstapi.expression.Expression;
+import org.e2immu.cstapi.expression.MethodCall;
 import org.e2immu.cstapi.expression.VariableExpression;
 import org.e2immu.cstapi.info.MethodInfo;
 import org.e2immu.cstapi.statement.Statement;
@@ -34,6 +35,7 @@ public class TranslationMapImpl implements TranslationMap {
     private final boolean recurseIntoScopeVariables;
     private final boolean yieldIntoReturn;
     private final boolean translateAgain;
+    private final ModificationTimesHandler modificationTimesHandler;
 
     private TranslationMapImpl(Map<? extends Statement, List<Statement>> statements,
                                Map<? extends Expression, ? extends Expression> expressions,
@@ -41,6 +43,7 @@ public class TranslationMapImpl implements TranslationMap {
                                Map<? extends Variable, ? extends Variable> variables,
                                Map<MethodInfo, MethodInfo> methods,
                                Map<ParameterizedType, ParameterizedType> types,
+                               ModificationTimesHandler modificationTimesHandler,
                                boolean expandDelayedWrappedExpressions,
                                boolean recurseIntoScopeVariables,
                                boolean yieldIntoReturn,
@@ -58,6 +61,7 @@ public class TranslationMapImpl implements TranslationMap {
         this.expandDelayedWrappedExpressions = expandDelayedWrappedExpressions;
         this.recurseIntoScopeVariables = recurseIntoScopeVariables;
         this.translateAgain = translateAgain;
+        this.modificationTimesHandler = modificationTimesHandler;
     }
 
     public static class Builder implements TranslationMap.Builder {
@@ -68,6 +72,7 @@ public class TranslationMapImpl implements TranslationMap {
         private final Map<MethodInfo, MethodInfo> methods = new HashMap<>();
         private final Map<Statement, List<Statement>> statements = new HashMap<>();
         private final Map<ParameterizedType, ParameterizedType> types = new HashMap<>();
+        private ModificationTimesHandler modificationTimesHandler;
         private boolean expandDelayedWrappedExpressions;
         private boolean recurseIntoScopeVariables;
         private boolean yieldIntoReturn;
@@ -92,6 +97,7 @@ public class TranslationMapImpl implements TranslationMap {
         @Override
         public TranslationMap build() {
             return new TranslationMapImpl(statements, expressions, variableExpressions, variables, methods, types,
+                    modificationTimesHandler,
                     expandDelayedWrappedExpressions, recurseIntoScopeVariables, yieldIntoReturn, translateAgain);
         }
 
@@ -170,6 +176,12 @@ public class TranslationMapImpl implements TranslationMap {
         @Override
         public boolean translateMethod(MethodInfo methodInfo) {
             return methods.containsKey(methodInfo);
+        }
+
+        @Override
+        public Builder setModificationTimesHandler(ModificationTimesHandler modificationTimesHandler) {
+            this.modificationTimesHandler = modificationTimesHandler;
+            return this;
         }
 
         @Override
@@ -416,4 +428,15 @@ public class TranslationMapImpl implements TranslationMap {
         return translateAgain;
     }
 
+    @Override
+    public String modificationTimes(Expression methodCallBeforeTranslation,
+                                    Expression translatedObject, List<Expression> translatedParameters) {
+        if (modificationTimesHandler == null) return null;
+        // type cast: see interface spec: methodCallBeforeTranslation is of type Expression to avoid cyclic type dependencies
+        MethodCall beforeTranslation;
+        if ((beforeTranslation = methodCallBeforeTranslation.asInstanceOf(MethodCall.class)) != null) {
+            return modificationTimesHandler.modificationTimes(beforeTranslation, translatedObject, translatedParameters);
+        }
+        throw new UnsupportedOperationException();
+    }
 }

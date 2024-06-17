@@ -307,7 +307,7 @@ public class FactoryImpl extends PredefinedImpl implements Factory {
 
     @Override
     public DependentVariable newDependentVariable(Expression array, Expression index) {
-        return DependentVariableImpl.create(this, array, index);
+        return DependentVariableImpl.create(array, index);
     }
 
     @Override

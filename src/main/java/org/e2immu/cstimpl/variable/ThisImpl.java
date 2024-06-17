@@ -8,6 +8,7 @@ import org.e2immu.cstapi.output.Qualification;
 import org.e2immu.cstapi.variable.DescendMode;
 import org.e2immu.cstapi.variable.This;
 import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstimpl.element.ElementImpl;
 import org.e2immu.cstimpl.output.OutputBuilderImpl;
 import org.e2immu.cstimpl.output.ThisNameImpl;
 import org.e2immu.cstimpl.output.TypeNameImpl;
@@ -66,12 +67,13 @@ public class ThisImpl extends VariableImpl implements This {
 
     @Override
     public void visit(Predicate<Element> predicate) {
-
+        predicate.test(this);
     }
 
     @Override
     public void visit(Visitor visitor) {
-
+        visitor.beforeVariable(this);
+        visitor.afterVariable(this);
     }
 
     @Override
@@ -83,11 +85,11 @@ public class ThisImpl extends VariableImpl implements This {
 
     @Override
     public Stream<Variable> variables(DescendMode descendMode) {
-        return Stream.empty();
+        return Stream.of(this);
     }
 
     @Override
     public Stream<TypeReference> typesReferenced() {
-        return Stream.empty();
+        return Stream.of(new ElementImpl.TypeReference(typeInfo(), explicitlyWriteType != null));
     }
 }
