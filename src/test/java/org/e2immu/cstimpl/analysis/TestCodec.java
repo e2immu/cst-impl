@@ -28,21 +28,31 @@ public class TestCodec {
     public void test() {
         CompilationUnit cu = runtime.newCompilationUnitBuilder().setPackageName("a.b").build();
         TypeInfo typeInfo = runtime.newTypeInfo(cu, "C");
+
         typeInfo.analysis().set(PropertyImpl.IMMUTABLE_TYPE, new ValueImpl.ImmutableImpl(3));
         typeInfo.analysis().set(PropertyImpl.SHALLOW_ANALYZER, ValueImpl.BoolImpl.TRUE);
+        typeInfo.analysis().set(PropertyImpl.COMMUTABLE_METHODS,
+                new ValueImpl.CommutableDataImpl("p1", "p2,p3", "p4"));
 
         Codec codec = new CodecImpl();
-        List<Property> properties = List.of(PropertyImpl.IMMUTABLE_TYPE, PropertyImpl.SHALLOW_ANALYZER);
+        List<Property> properties = List.of(
+                PropertyImpl.IMMUTABLE_TYPE,
+                PropertyImpl.SHALLOW_ANALYZER,
+                PropertyImpl.COMMUTABLE_METHODS);
         Stream<Codec.EncodedPropertyValue> epvStream = properties.stream().map(p ->
                 codec.encode(p, typeInfo.analysis().getOrDefault(p, p.defaultValue())));
         String s = ((CodecImpl.E) codec.encode(typeInfo, epvStream)).s();
         assertEquals("""
-                {"fqn": "Ta.b.C", "data":{"immutableType":3,"shallowAnalyzer":true}}\
+                {"fqn": "Ta.b.C", "data":{"immutableType":3,"shallowAnalyzer":true,\
+                "commutableMethods":["p1","p2,p3","p4"]}}\
                 """, s);
         JSONParser parser = new JSONParser(s);
         parser.Root();
         Node root = parser.rootNode();
         assertInstanceOf(Root.class, root);
+
+        TypeInfo typeInfo2 = runtime.newTypeInfo(cu, "D");
+
         if (root.get(0) instanceof JSONObject jo) {
             if (jo.get(1) instanceof KeyValuePair kvp) {
                 if (kvp.get(0) instanceof StringLiteral sl) {
@@ -64,10 +74,13 @@ public class TestCodec {
                             epvs.add(new Codec.EncodedPropertyValue(key, new CodecImpl.D(kvp2.get(2))));
                         }
                     }
-                    List<Codec.PropertyValue> pvs = codec.decode(typeInfo.analysis(), epvs.stream()).toList();
-                    assertEquals("", pvs.toString());
+                    List<Codec.PropertyValue> pvs = codec.decode(typeInfo2.analysis(), epvs.stream()).toList();
+                    assertEquals(3, pvs.size());
+                    pvs.forEach(pv -> typeInfo2.analysis().set(pv.property(), pv.value()));
                 } else fail();
             } else fail();
         } else fail();
+
+        assertEquals("p2,p3", typeInfo2.analysis().getOrDefault(PropertyImpl.COMMUTABLE_METHODS, ValueImpl.CommutableDataImpl.BLANK).par());
     }
 }

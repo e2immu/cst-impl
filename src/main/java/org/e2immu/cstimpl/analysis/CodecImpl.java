@@ -7,17 +7,14 @@ import org.e2immu.cstapi.analysis.Value;
 import org.e2immu.cstapi.element.Element;
 import org.e2immu.cstapi.expression.Expression;
 import org.e2immu.cstapi.info.*;
-import org.e2immu.cstapi.variable.Variable;
+import org.e2immu.cstapi.variable.*;
 import org.parsers.json.Node;
-import org.parsers.json.ast.JSONObject;
-import org.parsers.json.ast.Literal;
+import org.parsers.json.ast.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,12 +53,27 @@ public class CodecImpl implements Codec {
 
     @Override
     public List<EncodedValue> decodeList(EncodedValue encodedValue) {
-        return List.of();
+        List<EncodedValue> list = new LinkedList<>();
+        if (encodedValue instanceof D d && d.s instanceof Array jo && jo.size() > 2) {
+            for (int i = 1; i < jo.size(); i += 2) {
+                list.add(new D(jo.get(i)));
+            }
+        }
+        return list;
     }
 
     @Override
     public Map<EncodedValue, EncodedValue> decodeMap(EncodedValue encodedValue) {
-        return Map.of();
+        Map<EncodedValue, EncodedValue> map = new LinkedHashMap<>();
+        if (encodedValue instanceof D d && d.s instanceof JSONObject jo && jo.size() > 2) {
+            // kv pairs, starting with 1 unless empty
+            for (int i = 1; i < jo.size(); i += 2) {
+                if (jo.get(i) instanceof KeyValuePair kvp) {
+                    map.put(new D(kvp.get(0)), new D(kvp.get(2)));
+                } else throw new UnsupportedOperationException();
+            }
+        }
+        return map;
     }
 
     @Override
@@ -81,7 +93,9 @@ public class CodecImpl implements Codec {
 
     @Override
     public String decodeString(EncodedValue encodedValue) {
-        return "";
+        if (encodedValue instanceof D d && d.s instanceof StringLiteral l) {
+            return unquote(l.getSource());
+        } else throw new UnsupportedOperationException();
     }
 
     @Override
@@ -91,12 +105,12 @@ public class CodecImpl implements Codec {
 
     @Override
     public EncodedValue encodeExpression(Expression expression) {
-        return null;
+        return new E(quote(expression.toString()));
     }
 
     @Override
     public EncodedValue encodeInfo(Info info) {
-        return null;
+        return new E(quote(encodeInfoFqn(info)));
     }
 
     @Override
@@ -113,7 +127,9 @@ public class CodecImpl implements Codec {
 
     @Override
     public EncodedValue encodeMap(Map<EncodedValue, EncodedValue> map) {
-        return null;
+        String encoded = map.entrySet().stream().map(e -> ((E) e.getKey()).s + ":" + ((E) e.getValue()).s)
+                .collect(Collectors.joining(",", "{", "}"));
+        return new E(encoded);
     }
 
     @Override
@@ -139,7 +155,19 @@ public class CodecImpl implements Codec {
 
     @Override
     public EncodedValue encodeVariable(Variable variable) {
-        return new E(variable.fullyQualifiedName());
+        String type;
+        if (variable instanceof ParameterInfo) {
+            type = "P";
+        } else if (variable instanceof FieldReference) {
+            type = "F";
+        } else if (variable instanceof DependentVariable) {
+            type = "D";
+        } else if (variable instanceof LocalVariable) {
+            type = "L";
+        } else if (variable instanceof This) {
+            type = "T";
+        } else throw new UnsupportedOperationException();
+        return new E(quote(type + variable.fullyQualifiedName()));
     }
 
     @Override
@@ -158,12 +186,8 @@ public class CodecImpl implements Codec {
     @Override
     public EncodedValue encode(Element info, Stream<EncodedPropertyValue> encodedPropertyValueStream) {
         String fqn;
-        if (info instanceof TypeInfo typeInfo) {
-            fqn = "T" + typeInfo.fullyQualifiedName();
-        } else if (info instanceof MethodInfo methodInfo) {
-            fqn = "M" + methodInfo.fullyQualifiedName();
-        } else if (info instanceof FieldInfo fieldInfo) {
-            fqn = "F" + fieldInfo.fullyQualifiedName();
+        if (info instanceof Info i) {
+            fqn = encodeInfoFqn(i);
         } else if (info instanceof ParameterInfo pi) {
             fqn = "P" + pi.fullyQualifiedName();
         } else throw new UnsupportedOperationException();
@@ -171,5 +195,21 @@ public class CodecImpl implements Codec {
                 .collect(Collectors.joining(",", "{", "}"));
         String all = "{\"fqn\": " + quote(fqn) + ", \"data\":" + pvStream + "}";
         return new E(all);
+    }
+
+    private String encodeInfoFqn(Info info) {
+        if (info instanceof TypeInfo typeInfo) {
+            return "T" + typeInfo.fullyQualifiedName();
+        }
+        if (info instanceof MethodInfo methodInfo) {
+            return "M" + methodInfo.fullyQualifiedName();
+        }
+        if (info instanceof FieldInfo fieldInfo) {
+            return "F" + fieldInfo.fullyQualifiedName();
+        }
+        if (info instanceof ParameterInfo pi) {
+            return "P" + pi.fullyQualifiedName();
+        }
+        throw new UnsupportedOperationException();
     }
 }
