@@ -61,12 +61,12 @@ public class LocalVariableImpl extends VariableImpl implements LocalVariable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LocalVariableImpl that = (LocalVariableImpl) o;
-        return Objects.equals(assignmentExpression, that.assignmentExpression) && Objects.equals(name, that.name);
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(assignmentExpression, name);
+        return name.hashCode();
     }
 
     @Override
