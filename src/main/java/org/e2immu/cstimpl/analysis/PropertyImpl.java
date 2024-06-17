@@ -17,6 +17,7 @@ public class PropertyImpl implements Property {
     public static final Property PRECONDITION_METHOD = new PropertyImpl("preconditionMethod");
     public static final Property INDICES_OF_ESCAPE_METHOD = new PropertyImpl("indicesOfEscapesNotInPrePostCondition");
     public static final Property METHOD_ALLOWS_INTERRUPTS = new PropertyImpl("methodAllowsInterrupts");
+    public static final Property OWN_FIELDS_READ_MODIFIED_IN_METHOD = new PropertyImpl("areOwnFieldsReadModified", Value.FieldBooleanMap.class);
 
     // commutation on methods
     public static final Property PARALLEL_PARAMETER_GROUPS = new PropertyImpl("parallelParameterGroups",

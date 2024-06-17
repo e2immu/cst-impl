@@ -70,6 +70,10 @@ public class ValueImpl implements Value {
         public static final FieldValue EMPTY = new FieldValueImpl(null);
     }
 
+    public record FieldBooleanMapImpl(Map<FieldInfo,Boolean> map) implements FieldBooleanMap {
+        public static final FieldBooleanMap EMPTY = new FieldBooleanMapImpl(Map.of());
+    }
+
     public record AssignedToFieldImpl(Set<FieldInfo> fields) implements AssignedToField {
         public static final AssignedToField EMPTY = new AssignedToFieldImpl(Set.of());
     }

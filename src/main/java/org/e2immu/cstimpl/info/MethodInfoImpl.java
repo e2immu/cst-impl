@@ -19,6 +19,7 @@ import org.e2immu.cstimpl.analysis.ValueImpl;
 import org.e2immu.support.EventuallyFinal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -354,5 +355,10 @@ public class MethodInfoImpl extends InfoImpl implements MethodInfo {
     @Override
     public boolean isSynchronized() {
         return inspection.get().modifiers().stream().anyMatch(MethodModifier::isSynchronized);
+    }
+
+    @Override
+    public Map<FieldInfo, Boolean> areOwnFieldsReadModified() {
+        return analysedOrDefault(PropertyImpl.OWN_FIELDS_READ_MODIFIED_IN_METHOD, ValueImpl.FieldBooleanMapImpl.EMPTY).map();
     }
 }
