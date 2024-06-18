@@ -88,7 +88,13 @@ public class CodecImpl implements Codec {
 
     @Override
     public Set<EncodedValue> decodeSet(EncodedValue encodedValue) {
-        return Set.of();
+        Set<EncodedValue> list = new LinkedHashSet<>();
+        if (encodedValue instanceof D d && d.s instanceof Array jo && jo.size() > 2) {
+            for (int i = 1; i < jo.size(); i += 2) {
+                list.add(new D(jo.get(i)));
+            }
+        }
+        return list;
     }
 
     @Override
